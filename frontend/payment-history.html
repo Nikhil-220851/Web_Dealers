@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment History — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="payment-history.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+        
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar">A</div>
+          <div class="u-details">
+            <div class="u-name">Arjun Sharma</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>Payment History</h1>
+            <div class="topbar-sub">All your transactions</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+          <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
+        </div>
+
+        <!-- Notifications Dropdown -->
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div class="font-bold">Notifications</div>
+            <div class="text-xs text-primary" style="cursor:pointer">Mark all read</div>
+          </div>
+          <div style="max-height:300px; overflow-y:auto;">
+            <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item">
+              <div style="width:36px; height:36px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
+              <div>
+                <div class="text-sm font-semi">Payment Received</div>
+                <div class="text-xs text-muted" style="margin-top:4px">Your EMI of ₹8,200 for LN-2024-001 was processed successfully.</div>
+                <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAYMENT HISTORY CONTENT -->
+      <div id="page-payments" class="page-body active">
+        <div class="card active-loan-banner">
+          <div>
+            <div class="font-bold" style="font-size:15px">SBI Home Loan — LN-2024-001</div>
+            <div class="text-sm text-muted mt-8">Next due: April 5, 2024 · EMI: ₹8,200</div>
+          </div>
+          <div class="flex items-center gap-10">
+            <span class="badge badge-yellow">Due in 28 days</span>
+            <button class="btn btn-primary" onclick="openModal('pay-modal')"><i class="ph ph-credit-card"></i> Pay Now</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-title">Payment History</div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="date-col">Date</th>
+                <th>Loan ID</th>
+                <th>Type</th>
+                <th class="amount-col">Amount</th>
+                <th class="status-col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="date-col">Mar 05, 2024</td>
+                <td><span class="loan-id">LN-2024-001</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹8,200</td>
+                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="date-col">Feb 05, 2024</td>
+                <td><span class="loan-id">LN-2024-001</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹8,200</td>
+                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="date-col">Jan 05, 2024</td>
+                <td><span class="loan-id">LN-2024-001</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹8,200</td>
+                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="date-col">Dec 05, 2023</td>
+                <td><span class="loan-id">LN-2023-055</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹3,100</td>
+                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+              </tr>
+              <tr>
+                <td class="date-col">Nov 05, 2023</td>
+                <td><span class="loan-id">LN-2023-055</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹3,100</td>
+                <td class="status-col"><span class="badge badge-red">Failed</span></td>
+              </tr>
+              <tr>
+                <td class="date-col">Oct 05, 2023</td>
+                <td><span class="loan-id">LN-2023-055</span></td>
+                <td>EMI</td>
+                <td class="amount-col">₹3,100</td>
+                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- PAY MODAL — Multi-Step Payment Gateway -->
+  <div class="modal-overlay" id="pay-modal">
+    <div class="modal" style="max-width:440px" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="pay-modal-title">Make Payment</div>
+        <button class="modal-close" onclick="closePayModal()">✕</button>
+      </div>
+
+      <!-- Amount Banner -->
+      <div style="background:linear-gradient(135deg,#6C47FF,#9064FF);border-radius:12px;padding:18px 20px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:11px;opacity:.75;text-transform:uppercase;letter-spacing:.8px;">Amount Due</div>
+          <div style="font-family:var(--font-d);font-size:32px;font-weight:800;letter-spacing:-1px;margin-top:2px;">₹8,200</div>
+          <div style="font-size:12px;opacity:.75;margin-top:4px;">SBI Home Loan · LN-2024-001</div>
+        </div>
+        <div style="width:52px;height:52px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid rgba(255,255,255,.3);">
+          <i class="ph ph-bank"></i>
+        </div>
+      </div>
+
+      <!-- STEP 1: Choose Payment Method -->
+      <div id="pay-step-1" class="pay-step active">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px;">Select Payment Method</div>
+        <div style="display:flex;flex-direction:column;gap:10px;" id="pay-method-list">
+          <div class="pay-method-card active" onclick="selectPayMethod(this,'upi')" id="pm-upi">
+            <div class="pay-method-icon">📱</div>
+            <div><div style="font-weight:600;font-size:14px;">UPI</div><div style="font-size:12px;color:var(--text3);">Pay instantly via UPI ID</div></div>
+            <div style="margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;" id="pm-dot-upi"><div style="width:8px;height:8px;border-radius:50%;background:var(--primary);"></div></div>
+          </div>
+          <div class="pay-method-card" onclick="selectPayMethod(this,'card')" id="pm-card">
+            <div class="pay-method-icon">💳</div>
+            <div><div style="font-weight:600;font-size:14px;">Debit / Credit Card</div><div style="font-size:12px;color:var(--text3);">Visa, Mastercard, RuPay</div></div>
+            <div style="margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;" id="pm-dot-card"></div>
+          </div>
+          <div class="pay-method-card" onclick="selectPayMethod(this,'netbanking')" id="pm-netbanking">
+            <div class="pay-method-icon">🏦</div>
+            <div><div style="font-weight:600;font-size:14px;">Net Banking</div><div style="font-size:12px;color:var(--text3);">All major banks supported</div></div>
+            <div style="margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;" id="pm-dot-netbanking"></div>
+          </div>
+        </div>
+        <button class="btn btn-primary w-full" style="margin-top:18px;justify-content:center;" onclick="advancePayStep()">Continue →</button>
+      </div>
+
+      <!-- STEP 2: Payment Details -->
+      <div id="pay-step-2" class="pay-step">
+        <!-- UPI Form -->
+        <div id="pay-form-upi">
+          <div class="input-wrap" style="margin-bottom:14px;">
+            <label class="input-lbl">UPI ID</label>
+            <input class="input-field" id="pay-upi-id" placeholder="yourname@upi" type="text" />
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:14px;">
+            <i class="ph ph-shield-check" style="color:var(--green);font-size:18px;flex-shrink:0;"></i>
+            <span style="font-size:12px;color:var(--text2);">Your UPI ID will be verified before payment processing.</span>
+          </div>
+        </div>
+        <!-- Card Form -->
+        <div id="pay-form-card" style="display:none;">
+          <div class="input-grid" style="margin-bottom:14px;">
+            <div class="input-wrap full">
+              <label class="input-lbl">Card Number</label>
+              <input class="input-field" placeholder="1234 5678 9012 3456" maxlength="19" oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim()" />
+            </div>
+            <div class="input-wrap">
+              <label class="input-lbl">Expiry Date</label>
+              <input class="input-field" placeholder="MM / YY" maxlength="7" />
+            </div>
+            <div class="input-wrap">
+              <label class="input-lbl">CVV</label>
+              <input class="input-field" placeholder="•••" maxlength="4" type="password" />
+            </div>
+            <div class="input-wrap full">
+              <label class="input-lbl">Name on Card</label>
+              <input class="input-field" placeholder="Full Name" />
+            </div>
+          </div>
+        </div>
+        <!-- Net Banking Form -->
+        <div id="pay-form-netbanking" style="display:none;">
+          <div class="input-wrap" style="margin-bottom:14px;">
+            <label class="input-lbl">Select Your Bank</label>
+            <select class="input-field select-field">
+              <option>State Bank of India</option>
+              <option>HDFC Bank</option>
+              <option>ICICI Bank</option>
+              <option>Axis Bank</option>
+              <option>Kotak Mahindra Bank</option>
+              <option>Bank of Baroda</option>
+              <option>Punjab National Bank</option>
+            </select>
+          </div>
+          <div style="padding:12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:14px;">
+            <div style="font-size:12px;color:var(--text2);">You will be redirected to your bank's secure portal to authorize the payment.</div>
+          </div>
+        </div>
+        <div class="flex gap-10" style="margin-top:4px;">
+          <button class="btn btn-ghost w-full" onclick="goBackPayStep()">← Back</button>
+          <button class="btn btn-primary w-full" style="justify-content:center;" onclick="processPayment()">Pay ₹8,200 <i class="ph ph-lock-simple"></i></button>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:5px;">
+          <i class="ph ph-shield-check" style="color:var(--green);"></i> 256-bit SSL encrypted · Powered by LoanPro
+        </div>
+      </div>
+
+      <!-- STEP 3: Processing / Success -->
+      <div id="pay-step-3" class="pay-step" style="text-align:center;padding:10px 0;">
+        <div id="pay-processing">
+          <div class="pay-spinner" style="margin-bottom:16px;"></div>
+          <div style="font-family:var(--font-d);font-weight:700;font-size:16px;">Processing Payment…</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:6px;">Please wait, do not close this window.</div>
+        </div>
+        <div id="pay-success" style="display:none;">
+          <div class="pay-success-icon" style="margin-bottom:16px;"><i class="ph ph-check-bold"></i></div>
+          <div style="font-family:var(--font-d);font-weight:800;font-size:20px;color:var(--green);">Payment Successful!</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:8px;">₹8,200 paid towards SBI Home Loan</div>
+          <div style="background:var(--surface2);border-radius:var(--r);padding:12px 16px;margin:16px 0;text-align:left;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text3);">Transaction ID</span><span style="font-weight:600;" id="pay-txn-id">TXN123456</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text3);">Date &amp; Time</span><span style="font-weight:600;" id="pay-txn-date">–</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:var(--text3);">Status</span><span class="badge badge-green">Success</span></div>
+          </div>
+          <button class="btn btn-primary w-full" style="justify-content:center;" onclick="closePayModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let _payMethod = 'upi';
+    const _payForms = { upi: 'pay-form-upi', card: 'pay-form-card', netbanking: 'pay-form-netbanking' };
+    const _payDots = ['upi','card','netbanking'];
+
+    function selectPayMethod(el, method) {
+      _payMethod = method;
+      document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      _payDots.forEach(m => {
+        const dot = document.getElementById('pm-dot-' + m);
+        if (m === method) {
+          dot.style.borderColor = 'var(--primary)';
+          dot.innerHTML = '<div style="width:8px;height:8px;border-radius:50%;background:var(--primary);"></div>';
+        } else {
+          dot.style.borderColor = 'var(--border)';
+          dot.innerHTML = '';
+        }
+      });
+    }
+
+    function advancePayStep() {
+      document.getElementById('pay-step-1').classList.remove('active');
+      document.getElementById('pay-step-2').classList.add('active');
+      // Show right form
+      Object.values(_payForms).forEach(id => document.getElementById(id).style.display = 'none');
+      document.getElementById(_payForms[_payMethod]).style.display = '';
+      document.getElementById('pay-modal-title').textContent = 'Enter Payment Details';
+    }
+
+    function goBackPayStep() {
+      document.getElementById('pay-step-2').classList.remove('active');
+      document.getElementById('pay-step-1').classList.add('active');
+      document.getElementById('pay-modal-title').textContent = 'Make Payment';
+    }
+
+    function processPayment() {
+      document.getElementById('pay-step-2').classList.remove('active');
+      document.getElementById('pay-step-3').classList.add('active');
+      document.getElementById('pay-modal-title').textContent = 'Processing…';
+      setTimeout(() => {
+        document.getElementById('pay-processing').style.display = 'none';
+        document.getElementById('pay-success').style.display = '';
+        document.getElementById('pay-modal-title').textContent = 'Payment Complete';
+        document.getElementById('pay-txn-id').textContent = 'TXN' + Math.floor(Math.random() * 9000000 + 1000000);
+        document.getElementById('pay-txn-date').textContent = new Date().toLocaleString('en-IN', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      }, 2200);
+    }
+
+    function closePayModal() {
+      closeModal('pay-modal');
+      // Reset
+      setTimeout(() => {
+        ['pay-step-1','pay-step-2','pay-step-3'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+        document.getElementById('pay-step-1')?.classList.add('active');
+        document.getElementById('pay-processing').style.display = '';
+        document.getElementById('pay-success').style.display = 'none';
+        document.getElementById('pay-modal-title').textContent = 'Make Payment';
+      }, 300);
+    }
+  </script>
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script src="base.js"></script>
+  <script src="payment-history.js"></script>
+</body>
+
+</html>

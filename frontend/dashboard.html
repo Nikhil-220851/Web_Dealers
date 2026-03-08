@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+        
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar">A</div>
+          <div class="u-details">
+            <div class="u-name">Arjun Sharma</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>Dashboard</h1>
+            <div class="topbar-sub">Welcome back, Arjun <i class="ph ph-hand-waving"></i></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+          <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
+        </div>
+
+        <!-- Notifications Dropdown (Shared Logic in base.js) -->
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div class="font-bold">Notifications</div>
+            <div class="text-xs text-primary" style="cursor:pointer">Mark all read</div>
+          </div>
+          <div style="max-height:300px; overflow-y:auto;">
+            <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item">
+              <div style="width:36px; height:36px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
+              <div>
+                <div class="text-sm font-semi">Payment Received</div>
+                <div class="text-xs text-muted" style="margin-top:4px">Your EMI of ₹8,200 for LN-2024-001 was processed successfully.</div>
+                <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
+              </div>
+            </div>
+            <div style="padding:14px 18px; display:flex; gap:12px; cursor:pointer;" class="notif-item">
+              <div style="width:36px; height:36px; border-radius:50%; background:var(--yellow-bg); color:var(--yellow); display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="ph ph-hourglass-high"></i></div>
+              <div>
+                <div class="text-sm font-semi">Application Update</div>
+                <div class="text-xs text-muted" style="margin-top:4px">Your Personal Loan application (LN-2024-008) is under review.</div>
+                <div class="text-xs text-muted" style="margin-top:6px">1 day ago</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:12px; text-align:center; border-top:1px solid var(--border); cursor:pointer;" class="text-xs font-semi text-primary" onclick="window.location.href='notifications.html'">View All Notifications</div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD CONTENT -->
+      <div class="page-body active dotted-bg">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card" style="--stat-clr:rgba(108,71,255,.09)">
+            <div class="stat-icon" style="background:rgba(108,71,255,.09)"><i class="ph ph-money"></i></div>
+            <div class="stat-lbl mt-8">Active Loans</div>
+            <div class="stat-val">2</div>
+            <div class="stat-delta up">▲ +1 this year</div>
+          </div>
+          <div class="stat-card" style="--stat-clr:rgba(0,210,200,.1)">
+            <div class="stat-icon" style="background:rgba(0,210,200,.1)"><i class="ph ph-chart-bar"></i></div>
+            <div class="stat-lbl mt-8">Total Borrowed</div>
+            <div class="stat-val">₹50L</div>
+            <div class="stat-delta neu">₹8.2K EMI/mo</div>
+          </div>
+          <div class="stat-card" style="--stat-clr:rgba(34,197,94,.1)">
+            <div class="stat-icon" style="background:rgba(34,197,94,.1)"><i class="ph ph-check-circle"></i></div>
+            <div class="stat-lbl mt-8">Paid So Far</div>
+            <div class="stat-val">₹3.6L</div>
+            <div class="stat-delta up">▲ 18% repaid</div>
+          </div>
+          <div class="stat-card" style="--stat-clr:rgba(245,166,35,.1)">
+            <div class="stat-icon" style="background:rgba(245,166,35,.1)"><i class="ph ph-calendar"></i></div>
+            <div class="stat-lbl mt-8">Next Due</div>
+            <div class="stat-val">Apr 5</div>
+            <div class="stat-delta neu">28 days left</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="dash-row">
+            <div class="dash-col-left">
+              <div class="loan-hero">
+                <div class="lh-top">
+                  <span class="lh-badge">Home Loan</span>
+                  <span class="lh-status">Active</span>
+                </div>
+                <div class="lh-amt-lbl">Outstanding Balance</div>
+                <div class="lh-amt">₹41,64,000</div>
+                <div class="lh-meta">
+                  <div class="lh-meta-item"><label>Bank</label><span>SBI</span></div>
+                  <div class="lh-meta-item"><label>Rate</label><span>8.40% p.a.</span></div>
+                  <div class="lh-meta-item"><label>Tenure</label><span>27 yrs left</span></div>
+                </div>
+                <div class="prog-wrap">
+                  <div class="prog-lbl"><span>18% Repaid</span><span>₹8.36L paid</span></div>
+                  <div class="prog-track">
+                    <div class="prog-fill" style="width: 18%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-col-right">
+              <div class="card" style="flex: 1; display:flex; flex-direction:column;">
+                <div class="card-title">
+                  Loan Payment Timeline
+                  <span class="badge badge-purple">Annual View</span>
+                </div>
+                <div class="chart-container">
+                  <canvas id="emiChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-row">
+            <div class="dash-col-left">
+              <div class="card" style="flex: 1;">
+                <div class="card-title">Recent Transactions</div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
+                      <div>
+                        <div class="font-semi text-sm">EMI Payment</div>
+                        <div class="text-xs text-muted mt-8">Mar 2, 2024</div>
+                      </div>
+                    </div>
+                    <div class="font-bold d-family">₹8,200</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
+                      <div>
+                        <div class="font-semi text-sm">EMI Payment</div>
+                        <div class="text-xs text-muted mt-8">Feb 2, 2024</div>
+                      </div>
+                    </div>
+                    <div class="font-bold d-family">₹8,200</div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
+                      <div>
+                        <div class="font-semi text-sm">EMI Payment</div>
+                        <div class="text-xs text-muted mt-8">Jan 2, 2024</div>
+                      </div>
+                    </div>
+                    <div class="font-bold d-family">₹8,200</div>
+                  </div>
+                </div>
+                <div style="margin-top:12px; text-align:center;">
+                  <a href="payment-history.html" class="btn btn-ghost w-full">View All History</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-col-right" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+              <div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 30px;">
+                <div class="text-sm font-semi text-muted mb-8" style="text-transform:uppercase; letter-spacing:1px;">Credit Score</div>
+                <div style="position:relative; width:120px; height:120px; margin: 16px 0;">
+                  <svg viewBox="0 0 36 36" style="width:100%; height:100%; transform: rotate(-90deg);">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--border)" stroke-width="3.5" stroke-dasharray="75, 100" />
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--green)" stroke-width="3.5" stroke-dasharray="60, 100" />
+                  </svg>
+                  <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <div class="d-family font-bold" style="font-size:24px; line-height:1;">720</div>
+                    <div class="text-xs text-muted" style="margin-top:2px;">/ 900</div>
+                  </div>
+                </div>
+                <div class="badge badge-green" style="margin-bottom:12px; font-size:12px; padding:4px 12px;">Status: Good</div>
+                <div class="text-xs font-semi text-green" style="display:flex; align-items:center; gap:4px;">
+                  <i class="ph ph-trend-up"></i> +15 this year
+                </div>
+              </div>
+
+              <div class="card" style="display:flex; flex-direction:column;">
+                <div class="card-title">Recommended for you <i class="ph ph-sparkles text-primary"></i></div>
+                <div class="rec-cards" style="flex:1; justify-content:center;">
+                  <div class="rec-card" style="padding:16px;" onclick="window.location.href='apply-loan.html'">
+                    <div class="rec-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="ph ph-house"></i></div>
+                    <div style="flex:1">
+                      <div class="font-semi">Top-Up Home Loan</div>
+                      <div class="text-xs text-muted mt-8">Interest: 8.20%</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="padding:6px 12px; border-radius:8px;">Apply</button>
+                  </div>
+                  <div class="rec-card" style="padding:16px;" onclick="window.location.href='apply-loan.html'">
+                    <div class="rec-icon" style="background:#FEF3C7; color:#92400E;"><i class="ph ph-graduation-cap"></i></div>
+                    <div style="flex:1">
+                      <div class="font-semi">Education Loan</div>
+                      <div class="text-xs text-muted mt-8">Interest: 8.80%</div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" style="padding:6px 12px; border-radius:8px;">Apply</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script src="base.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+
+</html>
