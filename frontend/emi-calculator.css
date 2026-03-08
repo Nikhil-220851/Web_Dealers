@@ -1,0 +1,300 @@
+/* ═══════════════════════════════════════════════
+   EMI CALCULATOR — Premium Fintech Layout
+═══════════════════════════════════════════════ */
+
+/* ── Two-column grid layout ── */
+.emi-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.emi-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.emi-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Section headings inside cards ── */
+.emi-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-d);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 22px;
+}
+
+.emi-card-title i {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Slider rows ── */
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 24px;
+}
+
+.slider-row:last-child {
+  margin-bottom: 0;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
+.slider-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.1px;
+}
+
+.slider-val {
+  font-family: var(--font-d);
+  font-weight: 800;
+  color: var(--primary);
+  font-size: 15px;
+  letter-spacing: -0.5px;
+}
+
+/* ── Range input ── */
+input[type=range] {
+  width: 100%;
+  accent-color: var(--primary);
+  cursor: pointer;
+  height: 5px;
+  border-radius: 99px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--range-pct, 25%), var(--border) var(--range-pct, 25%), var(--border) 100%);
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px var(--primary), 0 2px 10px rgba(108, 71, 255, .35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 1px var(--primary), 0 4px 14px rgba(108, 71, 255, .45);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 1px var(--primary), 0 2px 10px rgba(108, 71, 255, .35);
+}
+
+.slider-hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+/* ── Monthly EMI hero card ── */
+.emi-hero {
+  background: linear-gradient(135deg, #6C47FF 0%, #8B5CF6 50%, #A78BFA 100%);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(108, 71, 255, .35);
+  margin-bottom: 0;
+}
+
+.emi-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.emi-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: 10%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+}
+
+.emi-hero-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.emi-hero-value {
+  font-family: var(--font-d);
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.emi-hero-sub {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ── Three summary mini-cards ── */
+.emi-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.breakdown-item {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 10px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.breakdown-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.breakdown-lbl {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.breakdown-val {
+  font-family: var(--font-d);
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* ── Chart card full height ── */
+.emi-chart-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.emi-chart-wrap {
+  flex: 1;
+  position: relative;
+  min-height: 420px;
+  width: 100%;
+}
+
+/* ── Donut pie alternative: progress ring below chart ── */
+.emi-stat-strip {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding-top: 16px;
+}
+
+.emi-stat {
+  flex: 1;
+  text-align: center;
+  padding: 0 10px;
+  border-right: 1px solid var(--border);
+}
+
+.emi-stat:last-child {
+  border-right: none;
+}
+
+.emi-stat-label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.emi-stat-value {
+  font-family: var(--font-d);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .emi-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .emi-chart-card {
+    min-height: 380px;
+  }
+
+  .emi-chart-wrap {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 540px) {
+  .emi-hero-value {
+    font-size: 36px;
+  }
+
+  .emi-breakdown {
+    grid-template-columns: 1fr 1fr;
+  }
+}
