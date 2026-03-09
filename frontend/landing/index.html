@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Simple & Fast Loans</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/css/landing.css">
+</head>
+<body>
+
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+ 
+    <div class="d-flex align-items-center gap-3 mb-2">
+      <div style="width:52px;height:52px;background:rgba(255,255,255,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.5);">
+        <span class="material-icons-round" style="font-size:1.8rem;color:#fff;">account_circle</span>
+      </div>
+      <div>
+        <span style="background:rgba(255,255,255,0.2);font-size:0.72rem;padding:0.1rem 0.6rem;border-radius:20px;margin-top:3px;display:inline-block;">Member</span>
+      </div>
+    </div>
+  
+    
+  </div>
+  <a href="../dashboard/dashboard.html"><span class="material-icons-round">dashboard</span> Dashboard</a>
+  <a href="../dashboard/apply-loan.html"><span class="material-icons-round">credit_card</span> Apply For Loans</a>
+  <a href="../dashboard/my-loans.html"><span class="material-icons-round">description</span> MY Loans</a>
+  <a href="../dashboard/payment-history.html"><span class="material-icons-round">account_balance</span> Payment History</a>
+  <a href="../dashboard/profile.html"><span class="material-icons-round">person</span> My Profile</a>
+  <a href="../auth/login.html"><span class="material-icons-round">cancel</span> Logout</a>
+</div>
+
+
+<nav class="navbar d-flex align-items-center justify-content-between">
+
+  
+  <div class="d-flex align-items-center gap-3">
+    <button class="three-lines" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <a href="#" class="brand-name">
+  <span class="logo-blue">Loan</span><span class="logo-dark">Pro</span>
+</a>
+
+  </div>
+
+  <div class="d-flex gap-2">
+    <a href="../auth/login.html" class="btn-login">Login</a>
+    <a href="../auth/signup.html" class="btn-started">Get Started</a>
+  </div>
+
+</nav>
+
+
+<section class="hero">
+  <div class="container py-5">
+    <div class="row align-items-center g-5">
+
+ 
+      <div class="col-lg-6">
+        <div class="badge-pill"><span class="material-icons-round" style="font-size:0.9rem;vertical-align:middle;">bolt</span> Fast &amp; Trusted Loan Platform</div>
+        <h1>
+          Simple &amp; Fast<br>
+          <span>Loan Apply</span><br>
+          Anytime, Anywhere.
+        </h1>
+        <p>
+          Apply for loans in minutes with zero paperwork. Track your EMIs, contributions, and statements — all in one place.
+        </p>
+        <div class="d-flex gap-3 mt-4">
+          <a href="../auth/signup.html" class="btn-started" style="font-size:1rem;padding:0.7rem 1.8rem;">Get Started</a>
+        
+        </div>
+      </div>
+
+
+
+      <div class="col-lg-6 text-center">
+  <img src="../assets/images/image.jpeg"
+       class="img-fluid"
+       style="max-height:420px;">
+</div>
+
+      
+
+    </div>
+  </div>
+</section>
+<section class="py-5">
+
+<div class="container-fluid">
+
+<div class="row g-4">
+
+<div class="col-md-4">
+<div class="hero-card reveal text-center">
+<div class="lbl">Fast Approval</div>
+<div class="val" style="font-size:1.2rem;color:#0a1a4a;">Get Loan in Minutes</div>
+<div class="sub">Apply online and receive approval quickly without long paperwork.</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="hero-card reveal text-center">
+<div class="lbl">Secure Platform</div>
+<div class="val" style="font-size:1.2rem;color:#0a1a4a;">100% Safe & Trusted</div>
+<div class="sub">Your data and transactions are protected with secure technology.</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="hero-card reveal text-center">
+<div class="lbl">Flexible Repayment</div>
+<div class="val" style="font-size:1.2rem;color:#0a1a4a;">Easy EMI Options</div>
+<div class="sub">Choose repayment plans that suit your financial needs.</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+  <section class="popular-loans py-5">
+<div class="container">
+
+<h2 class="text-center mb-5">Popular Loan Options</h2>
+
+<div class="row g-4">
+
+<div class="col-md-3">
+<div class="loan-card text-center">
+<img src="../assets/images/personal.jfif" class="loan-icon">
+<h5>Personal Loan</h5>
+<p>Quick cash for your personal needs with easy approval.</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="loan-card text-center">
+<img src="../assets/images/home_loan.jpg" class="loan-icon">
+<h5>Home Loan</h5>
+<p>Affordable loans to help you buy your dream home.</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="loan-card text-center">
+<img src="../assets/images/car_loan.webp" class="loan-icon">
+<h5>Car Loan</h5>
+<p>Drive your dream car with flexible repayment options.</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="loan-card text-center">
+<img src="../assets/images/business_loan.jpg" class="loan-icon">
+<h5>Business Loan</h5>
+<p>Grow your business with fast and secure funding.</p>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/landing.js"></script>
+</body>
+</html>

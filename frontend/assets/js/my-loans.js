@@ -29,7 +29,7 @@
         <td><span class="badge ${badgeMap[l.status]}">${labelMap[l.status]}</span></td>
         <td><div class="flex gap-8">
           <button class="btn btn-ghost btn-sm">View</button>
-          ${l.status === 'accepted' ? '<button class="btn btn-outline btn-sm" onclick="openModal(\'pay-modal\')"><span>Pay EMI</span></button>' : ''}
+          ${l.status === 'accepted' ? '<button class="btn btn-outline btn-sm" onclick="window.location.href=\'../borrower/payment.html\'"><span>Pay EMI</span></button>' : ''}
         </div></td>
       </tr>`).join('')}
     </tbody>

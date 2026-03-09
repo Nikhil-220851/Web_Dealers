@@ -34,8 +34,8 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="base.css">
-  <link rel="stylesheet" href="apply-loan.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/apply-loan.css">
 </head>
 
 <body>
@@ -81,7 +81,13 @@
         <a href="contact.html" class="nav-item">
           <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
         </a>
+      
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
       </nav>
+
 
       <div class="sidebar-footer">
         <a href="profile.html" class="user-chip">
@@ -305,8 +311,26 @@
   
   
 
-  <script src="base.js"></script>
-  <script src="apply-loan.js"></script>
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/apply-loan.js"></script>
+
+  <script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        alert('You have been logged out.');
+        window.location.href = '../landing/index.html';
+    }
+
+    // Check session
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
 </body>
+
 
 </html>

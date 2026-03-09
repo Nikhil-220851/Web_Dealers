@@ -6,36 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — LoanPro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="base.css">
-  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/dashboard.css">
 </head>
 
 <body>
@@ -81,6 +57,11 @@
         <a href="contact.html" class="nav-item">
           <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
         </a>
+
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
       </nav>
 
       <div class="sidebar-footer">
@@ -99,9 +80,10 @@
       <!-- TOPBAR -->
       <header class="topbar">
         <div class="topbar-left">
+          <button class="sidebar-toggle-btn" onclick="toggleSidebar()"><i class="ph ph-list"></i></button>
           <div>
-            <h1>Dashboard</h1>
-            <div class="topbar-sub">Welcome back, Arjun <i class="ph ph-hand-waving"></i></div>
+            <h1 id="page-title">Dashboard</h1>
+            <div class="topbar-sub" id="page-sub">Welcome back, Arjun <i class="ph ph-hand-waving"></i></div>
           </div>
         </div>
         <div class="topbar-right">
@@ -109,7 +91,7 @@
           <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
         </div>
 
-        <!-- Notifications Dropdown (Shared Logic in base.js) -->
+        <!-- Notifications Dropdown -->
         <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
           <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
             <div class="font-bold">Notifications</div>
@@ -124,21 +106,13 @@
                 <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
               </div>
             </div>
-            <div style="padding:14px 18px; display:flex; gap:12px; cursor:pointer;" class="notif-item">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--yellow-bg); color:var(--yellow); display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="ph ph-hourglass-high"></i></div>
-              <div>
-                <div class="text-sm font-semi">Application Update</div>
-                <div class="text-xs text-muted" style="margin-top:4px">Your Personal Loan application (LN-2024-008) is under review.</div>
-                <div class="text-xs text-muted" style="margin-top:6px">1 day ago</div>
-              </div>
-            </div>
           </div>
           <div style="padding:12px; text-align:center; border-top:1px solid var(--border); cursor:pointer;" class="text-xs font-semi text-primary" onclick="window.location.href='notifications.html'">View All Notifications</div>
         </div>
       </header>
 
       <!-- DASHBOARD CONTENT -->
-      <div class="page-body active dotted-bg">
+      <div id="page-dashboard" class="page-body active dotted-bg">
         <!-- Stats -->
         <div class="stats-grid">
           <div class="stat-card" style="--stat-clr:rgba(108,71,255,.09)">
@@ -209,32 +183,12 @@
               <div class="card" style="flex: 1;">
                 <div class="card-title">Recent Transactions</div>
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+                  <div class="txn-row" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
                     <div style="display:flex; align-items:center; gap:12px;">
                       <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
                       <div>
                         <div class="font-semi text-sm">EMI Payment</div>
                         <div class="text-xs text-muted mt-8">Mar 2, 2024</div>
-                      </div>
-                    </div>
-                    <div class="font-bold d-family">₹8,200</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                      <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
-                      <div>
-                        <div class="font-semi text-sm">EMI Payment</div>
-                        <div class="text-xs text-muted mt-8">Feb 2, 2024</div>
-                      </div>
-                    </div>
-                    <div class="font-bold d-family">₹8,200</div>
-                  </div>
-                  <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                      <div style="width:36px; height:36px; border-radius:10px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="ph ph-check-circle"></i></div>
-                      <div>
-                        <div class="font-semi text-sm">EMI Payment</div>
-                        <div class="text-xs text-muted mt-8">Jan 2, 2024</div>
                       </div>
                     </div>
                     <div class="font-bold d-family">₹8,200</div>
@@ -260,29 +214,16 @@
                   </div>
                 </div>
                 <div class="badge badge-green" style="margin-bottom:12px; font-size:12px; padding:4px 12px;">Status: Good</div>
-                <div class="text-xs font-semi text-green" style="display:flex; align-items:center; gap:4px;">
-                  <i class="ph ph-trend-up"></i> +15 this year
-                </div>
               </div>
 
               <div class="card" style="display:flex; flex-direction:column;">
-                <div class="card-title">Recommended for you <i class="ph ph-sparkles text-primary"></i></div>
+                <div class="card-title">Recommended for you</div>
                 <div class="rec-cards" style="flex:1; justify-content:center;">
                   <div class="rec-card" style="padding:16px;" onclick="window.location.href='apply-loan.html'">
                     <div class="rec-icon" style="background:#DBEAFE; color:#1E40AF;"><i class="ph ph-house"></i></div>
                     <div style="flex:1">
                       <div class="font-semi">Top-Up Home Loan</div>
-                      <div class="text-xs text-muted mt-8">Interest: 8.20%</div>
                     </div>
-                    <button class="btn btn-primary btn-sm" style="padding:6px 12px; border-radius:8px;">Apply</button>
-                  </div>
-                  <div class="rec-card" style="padding:16px;" onclick="window.location.href='apply-loan.html'">
-                    <div class="rec-icon" style="background:#FEF3C7; color:#92400E;"><i class="ph ph-graduation-cap"></i></div>
-                    <div style="flex:1">
-                      <div class="font-semi">Education Loan</div>
-                      <div class="text-xs text-muted mt-8">Interest: 8.80%</div>
-                    </div>
-                    <button class="btn btn-primary btn-sm" style="padding:6px 12px; border-radius:8px;">Apply</button>
                   </div>
                 </div>
               </div>
@@ -293,20 +234,24 @@
     </main>
   </div>
 
-  
-  
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+  <script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        alert('You have been logged out.');
+        window.location.href = '../landing/index.html';
+    }
 
-  
-  
-
-  
-  
-
-  
-  
-
-  <script src="base.js"></script>
-  <script src="dashboard.js"></script>
+    // Check session
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
 </body>
 
 </html>

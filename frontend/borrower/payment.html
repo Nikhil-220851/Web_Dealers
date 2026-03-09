@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanPro Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/payment.css">
+</head>
+<body>
+
+  <!-- Topbar / Minimal Nav for Checkout -->
+  <header class="checkout-header">
+    <div class="logo-wrap" onclick="window.history.back()">
+      <div class="logo-mark"><i class="ph ph-arrow-left" style="color:white;"></i></div>
+      <div class="logo-text">Cancel & Return</div>
+    </div>
+    <div class="secure-badge">
+      <i class="ph-fill ph-lock-key"></i> 100% Secure Payment
+    </div>
+  </header>
+
+  <main class="checkout-container">
+    
+    <!-- Left: Payment Steps -->
+    <div class="checkout-left">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 25%"></div>
+      </div>
+
+      <div class="step-indicator">
+        <span class="step-num" id="stepNumText">Step 1 of 4</span>
+        <span class="step-title" id="stepTitleText">Select Payment Method</span>
+      </div>
+
+      <!-- STEP 1: Select Payment Method -->
+      <div id="step1" class="step-section active">
+        <h2 class="section-heading">How would you like to pay?</h2>
+        <div class="methods-grid">
+          
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="card" onchange="enableStep1()">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-credit-card"></i></div>
+              <div class="method-info">
+                <h3>Credit / Debit Card</h3>
+                <p>Pay using Visa, Mastercard, RuPay</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="upi" onchange="enableStep1()">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-device-mobile"></i></div>
+              <div class="method-info">
+                <h3>UPI</h3>
+                <p>GPay, PhonePe, Paytm, etc.</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="netbanking" onchange="enableStep1()">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-bank"></i></div>
+              <div class="method-info">
+                <h3>Net Banking</h3>
+                <p>All major banks available</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="wallet" onchange="enableStep1()">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-wallet"></i></div>
+              <div class="method-info">
+                <h3>Wallet</h3>
+                <p>Paytm, Amazon Pay, Mobikwik</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+        </div>
+
+        <div class="step-footer">
+          <button class="btn btn-primary" id="btnNext1" onclick="goToStep(2)" disabled>Continue</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Payment Details -->
+      <div id="step2" class="step-section">
+        <h2 class="section-heading">Enter Payment Details</h2>
+
+        <!-- Card Details -->
+        <div id="form-card" class="payment-form">
+          <div class="field">
+            <label>Card Number</label>
+            <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" oninput="validateStep2()">
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Expiry Date</label>
+              <input type="text" placeholder="MM/YY" maxlength="5" oninput="validateStep2()">
+            </div>
+            <div class="field">
+              <label>CVV</label>
+              <input type="password" placeholder="***" maxlength="3" oninput="validateStep2()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Name on Card</label>
+            <input type="text" placeholder="John Doe" oninput="validateStep2()">
+          </div>
+        </div>
+
+        <!-- UPI Details -->
+        <div id="form-upi" class="payment-form">
+          <div class="quick-upi">
+            <div class="upi-app"><img src="../assets/images/phonepe.png" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'#5f259f\'/><text x=\'50\' y=\'65\' font-size=\'40\' font-weight=\'bold\' fill=\'white\' text-anchor=\'middle\' font-family=\'Arial\'>P</text></svg>'"></div>
+            <div class="upi-app"><img src="../assets/images/gpay.png" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'#fff\' stroke=\'#ddd\' stroke-width=\'2\'/><text x=\'50\' y=\'65\' font-size=\'40\' font-weight=\'bold\' fill=\'#ea4335\' text-anchor=\'middle\' font-family=\'Arial\'>G</text></svg>'"></div>
+            <div class="upi-app"><img src="../assets/images/paytm.png" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'#002970\'/><text x=\'50\' y=\'65\' font-size=\'30\' font-weight=\'bold\' fill=\'#00baec\' text-anchor=\'middle\' font-family=\'Arial\'>Pay</text></svg>'"></div>
+          </div>
+          <div class="field mt-4">
+            <label>Or enter UPI ID</label>
+            <div class="input-with-icon">
+              <input type="text" id="upiId" placeholder="example@upi" oninput="validateStep2()">
+              <div class="input-status" id="upiStatus"></div>
+            </div>
+            <span class="text-xs text-muted mt-2 d-block">A payment request will be sent to this UPI ID.</span>
+          </div>
+        </div>
+
+        <!-- Net Banking Details -->
+        <div id="form-netbanking" class="payment-form">
+          <div class="bank-grid">
+            <label class="bank-card">
+              <input type="radio" name="bank" onchange="validateStep2()">
+              <div class="bank-logo">HDFC</div>
+            </label>
+            <label class="bank-card">
+              <input type="radio" name="bank" onchange="validateStep2()">
+              <div class="bank-logo">ICICI</div>
+            </label>
+            <label class="bank-card">
+              <input type="radio" name="bank" onchange="validateStep2()">
+              <div class="bank-logo">SBI</div>
+            </label>
+            <label class="bank-card">
+              <input type="radio" name="bank" onchange="validateStep2()">
+              <div class="bank-logo">Axis</div>
+            </label>
+          </div>
+          <div class="field mt-4">
+            <label>Other Banks</label>
+            <select onchange="validateStep2()">
+              <option value="">Select your bank</option>
+              <option value="kotak">Kotak Mahindra Bank</option>
+              <option value="pnb">Punjab National Bank</option>
+              <option value="bob">Bank of Baroda</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Wallet Details -->
+        <div id="form-wallet" class="payment-form">
+          <div class="wallet-balance-card">
+            <div class="wp-left">
+              <div class="w-icon"><i class="ph ph-wallet"></i></div>
+              <div>
+                <div class="w-name">LoanPro Wallet</div>
+                <div class="w-avail">Available Balance</div>
+              </div>
+            </div>
+            <div class="wp-right">₹12,500</div>
+          </div>
+          <div class="text-xs text-muted mt-3">Sufficient balance available to make this payment.</div>
+        </div>
+
+        <div class="step-footer split">
+          <button class="btn btn-ghost" onclick="goToStep(1)">Back</button>
+          <button class="btn btn-primary" id="btnNext2" onclick="goToStep(3)" disabled>Continue</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Confirm Payment -->
+      <div id="step3" class="step-section">
+        <h2 class="section-heading">Confirm & Pay</h2>
+        
+        <div class="summary-box">
+          <div class="sum-row">
+            <span>Loan ID</span>
+            <span class="font-semi text-text">LN-2024-001</span>
+          </div>
+          <div class="sum-row">
+            <span>EMI Amount</span>
+            <span class="font-semi text-text">₹8,200</span>
+          </div>
+          <div class="sum-row">
+            <span>Late Fee <span class="badge badge-green">Waived</span></span>
+            <span class="font-semi text-text" style="text-decoration:line-through; color:var(--text3)">₹150</span>
+          </div>
+          <div class="sum-row">
+            <span>Processing Fee</span>
+            <span class="font-semi text-text">₹50</span>
+          </div>
+          
+          <div class="sum-total">
+            <span>Total Payable</span>
+            <span class="d-family text-blue" style="font-size: 24px;">₹8,250</span>
+          </div>
+        </div>
+
+        <div class="payment-method-review mt-4">
+          <div class="pmr-left">
+            <div class="pmr-icon" id="reviewIcon"><i class="ph ph-device-mobile"></i></div>
+            <div>
+              <div class="pmr-title">Paying via <span id="reviewMethod">UPI</span></div>
+              <div class="pmr-sub" id="reviewDetail">example@upi</div>
+            </div>
+          </div>
+          <button class="btn-text" onclick="goToStep(1)">Change</button>
+        </div>
+
+        <div class="step-footer split" style="margin-top: 30px;">
+          <button class="btn btn-ghost" onclick="goToStep(2)">Back</button>
+          <button class="btn btn-primary btn-pay" id="btnPay" onclick="processPayment()">
+            <i class="ph-fill ph-lock-key"></i> Pay ₹8,250 Securely
+          </button>
+        </div>
+        
+        <div class="safe-text text-center mt-3 text-xs text-muted">
+          Your payment is encrypted and 100% secure.
+        </div>
+      </div>
+
+      <!-- STEP 4: Success -->
+      <div id="step4" class="step-section text-center">
+        <div class="success-anim-wrap">
+          <div class="success-circle">
+            <i class="ph-fill ph-check"></i>
+          </div>
+        </div>
+        
+        <h1 class="success-heading d-family" style="margin-top:20px; font-size: 28px; color: var(--green);">Payment Successful!</h1>
+        <p class="text-muted mt-2">Your EMI payment has been processed successfully.</p>
+        
+        <div class="receipt-card mt-6">
+          <div class="rc-row">
+            <span>Amount Paid</span>
+            <span class="font-bold">₹8,250</span>
+          </div>
+          <div class="rc-row">
+            <span>Transaction ID</span>
+            <span class="font-mono">TXN783421890</span>
+          </div>
+          <div class="rc-row">
+            <span>Date & Time</span>
+            <span id="paymentDateTime">12 Feb 2025, 10:45 AM</span>
+          </div>
+          <div class="rc-row">
+            <span>Payment Mode</span>
+            <span id="receiptMethod">UPI</span>
+          </div>
+        </div>
+
+        <div class="step-footer" style="flex-direction: column; gap: 12px; margin-top:30px;">
+          <button class="btn btn-outline w-full" style="width:100%"><i class="ph ph-download-simple"></i> Download Receipt</button>
+          <a href="../dashboard/dashboard.html" class="btn btn-primary w-full" style="width:100%">Back to Dashboard</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Sticky Order Summary -->
+    <div class="checkout-right">
+      <div class="order-summary-card">
+        <div class="osc-title">Order Summary</div>
+        
+        <div class="osc-item">
+          <div class="o-icon"><i class="ph ph-house"></i></div>
+          <div class="o-info">
+            <div class="o-name">Home Loan EMI</div>
+            <div class="o-sub">Installment 18 of 324</div>
+          </div>
+        </div>
+
+        <div class="osc-divider"></div>
+
+        <div class="osc-row">
+          <span>Principal</span>
+          <span>₹1,800</span>
+        </div>
+        <div class="osc-row">
+          <span>Interest</span>
+          <span>₹6,400</span>
+        </div>
+        <div class="osc-row text-xs text-muted">
+          <span>Taxes & Fees</span>
+          <span>₹50</span>
+        </div>
+
+        <div class="osc-divider"></div>
+
+        <div class="osc-total">
+          <span>Total Need to Pay</span>
+          <span class="d-family text-blue">₹8,250</span>
+        </div>
+      </div>
+      
+      <div class="trust-badges">
+        <div class="tb-item"><i class="ph ph-shield-check"></i> 256-bit Encryption</div>
+        <div class="tb-item"><i class="ph ph-check-square-offset"></i> PCI-DSS Compliant</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text mt-4 font-bold text-white">Processing Payment...</div>
+    <div class="text-sm mt-2 text-white" style="opacity: 0.7;">Please do not refresh or close this window</div>
+  </div>
+
+  <script src="../assets/js/payment.js"></script>
+  <script>
+    // set current time on load
+    const now = new Date();
+    document.getElementById('paymentDateTime').innerText = now.toLocaleString();
+  </script>
+</body>
+</html>

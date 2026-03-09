@@ -2217,7 +2217,13 @@
               class="ph ph-question"></i></span> <span class="nav-label">Help Center</span></button>
         <button class="nav-item" onclick="showPage('contact',this)"><span class="nav-icon"><i
               class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span></button>
+      
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
       </nav>
+
 
       <div class="sidebar-footer">
         <div class="user-chip">
@@ -2582,7 +2588,7 @@
           </div>
           <div class="flex items-center gap-10">
             <span class="badge badge-yellow">Due in 28 days</span>
-            <button class="btn btn-primary" onclick="openModal('pay-modal')"><i class="ph ph-credit-card"></i> Pay
+            <button class="btn btn-primary" onclick="window.location.href='../borrower/payment.html'"><i class="ph ph-credit-card"></i> Pay
               Now</button>
           </div>
         </div>
@@ -3261,34 +3267,7 @@
     </div>
   </div>
 
-  <!-- PAY MODAL -->
-  <div class="modal-overlay" id="pay-modal">
-    <div class="modal" style="max-width:400px" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title">Make Payment</div>
-        <button class="modal-close" onclick="closeModal('pay-modal')">✕</button>
-      </div>
-      <div style="background:var(--primary-light);border-radius:10px;padding:14px;margin-bottom:16px">
-        <div class="text-xs text-muted">Amount Due</div>
-        <div class="d-family font-bold text-primary" style="font-size:30px">₹8,200</div>
-        <div class="text-sm text-muted mt-8">SBI Home Loan · LN-2024-001</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div class="input-wrap"><label class="input-lbl">Payment Method</label>
-          <select class="input-field select-field">
-            <option>UPI</option>
-            <option>Net Banking</option>
-            <option>Debit Card</option>
-            <option>Credit Card</option>
-          </select>
-        </div>
-        <div class="input-wrap"><label class="input-lbl">UPI ID</label><input class="input-field"
-            placeholder="name@upi" /></div>
-        <div class="flex gap-10" style="margin-top:6px">
-          <button class="btn btn-ghost w-full" onclick="closeModal('pay-modal')">Cancel</button>
-          <button class="btn btn-primary w-full" onclick="closeModal('pay-modal')">Pay ₹8,200 →</button>
-        </div>
-      </div>
+
 
 
       <script>
@@ -3675,7 +3654,7 @@
         <td><span class="badge ${badgeMap[l.status]}">${labelMap[l.status]}</span></td>
         <td><div class="flex gap-8">
           <button class="btn btn-ghost btn-sm">View</button>
-          ${l.status === 'accepted' ? '<button class="btn btn-outline btn-sm" onclick="openModal(\'pay-modal\')"><span>Pay EMI</span></button>' : ''}
+          ${l.status === 'accepted' ? '<button class="btn btn-outline btn-sm" onclick="window.location.href=\'../borrower/payment.html\'"><span>Pay EMI</span></button>' : ''}
         </div></td>
       </tr>`).join('')}
     </tbody>
@@ -4115,6 +4094,24 @@
         calcEMI();
         calcCompletion();
       </script>
+
+  <script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        alert('You have been logged out.');
+        window.location.href = '../landing/index.html';
+    }
+
+    // Check session
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
 </body>
+
 
 </html>
