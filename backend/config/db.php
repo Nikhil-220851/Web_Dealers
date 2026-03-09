@@ -2,7 +2,16 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$mongoUri = "mongodb+srv://teamadmin:loanpro007@cluster0.zm7nxmn.mongodb.net/Loan_Management_System";
+// Load environment variables from .env file
+$envFile = __DIR__ . '/../../.env';
+if (file_exists($envFile)) {
+    $env = parse_ini_file($envFile);
+    foreach ($env as $key => $value) {
+        $_ENV[$key] = $value;
+    }
+}
+
+$mongoUri = $_ENV['MONGODB_URI'] ?? 'mongodb+srv://localhost:27017/test';
 
 try {
     $client = new MongoDB\Client($mongoUri);
