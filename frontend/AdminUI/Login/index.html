@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Admin Sign In</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Left Panel -->
+  <div class="left">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <a class="left-brand" href="../Dashboard/index.html">
+      <span class="material-icons-round">admin_panel_settings</span>
+      <span class="t1">Loan</span><span class="t2">Pro</span>
+    </a>
+
+    <div class="left-body">
+      <h1>Welcome back,<br/>Admin.</h1>
+      <p>Sign in to your LoanPro admin dashboard to manage loans, borrowers, and analytics all in one place.</p>
+      <div class="chips">
+        <div class="chip"><span class="material-icons-round">shield</span> Secure Admin Access</div>
+        <div class="chip"><span class="material-icons-round">analytics</span> Real-Time Analytics</div>
+        <div class="chip"><span class="material-icons-round">task_alt</span> Instant Loan Approvals</div>
+      </div>
+    </div>
+
+    <div class="left-foot">© 2026 LoanPro · All rights reserved.</div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right">
+    <div class="form-box">
+
+      <div class="form-eyebrow">Admin Portal</div>
+      <h2>Sign in to your account</h2>
+      <p class="sub">Enter your credentials to access the admin dashboard.</p>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">mail</span>
+          <input type="email" id="email" placeholder="admin@loanpro.com"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">lock</span>
+          <input type="password" id="password" placeholder="Enter your password"/>
+          <button class="eye-btn" type="button" onclick="togglePass()">
+            <span class="material-icons-round" id="eyeIco">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="remember-row">
+        <label class="remember-label">
+          <input type="checkbox"/> Remember me
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-submit" onclick="handleSignIn()">
+        <span class="material-icons-round">login</span> Sign In
+      </button>
+
+      <div class="divider">OR</div>
+
+      <div class="link-row">
+        Don't have an account? <a href="../Signup/index.html">Create one</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
