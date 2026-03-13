@@ -35,6 +35,7 @@ async function handleLogin() {
       localStorage.setItem('firstname',  result.user.firstname);
       localStorage.setItem('lastname',   result.user.lastname);
       localStorage.setItem('userId',     result.user.id);
+      localStorage.setItem('phoneno',    result.user.phoneno || '');
 
       // Show success overlay then redirect to dashboard
       document.getElementById('successOverlay').classList.add('show');

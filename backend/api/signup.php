@@ -57,9 +57,9 @@ if (!empty($phoneno) && !preg_match('/^\d{10}$/', $phoneno)) {
 }
 
 // Password minimum length
-if (strlen($password) < 8) {
+if (strlen($password) < 6) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Password must be at least 8 characters long"]);
+    echo json_encode(["status" => "error", "message" => "Password must be at least 6 characters long"]);
     exit();
 }
 

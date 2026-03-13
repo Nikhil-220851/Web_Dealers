@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Application - LoanPro</title>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/apply-loan.css">
+  <style>
+    .step-container { display: none; animation: fadeIn 0.3s ease; }
+    .step-container.active { display: block; }
+    
+    @keyframes checkmark {
+      0% { stroke-dashoffset: 50; transform: scale(0.8); opacity: 0; }
+      100% { stroke-dashoffset: 0; transform: scale(1); opacity: 1; }
+    }
+    .check-svg { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 2; stroke: var(--green); stroke-miterlimit: 10; margin: 10% auto; box-shadow: inset 0px 0px 0px var(--green); animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+    .check-circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: var(--green); fill: none; animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+    .check-path { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards; }
+    @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+    @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+    @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px var(--green-bg); } }
+    .bank-logo { width: 100%; height: 100%; object-fit: contain; }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo" onclick="window.location.href='dashboard.html'">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span></a>
+        <a href="apply-loan.html" class="nav-item active"><span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span></a>
+        <a href="my-loans.html" class="nav-item"><span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span></a>
+        <a href="payment-history.html" class="nav-item"><span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span></a>
+        <a href="emi-calculator.html" class="nav-item"><span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span></a>
+        <a href="profile.html" class="nav-item"><span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span></a>
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()"><span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
+          <div class="u-details">
+            <div class="u-name" id="sidebar-user-name">Loading...</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>Loan Application</h1>
+            <div class="topbar-sub">Complete your loan request</div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-body active" style="padding:24px">
+        <div id="app-wrapper" style="max-width:700px;margin:0 auto">
+
+          <!-- Loan Context Header -->
+          <div id="loan-context" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow-sm)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div id="ctx-logo-wrap" style="width:40px;height:40px;border-radius:10px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;padding:4px;overflow:hidden;flex-shrink:0;">
+                <i class="ph ph-bank" style="font-size:20px;color:var(--primary)"></i>
+              </div>
+              <div>
+                <div id="ctx-type" style="font-family:var(--font-d);font-weight:700;font-size:16px;color:var(--text1)">Loading...</div>
+                <div id="ctx-bank" style="font-size:12px;color:var(--text2)">Please wait</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div id="ctx-rate" style="font-weight:700;font-size:18px;color:var(--text1)">--%</div>
+              <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Interest p.a.</div>
+            </div>
+          </div>
+
+          <!-- Progress Stepper -->
+          <div class="stepper" style="margin-bottom:32px">
+            <div class="step-circ" id="ind-1">1</div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step-circ" id="ind-2">2</div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step-circ" id="ind-3">3</div>
+            <div class="step-line" id="line-3"></div>
+            <div class="step-circ" id="ind-4">4</div>
+          </div>
+
+          <!-- STEP 1: Terms & Conditions -->
+          <div id="step-1" class="step-container card">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+              <i class="ph ph-file-text" style="font-size:24px;color:var(--primary)"></i>
+              <h3 style="font-family:var(--font-d);font-size:18px;margin:0">Terms &amp; Conditions</h3>
+            </div>
+            <div style="background:var(--bg);padding:16px;border-radius:8px;font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:24px;border:1px solid var(--border)">
+              <p>By proceeding with this application, you agree to the following terms:</p>
+              <ul style="margin-top:10px;padding-left:20px">
+                <li>All provided information must be accurate and verifiable.</li>
+                <li>The interest rate is subject to change based on your credit profile.</li>
+                <li>Processing fees are non-refundable once the application is initiated.</li>
+                <li>You authorize the bank to fetch your credit report for assessment.</li>
+              </ul>
+            </div>
+            <div style="display:flex;gap:12px">
+              <button class="btn btn-ghost w-full" onclick="window.location.href='apply-loan.html'">Cancel Application</button>
+              <button class="btn btn-primary w-full" onclick="goToStep(2)">Accept &amp; Continue <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Applicant Form -->
+          <div id="step-2" class="step-container card">
+            <h3 style="margin-bottom:20px;font-family:var(--font-d);font-size:18px">Applicant Details</h3>
+            
+            <div style="background:var(--primary-light);border-radius:6px;padding:12px 16px;font-size:12px;color:var(--primary-dark);margin-bottom:20px;display:flex;align-items:flex-start;gap:10px">
+              <i class="ph ph-info" style="font-size:16px;margin-top:1px"></i> 
+              We've pre-filled this form using your profile data. Please review and update any missing information before proceeding.
+            </div>
+
+            <!-- Basic Info -->
+            <div style="margin-bottom:24px">
+              <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px"><i class="ph ph-user-circle"></i> Personal Info</div>
+              <div class="input-grid">
+                <div class="input-wrap"><label class="input-lbl">Full Name</label><input type="text" class="input-field req-f" id="f_name" placeholder="John Doe"></div>
+                <div class="input-wrap"><label class="input-lbl">Date of Birth</label><input type="date" class="input-field req-f" id="f_dob"></div>
+                <div class="input-wrap"><label class="input-lbl">Email Address</label><input type="email" class="input-field req-f" id="f_email" placeholder="john@example.com"></div>
+                <div class="input-wrap"><label class="input-lbl">Phone Number</label><input type="tel" class="input-field req-f" id="f_phone" placeholder="9876543210"></div>
+                <div class="input-wrap full"><label class="input-lbl">Residential Address</label><input type="text" class="input-field req-f" id="f_address" placeholder="123 Street Name, City, State, PIN"></div>
+              </div>
+            </div>
+
+            <!-- KYC & Bank -->
+            <div style="margin-bottom:24px">
+              <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px"><i class="ph ph-identification-card"></i> KYC &amp; Banking</div>
+              <div class="input-grid">
+                <div class="input-wrap"><label class="input-lbl">PAN Number</label><input type="text" class="input-field req-f" id="f_pan" placeholder="ABCDE1234F"></div>
+                <div class="input-wrap"><label class="input-lbl">Aadhaar Number</label><input type="text" class="input-field req-f" id="f_aadhaar" placeholder="1234 5678 9012"></div>
+                <div class="input-wrap"><label class="input-lbl">Bank Name</label><input type="text" class="input-field req-f" id="f_bankname" placeholder="HDFC Bank"></div>
+                <div class="input-wrap"><label class="input-lbl">Account Number</label><input type="text" class="input-field req-f" id="f_acc" placeholder="XXXXXXXXX"></div>
+                <div class="input-wrap"><label class="input-lbl">IFSC Code</label><input type="text" class="input-field req-f" id="f_ifsc" placeholder="HDFC0001234"></div>
+                <div class="input-wrap"><label class="input-lbl">Annual Income (₹)</label><input type="number" class="input-field req-f" id="f_income" placeholder="500000"></div>
+              </div>
+            </div>
+
+            <!-- Loan Configuration -->
+            <div style="margin-bottom:30px">
+              <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px"><i class="ph ph-currency-inr"></i> Loan Requirements</div>
+              <div class="input-grid">
+                <div class="input-wrap"><label class="input-lbl">Requested Amount (₹)</label><input type="number" class="input-field req-f" id="f_loan_amount" placeholder="Requested Amount" value="100000"></div>
+                <div class="input-wrap"><label class="input-lbl">Tenure (Months)</label>
+                  <select class="input-field select-field req-f" id="f_tenure">
+                    <option value="12">12 Months (1 Year)</option>
+                    <option value="24">24 Months (2 Years)</option>
+                    <option value="36">36 Months (3 Years)</option>
+                    <option value="48">48 Months (4 Years)</option>
+                    <option value="60">60 Months (5 Years)</option>
+                  </select>
+                </div>
+                <div class="input-wrap full"><label class="input-lbl">Employment Type</label>
+                  <select class="input-field select-field req-f" id="f_employment">
+                    <option value="Salaried">Salaried</option>
+                    <option value="Self-Employed">Self-Employed</option>
+                    <option value="Business Owner">Business Owner</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div id="step-2-err" style="color:var(--red);font-size:12px;margin-bottom:16px;display:none;font-weight:600;"><i class="ph ph-warning-circle"></i> Please fill in all required fields.</div>
+
+            <div style="display:flex;gap:12px">
+              <button class="btn btn-ghost w-full" onclick="goToStep(1)"><i class="ph ph-arrow-left"></i> Back</button>
+              <button class="btn btn-primary w-full" onclick="validateStep2()">Review Application <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Review -->
+          <div id="step-3" class="step-container card">
+            <h3 style="margin-bottom:6px;font-family:var(--font-d);font-size:18px">Review Application</h3>
+            <p style="color:var(--text2);font-size:13px;margin-bottom:20px">Please confirm your details before final submission.</p>
+
+            <div id="review-content" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:2px 20px;margin-bottom:24px">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div style="display:flex;gap:12px">
+              <button class="btn btn-ghost" onclick="goToStep(2)" style="flex:1"><i class="ph ph-pencil-simple"></i> Edit Details</button>
+              <button class="btn btn-primary" id="btn-submit" onclick="submitApplication()" style="flex:2">Confirm &amp; Submit <i class="ph ph-check-circle"></i></button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Success -->
+          <div id="step-4" class="step-container card" style="text-align:center;padding:40px 20px">
+            
+            <svg class="check-svg" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+              <circle class="check-circle" fill="none" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1"/>
+              <polyline class="check-path" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 "/>
+            </svg>
+
+            <h2 style="font-family:var(--font-d);font-size:24px;margin-bottom:10px;color:var(--text1)">Application Successful!</h2>
+            <p style="color:var(--text2);font-size:14px;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">Your loan application has been securely submitted and is now under review. You will receive updates via email shortly.</p>
+            
+            <div style="background:var(--bg);border:1px dashed var(--border);border-radius:10px;padding:16px;max-width:300px;margin:0 auto 30px">
+              <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Application Reference Number</div>
+              <div id="succ-app-id" style="font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--primary)">---</div>
+            </div>
+
+            <div style="display:flex;gap:12px;justify-content:center;max-width:400px;margin:0 auto">
+              <button class="btn btn-ghost w-full" onclick="window.print()"><i class="ph ph-printer"></i> Print Summary</button>
+              <button class="btn btn-primary w-full" onclick="window.location.href='my-loans.html'">View My Loans <i class="ph ph-arrow-right"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/loan-application.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = '../landing/index.html'; }
+    window.addEventListener('DOMContentLoaded', () => { if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../auth/login.html'; });
+  </script>
+</body>
+</html>

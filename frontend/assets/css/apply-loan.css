@@ -388,4 +388,53 @@
       flex-shrink: 0;
       font-size: 12px;
     }
-
+
+    /* ═══════════════════════════════════════════════
+       STEPPER UI
+    ═══════════════════════════════════════════════ */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-circ {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-d);
+      font-weight: 700;
+      font-size: 14px;
+      background: var(--surface2);
+      color: var(--text3);
+      border: 2px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .step-circ.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(108, 71, 255, 0.25);
+    }
+
+    .step-circ.done {
+      background: var(--green-bg);
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .step-line.done {
+      background: var(--green);
+    }

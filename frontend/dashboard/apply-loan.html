@@ -6,36 +6,130 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Apply for Loan — LoanPro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/apply-loan.css">
+  <style>
+    /* ── Loan Card Grid ── */
+    #loanCardsGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      #loanCardsGrid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Loan Card Component ── */
+    .loan-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+    }
+    .loan-card:hover {
+      box-shadow: 0 8px 28px rgba(108,71,255,.13);
+      transform: translateY(-3px);
+      border-color: rgba(108,71,255,.3);
+    }
+
+    .loan-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .loan-card-bank-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: .5px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 4px;
+      overflow: hidden;
+    }
+    .bank-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .loan-card-info { flex: 1; min-width: 0; }
+    .loan-card-bank-name {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .loan-card-type {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text1);
+      font-family: var(--font-d);
+    }
+
+    .loan-card-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-low  { background: var(--green-bg); color: var(--green); }
+    .badge-high { background: #ede9fe; color: #6C47FF; }
+
+    .loan-card-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .loan-card-stat {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .loan-card-stat-label {
+      font-size: 10.5px;
+      color: var(--text3);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .loan-card-stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text1);
+    }
+
+    .loan-card-btn {
+      height: 44px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 10px;
+    }
+    .loan-card-btn i { font-size: 16px; transition: transform .2s; }
+    .loan-card-btn:hover i { transform: translateX(4px); }
+  </style>
 </head>
 
 <body>
@@ -69,7 +163,6 @@
           <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
         </a>
 
-        
         <a href="notifications.html" class="nav-item">
           <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
         </a>
@@ -88,12 +181,11 @@
         </a>
       </nav>
 
-
       <div class="sidebar-footer">
         <a href="profile.html" class="user-chip">
-          <div class="u-avatar">A</div>
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
           <div class="u-details">
-            <div class="u-name">Arjun Sharma</div>
+            <div class="u-name" id="sidebar-user-name">Loading…</div>
             <div class="u-role">Borrower</div>
           </div>
           <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
@@ -113,224 +205,62 @@
         <div class="topbar-right">
           <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
         </div>
-
-        <!-- Notifications Dropdown -->
-        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
-          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <div class="font-bold">Notifications</div>
-            <div class="text-xs text-primary" style="cursor:pointer">Mark all read</div>
-          </div>
-          <div style="max-height:300px; overflow-y:auto;">
-            <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
-              <div>
-                <div class="text-sm font-semi">Payment Received</div>
-                <div class="text-xs text-muted" style="margin-top:4px">Your EMI of ₹8,200 for LN-2024-001 was processed successfully.</div>
-                <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
-              </div>
-            </div>
-          </div>
-          <div style="padding:12px; text-align:center; border-top:1px solid var(--border); cursor:pointer;" class="text-xs font-semi text-primary" onclick="window.location.href='notifications.html'">View All Notifications</div>
-        </div>
       </header>
 
-      <!-- APPLY CONTENT -->
-      <div id="page-apply" class="page-body active">
-        <!-- 1. Types View -->
-        <div id="view-types" class="apply-view active">
-          <div class="view-header">
-            <div class="view-title">What type of loan do you need?</div>
-          </div>
-          <div class="types-grid">
-            <div class="type-card" onclick="selectLoanType('Home Loan')"><span class="type-icon"><i class="ph ph-house"></i></span>
-              <div class="type-title">Home Loan</div>
+      <!-- PAGE CONTENT -->
+      <div class="page-body active" style="padding:24px">
+
+        <!-- Filter Bar -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:28px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
+            <div>
+              <label class="input-lbl">Loan Type</label>
+              <select class="input-field" id="filter-loan-type">
+                <option>All Types</option>
+                <option>Personal Loan</option>
+                <option>Home Loan</option>
+                <option>Car Loan</option>
+                <option>Education Loan</option>
+                <option>Business Loan</option>
+              </select>
             </div>
-            <div class="type-card" onclick="selectLoanType('Personal Loan')"><span class="type-icon"><i class="ph ph-money"></i></span>
-              <div class="type-title">Personal Loan</div>
+            <div>
+              <label class="input-lbl">Bank</label>
+              <select class="input-field" id="filter-bank">
+                <option>All Banks</option>
+                <option>HDFC Bank</option>
+                <option>State Bank of India</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Kotak Mahindra Bank</option>
+              </select>
             </div>
-            <div class="type-card" onclick="selectLoanType('Education Loan')"><span class="type-icon"><i class="ph ph-graduation-cap"></i></span>
-              <div class="type-title">Education Loan</div>
+            <div>
+              <label class="input-lbl">Min Amount: <span id="filter-amt-display" style="color:var(--primary);font-weight:700">&#8377;50,000</span></label>
+              <input type="range" class="w-full" id="filter-amount" min="50000" max="5000000" step="50000" value="50000" />
             </div>
-            <div class="type-card" onclick="selectLoanType('Car Loan')"><span class="type-icon"><i class="ph ph-car"></i></span>
-              <div class="type-title">Car Loan</div>
-            </div>
-            <div class="type-card" onclick="selectLoanType('Business Loan')"><span class="type-icon"><i class="ph ph-buildings"></i></span>
-              <div class="type-title">Business Loan</div>
-            </div>
-            <div class="type-card" onclick="selectLoanType('Gold Loan')"><span class="type-icon"><i class="ph ph-trophy"></i></span>
-              <div class="type-title">Gold Loan</div>
+            <div>
+              <button class="btn btn-primary w-full" id="btn-search-loans" style="height:42px">
+                <i class="ph ph-magnifying-glass"></i> Search
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- 2. Banks View -->
-        <div id="view-banks" class="apply-view">
-          <div class="view-header">
-            <button class="back-btn" onclick="navApplyView('view-types')">←</button>
-            <div class="view-title">Select Bank for <span id="lbl-type-bank" class="text-primary"></span></div>
-          </div>
-          <div class="banks-grid" id="banks-grid"></div>
-        </div>
+        <!-- Loan Cards Grid -->
+        <div id="loanCardsGrid"></div>
 
-        <!-- 3. Products View -->
-        <div id="view-products" class="apply-view">
-          <div class="view-header">
-            <button class="back-btn" onclick="navApplyView('view-banks')">←</button>
-            <div class="view-title">Loan Schemes Options</div>
-          </div>
-          <div id="products-list"></div>
-        </div>
-
-        <!-- 4. Details View -->
-        <div id="view-details" class="apply-view">
-          <div class="view-header">
-            <button class="back-btn" onclick="navApplyView('view-products')">←</button>
-            <div class="view-title">Loan Details</div>
-          </div>
-          <div id="loan-details-content"></div>
-        </div>
       </div>
     </main>
   </div>
 
-  <!-- APPLY MODAL -->
-  <div class="modal-overlay" id="apply-modal">
-    <div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title" id="apply-modal-title">Loan Application</div>
-        <button class="modal-close" onclick="closeModal('apply-modal')">✕</button>
-      </div>
-      <div class="stepper" id="stepper">
-        <div class="step-circ active" id="sc-0">1</div>
-        <div class="step-line" id="sl-0"></div>
-        <div class="step-circ todo" id="sc-1">2</div>
-        <div class="step-line" id="sl-1"></div>
-        <div class="step-circ todo" id="sc-2">3</div>
-        <div class="step-line" id="sl-2"></div>
-        <div class="step-circ todo" id="sc-3">4</div>
-      </div>
-      <div id="step-0">
-        <div style="background:var(--primary-light);border-radius:10px;padding:12px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center" id="apply-loan-info"></div>
-        <div style="font-size:13px; color:var(--text2); line-height:1.6; margin-bottom:16px">
-          By continuing, you agree to the Terms and Conditions of this loan. The interest rate is calculated on a reducing balance basis. Processing fees may apply as per the bank's policy. Please ensure you have read the relevant scheme documents.
-        </div>
-        <div class="flex gap-10" style="margin-top:16px">
-          <button class="btn btn-ghost w-full" onclick="closeModal('apply-modal')">Cancel</button>
-          <button class="btn btn-primary w-full" onclick="applyStep(1)">Accept & Continue →</button>
-        </div>
-      </div>
-      <div id="step-1" style="display:none">
-        <div style="background:var(--primary-light); border-radius:var(--r-sm); padding:9px 13px; margin-bottom:16px; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--primary-dark);"><i class="ph ph-info"></i> Details pre-filled from your profile. You may edit before submitting.</div>
-        <div class="form-group-card">
-          <div class="form-group-card-title"><i class="ph ph-user-circle"></i> Basic Details</div>
-          <div class="input-grid">
-            <div class="input-wrap"><label class="input-lbl">Full Name</label><input class="input-field" id="app-fullname" placeholder="Your full name" /></div>
-            <div class="input-wrap"><label class="input-lbl">Date of Birth</label><input class="input-field" type="date" id="app-dob" /></div>
-            <div class="input-wrap"><label class="input-lbl">Phone Number</label><input class="input-field" id="app-phone" placeholder="+91 XXXXX XXXXX" /></div>
-            <div class="input-wrap"><label class="input-lbl">Email Address</label><input class="input-field" id="app-email" placeholder="you@email.com" /></div>
-            <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="app-address" placeholder="Street, City, State, PIN" /></div>
-          </div>
-        </div>
-        
-        <div class="form-group-card">
-          <div class="form-group-card-title"><i class="ph ph-bank"></i> Bank & KYC Details</div>
-          <div class="input-grid">
-            <div class="input-wrap"><label class="input-lbl">PAN Number</label><input class="input-field" id="app-pan" placeholder="ABCDE1234F" /></div>
-            <div class="input-wrap"><label class="input-lbl">Aadhaar Number</label><input class="input-field" id="app-aadhaar" placeholder="XXXX-XXXX-XXXX" /></div>
-            <div class="input-wrap"><label class="input-lbl">Bank Name</label><input class="input-field" id="app-bankname" placeholder="e.g. State Bank of India" /></div>
-            <div class="input-wrap"><label class="input-lbl">Bank Account Number</label><input class="input-field" id="app-account" placeholder="Account number" /></div>
-            <div class="input-wrap"><label class="input-lbl">IFSC Code</label><input class="input-field" id="app-ifsc" placeholder="e.g. SBIN0001234" /></div>
-            <div class="input-wrap"><label class="input-lbl">Annual Income</label><input class="input-field" id="app-income" value="₹12,00,000" /></div>
-          </div>
-        </div>
-
-        <div class="form-group-card" style="margin-bottom:0px;">
-          <div class="form-group-card-title"><i class="ph ph-currency-inr"></i> Loan Details</div>
-          <div class="input-grid">
-            <div class="input-wrap"><label class="input-lbl">Requested Loan Amount</label><input class="input-field" id="app-loan-amt" placeholder="Enter amount (e.g. 500000)" /></div>
-            <div class="input-wrap"><label class="input-lbl">Employment Type</label>
-              <select class="input-field select-field" id="app-employment">
-                <option>Salaried</option>
-                <option>Self-Employed</option>
-                <option>Business</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="flex gap-10" style="margin-top:20px">
-          <button class="btn btn-ghost w-full" onclick="applyStep(0)">← Back</button>
-          <button class="btn btn-primary w-full" onclick="applyStep(2)">Review Application →</button>
-        </div>
-      </div>
-      <div id="step-2" style="display:none">
-        <div id="confirm-rows"></div>
-        <div class="flex gap-10" style="margin-top:16px">
-          <button class="btn btn-ghost btn-sm" onclick="applyStep(1)" style="flex:1">← Edit</button>
-          <button class="btn btn-primary" style="flex:2" onclick="applyStep(3)">Submit Application ✓</button>
-        </div>
-      </div>
-      <div id="step-3" style="display:none;text-align:center;padding:16px 0 8px">
-        <div class="success-wrap">
-          <div class="success-circle" id="success-circle-anim">
-            <div class="success-ring"></div>
-            <div class="success-ring-2"></div>
-            <div class="success-disc">
-              <svg width="38" height="38" viewBox="0 0 38 38"><path class="tick-path" d="M7 19 L15 27 L31 11" /></svg>
-            </div>
-          </div>
-          <div class="d-family font-bold" style="font-size:20px;margin:10px 0 6px">Loan Application Submitted Successfully</div>
-          <div class="text-muted" style="font-size:13px;line-height:1.7;margin-bottom:20px">Your loan request has been sent for verification.<br>You'll receive updates via SMS & email.</div>
-        </div>
-        <div style="background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;">
-          <div style="text-align:left;">
-            <div class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:.8px;">Application ID</div>
-            <div class="d-family font-bold text-primary" style="font-size:20px" id="app-id">LN-2024-123</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:.8px;">Submitted On</div>
-            <div class="font-semi" style="font-size:13px" id="app-submit-date"></div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <button class="btn btn-primary w-full" onclick="downloadLoanPdf()"><i class="ph ph-download-simple"></i> Download Loan Application</button>
-          <button class="btn btn-ghost w-full" onclick="window.location.href='dashboard.html'"><i class="ph ph-house"></i> Return to Dashboard</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
   <script src="../assets/js/base.js"></script>
   <script src="../assets/js/apply-loan.js"></script>
-
   <script>
-    // Logout function
-    function logout() {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
-        alert('You have been logged out.');
-        window.location.href = '../landing/index.html';
-    }
-
-    // Check session
-    window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '../auth/login.html';
-        }
-    });
+    function logout() { localStorage.clear(); window.location.href='../landing/index.html'; }
+    window.addEventListener('DOMContentLoaded', () => { if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href='../auth/login.html'; });
   </script>
-</body>
 
+</body>
 
 </html>

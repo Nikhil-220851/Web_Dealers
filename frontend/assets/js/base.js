@@ -19,7 +19,7 @@
         ];
 
         const PAGE_META = {
-          dashboard: { title: 'Dashboard', sub: 'Welcome back, Arjun <i class="ph ph-hand-waving"></i>' },
+          dashboard: { title: 'Dashboard', sub: 'Welcome back, User <i class="ph ph-hand-waving"></i>' },
           apply: { title: 'Apply for Loans', sub: 'Find the best loan for you' },
           loans: { title: 'My Loans', sub: 'Track your applications' },
           payments: { title: 'Payment History', sub: 'All your transactions' },
@@ -73,171 +73,17 @@
         }
 
 
-        /* ═══════════════════════════════════════════════
-           KYC DATA STORE
-        ═══════════════════════════════════════════════ */
-        const KYC_DATA = {
-          fullName: 'Arjun Sharma',
-          dob: '12 Aug 1992',
-          dobRaw: '1992-08-12',
-          phone: '+91 98765 43210',
-          email: 'arjun.sharma@email.com',
-          pan: 'ABCDE1234F',
-          aadhaar: 'XXXX-XXXX-4567',
-          account: 'XXXX XXXX 7890',
-          ifsc: 'SBIN0001234',
-          bankName: 'State Bank of India',
-          address: '123 MG Road, Hyderabad, Telangana 500001'
-        };
-
-        /* Completion fields list — must be truthy to count */
-        function calcCompletion() {
-          const fields = [
-            document.getElementById('prof-firstname')?.value?.trim(),
-            document.getElementById('prof-lastname')?.value?.trim(),
-            document.getElementById('prof-phone')?.value?.trim(),
-            document.getElementById('prof-email')?.value?.trim(),
-            document.getElementById('prof-address')?.value?.trim(),
-            KYC_DATA.dobRaw,
-            KYC_DATA.pan,
-            KYC_DATA.aadhaar,
-            KYC_DATA.account,
-            KYC_DATA.ifsc
-          ];
-          const filled = fields.filter(f => !!f && f.length > 0).length;
-          const total = fields.length;
-          const pct = Math.round((filled / total) * 100);
-          document.getElementById('completion-filled').textContent = filled;
-          document.getElementById('completion-total').textContent = total;
-          document.getElementById('completion-pct').textContent = pct;
-          document.getElementById('completion-bar').style.width = pct + '%';
-          const hint = pct < 100
-            ? `💡 ${total - filled} field${total - filled !== 1 ? 's' : ''} remaining to reach 100%`
-            : '🎉 Your profile is 100% complete!';
-          const hintEl = document.querySelector('#profile-completion-card [style*="margin-top:8px"]');
-          if (hintEl) hintEl.textContent = hint;
-        }
-
-        /* Prefill apply-modal form from KYC_DATA */
         function prefillApplyForm() {
-          const map = {
-            'app-fullname': KYC_DATA.fullName,
-            'app-dob': KYC_DATA.dobRaw,
-            'app-phone': KYC_DATA.phone,
-            'app-email': KYC_DATA.email,
-            'app-address': KYC_DATA.address,
-            'app-pan': KYC_DATA.pan,
-            'app-aadhaar': KYC_DATA.aadhaar,
-            'app-bankname': KYC_DATA.bankName,
-            'app-account': KYC_DATA.account,
-            'app-ifsc': KYC_DATA.ifsc,
-          };
-          Object.entries(map).forEach(([id, val]) => {
-            const el = document.getElementById(id);
-            if (el) el.value = val || '';
-          });
-        }
-
-        /* KYC Edit / Save / Cancel */
-        function toggleKycEdit() {
-          const editMode = document.getElementById('kyc-edit-mode');
-          const viewMode = document.getElementById('kyc-view-mode');
-          const btn = document.getElementById('kyc-edit-btn');
-          // Sync edit fields from KYC_DATA before opening
-          document.getElementById('kyc-fullname').value = KYC_DATA.fullName;
-          document.getElementById('kyc-dob').value = KYC_DATA.dobRaw;
-          document.getElementById('kyc-phone').value = KYC_DATA.phone;
-          document.getElementById('kyc-email').value = KYC_DATA.email;
-          document.getElementById('kyc-pan').value = KYC_DATA.pan;
-          document.getElementById('kyc-aadhaar').value = KYC_DATA.aadhaar;
-          document.getElementById('kyc-account').value = KYC_DATA.account;
-          document.getElementById('kyc-ifsc').value = KYC_DATA.ifsc;
-          document.getElementById('kyc-bankname').value = KYC_DATA.bankName;
-          document.getElementById('kyc-address').value = KYC_DATA.address;
-          editMode.style.display = 'block';
-          viewMode.style.display = 'none';
-          btn.innerHTML = '';
-        }
-
-        function cancelKycEdit() {
-          document.getElementById('kyc-edit-mode').style.display = 'none';
-          document.getElementById('kyc-view-mode').style.display = 'block';
-          document.getElementById('kyc-edit-btn').innerHTML = '<i class="ph ph-pencil-simple"></i> Edit';
-        }
-
-        function saveKycDetails() {
-          KYC_DATA.fullName = document.getElementById('kyc-fullname').value.trim();
-          KYC_DATA.dobRaw = document.getElementById('kyc-dob').value;
-          const d = new Date(KYC_DATA.dobRaw);
-          KYC_DATA.dob = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-          KYC_DATA.phone = document.getElementById('kyc-phone').value.trim();
-          KYC_DATA.email = document.getElementById('kyc-email').value.trim();
-          KYC_DATA.pan = document.getElementById('kyc-pan').value.trim();
-          KYC_DATA.aadhaar = document.getElementById('kyc-aadhaar').value.trim();
-          KYC_DATA.account = document.getElementById('kyc-account').value.trim();
-          KYC_DATA.ifsc = document.getElementById('kyc-ifsc').value.trim();
-          KYC_DATA.bankName = document.getElementById('kyc-bankname').value.trim();
-          KYC_DATA.address = document.getElementById('kyc-address').value.trim();
-          // Update view mode display
-          document.getElementById('kyc-view-fullname').textContent = KYC_DATA.fullName;
-          document.getElementById('kyc-view-dob').textContent = KYC_DATA.dob;
-          document.getElementById('kyc-view-phone').textContent = KYC_DATA.phone;
-          document.getElementById('kyc-view-email').textContent = KYC_DATA.email;
-          document.getElementById('kyc-view-pan').textContent = KYC_DATA.pan;
-          document.getElementById('kyc-view-aadhaar').textContent = KYC_DATA.aadhaar;
-          document.getElementById('kyc-view-account').textContent = KYC_DATA.account;
-          document.getElementById('kyc-view-ifsc').textContent = KYC_DATA.ifsc;
-          document.getElementById('kyc-view-bank').textContent = KYC_DATA.bankName;
-          document.getElementById('kyc-view-address').textContent = KYC_DATA.address;
-          cancelKycEdit();
-          calcCompletion();
-        }
-
-        function syncKycCompletionLive() {
-          // Live update completion percentage as user types in KYC edit form
-          const tmpData = [
-            document.getElementById('prof-firstname')?.value?.trim(),
-            document.getElementById('prof-lastname')?.value?.trim(),
-            document.getElementById('prof-phone')?.value?.trim(),
-            document.getElementById('prof-email')?.value?.trim(),
-            document.getElementById('prof-address')?.value?.trim(),
-            document.getElementById('kyc-dob')?.value,
-            document.getElementById('kyc-pan')?.value?.trim(),
-            document.getElementById('kyc-aadhaar')?.value?.trim(),
-            document.getElementById('kyc-account')?.value?.trim(),
-            document.getElementById('kyc-ifsc')?.value?.trim()
-          ];
-          const filled = tmpData.filter(f => !!f && f.length > 0).length;
-          const pct = Math.round((filled / 10) * 100);
-          document.getElementById('completion-filled').textContent = filled;
-          document.getElementById('completion-pct').textContent = pct;
-          document.getElementById('completion-bar').style.width = pct + '%';
-        }
-
-        function updateKycFromProfile() {
-          // When profile fields change, sync to KYC_DATA and recalculate
-          const fn = document.getElementById('prof-firstname')?.value?.trim();
-          const ln = document.getElementById('prof-lastname')?.value?.trim();
-          if (fn || ln) KYC_DATA.fullName = [fn, ln].filter(Boolean).join(' ');
-          const ph = document.getElementById('prof-phone')?.value?.trim();
-          if (ph) KYC_DATA.phone = ph;
-          const em = document.getElementById('prof-email')?.value?.trim();
-          if (em) KYC_DATA.email = em;
-          const ad = document.getElementById('prof-address')?.value?.trim();
-          if (ad) KYC_DATA.address = ad;
-          calcCompletion();
-        }
-
-        function saveProfileSettings() {
-          updateKycFromProfile();
-          // Show brief success flash
-          const btn = event.currentTarget;
-          btn.textContent = '✓ Saved!';
-          setTimeout(() => { btn.textContent = 'Save Changes'; }, 1500);
-        }
-
-
-        /* ═══════════════════════════════════════════════
+  const map = {
+    'app-fullname': [localStorage.getItem('firstname'), localStorage.getItem('lastname')].filter(Boolean).join(' '),
+    'app-phone': localStorage.getItem('phoneno'),
+    'app-email': localStorage.getItem('userEmail')
+  };
+  Object.entries(map).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  });
+}/* ═══════════════════════════════════════════════
            MODAL & DROPDOWN HELPERS
         ═══════════════════════════════════════════════ */
         function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -260,6 +106,32 @@
           }
         });
 
+
+        /* ═══════════════════════════════════════════════
+           GLOBAL UI UPDATES (from localStorage)
+        ═══════════════════════════════════════════════ */
+        function updateUserUI() {
+          const firstname = localStorage.getItem('firstname') || '';
+          const lastname  = localStorage.getItem('lastname')  || '';
+          const email     = localStorage.getItem('userEmail') || '';
+          const fullName  = [firstname, lastname].filter(Boolean).join(' ') || 'User';
+          const initial   = (firstname[0] || lastname[0] || '?').toUpperCase();
+
+          // Sidebar Elements
+          const sbName    = document.getElementById('sidebar-user-name');
+          const sbAvatar  = document.getElementById('sidebar-avatar-letter');
+          if (sbName)   sbName.textContent   = fullName;
+          if (sbAvatar) sbAvatar.textContent  = initial;
+
+          // Topbar Elements
+          const tbSub     = document.getElementById('page-sub');
+          if (tbSub) {
+            // Only update welcome message if it looks like the default or is empty
+            if (tbSub.innerHTML.includes('Welcome back') || tbSub.innerHTML === '') {
+              tbSub.innerHTML = `Welcome back, ${firstname || 'User'} <i class="ph ph-hand-waving"></i>`;
+            }
+          }
+        }
 
         /* ═══════════════════════════════════════════════
            ANIMATIONS — wired in on DOMContentLoaded
@@ -358,6 +230,7 @@
 
         /* ── INIT ALL ANIMATIONS ── */
         document.addEventListener('DOMContentLoaded', () => {
+          updateUserUI(); // Populate global UI elements
           initRipples();
           runDashboardStagger();
           animateProgBar();
@@ -382,8 +255,4 @@
           }, 60);
         };
 
-        /* Initial render */
-        renderProducts();
-        renderLoansTable('accepted');
-        calcEMI();
-        calcCompletion();
+        

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -90,9 +90,9 @@
 
       <div class="sidebar-footer">
         <a href="profile.html" class="user-chip">
-          <div class="u-avatar">A</div>
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
           <div class="u-details">
-            <div class="u-name">Arjun Sharma</div>
+            <div class="u-name" id="sidebar-user-name">Loading�</div>
             <div class="u-role">Borrower</div>
           </div>
           <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
@@ -137,9 +137,9 @@
       <div id="page-loans" class="page-body active">
         <div class="card">
           <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchLoanTab('accepted',this)">Accepted <span class="tab-count" id="tc-accepted">0</span></button>
-            <button class="tab-btn" onclick="switchLoanTab('pending',this)">Pending <span class="tab-count" id="tc-pending">0</span></button>
-            <button class="tab-btn" onclick="switchLoanTab('rejected',this)">Rejected <span class="tab-count" id="tc-rejected">0</span></button>
+            <button class="tab-btn active" onclick="switchLoanTab('pending',this)">Pending <span class="tab-count" id="tab-count-pending">0</span></button>
+            <button class="tab-btn" onclick="switchLoanTab('approved',this)">Active <span class="tab-count" id="tab-count-approved">0</span></button>
+            <button class="tab-btn" onclick="switchLoanTab('rejected',this)">Closed <span class="tab-count" id="tab-count-rejected">0</span></button>
           </div>
           <div id="loans-table-wrap"></div>
         </div>
@@ -185,3 +185,5 @@
 
 
 </html>
+
+

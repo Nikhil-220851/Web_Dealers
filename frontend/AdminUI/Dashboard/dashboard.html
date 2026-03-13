@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="material-icons-round">admin_panel_settings</span>
+      <span>LoanPro Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <a href="dashboard.html" class="active"><span class="material-icons-round">dashboard</span> Dashboard</a>
+      <a href="loan-requests.html"><span class="material-icons-round">credit_card</span> Loan Requests</a>
+      <a href="borrowers.html"><span class="material-icons-round">groups</span> Borrowers</a>
+      <div class="sidebar-section-label">Insights</div>
+      <a href="analytics.html"><span class="material-icons-round">show_chart</span> Analytics</a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="settings.html"><span class="material-icons-round">settings</span> Settings</a>
+      <a href="#" onclick="logout(); return false;"><span class="material-icons-round">logout</span> Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="brand-name" href="#">
+        <span class="t1">Loan</span><span class="t2">Pro</span>
+      </a>
+    </div>
+    <div class="navbar-right">
+      <div class="admin-badge">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div class="admin-info">
+          <span class="admin-name" id="adminName">Loading…</span>
+          <span class="admin-role" id="adminRole"></span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <span class="material-icons-round">logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Dashboard Body -->
+  <main class="dashboard">
+
+    <div class="page-heading">
+      <h1>Admin Dashboard</h1>
+      <p>Welcome back, <strong id="headingName">Admin</strong>! Here's what's happening with your loans today.</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stats-card card-purple">
+          <span class="material-icons-round stats-icon">account_balance</span>
+          <h4>Total Loan Amount</h4>
+          <p id="statTotalAmount">₹0</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stats-card card-teal">
+          <span class="material-icons-round stats-icon">groups</span>
+          <h4>Total Borrowers</h4>
+          <p id="statBorrowers">0</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stats-card card-green">
+          <span class="material-icons-round stats-icon">credit_card</span>
+          <h4>Total Loans</h4>
+          <p id="statTotalLoans">0</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stats-card card-orange">
+          <span class="material-icons-round stats-icon">task_alt</span>
+          <h4>Loans Approved</h4>
+          <p id="statApprovedLoans">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Loan Status (Static Example for visual appeal) -->
+    <div class="panel" style="--delay:0.05s">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-icon-wrap"><span class="material-icons-round">calendar_today</span></div>
+          Daily Loan Status
+        </div>
+        <div class="panel-tag">Last 3 Days</div>
+      </div>
+      <div class="day-cards-grid">
+        <div class="day-card">
+          <div class="day-card-date">Mon, 10 Mar 2026</div>
+          <div class="day-metrics">
+            <div class="dm"><span class="dm-val">15</span><span class="dm-lbl">Applications</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val g">10</span><span class="dm-lbl">Approved</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val t">66%</span><span class="dm-lbl">Rate</span></div>
+          </div>
+          <div class="rate-track"><div class="rate-fill" style="--pct:66%"></div></div>
+        </div>
+        <div class="day-card day-card--peak">
+          <div class="peak-badge">&#9650; Peak</div>
+          <div class="day-card-date">Tue, 11 Mar 2026</div>
+          <div class="day-metrics">
+            <div class="dm"><span class="dm-val">20</span><span class="dm-lbl">Applications</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val g">14</span><span class="dm-lbl">Approved</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val t">70%</span><span class="dm-lbl">Rate</span></div>
+          </div>
+          <div class="rate-track"><div class="rate-fill" style="--pct:70%"></div></div>
+        </div>
+        <div class="day-card">
+          <div class="day-card-date">Wed, 12 Mar 2026</div>
+          <div class="day-metrics">
+            <div class="dm"><span class="dm-val">18</span><span class="dm-lbl">Applications</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val g">12</span><span class="dm-lbl">Approved</span></div>
+            <div class="dm-sep"></div>
+            <div class="dm"><span class="dm-val t">67%</span><span class="dm-lbl">Rate</span></div>
+          </div>
+          <div class="rate-track"><div class="rate-fill" style="--pct:67%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Applications -->
+    <div class="panel mt-4 mb-4" style="--delay:0.2s">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-icon-wrap"><span class="material-icons-round">pending_actions</span></div>
+          Recent Applications
+        </div>
+        <a href="loan-requests.html" class="panel-tag tag-amber" style="text-decoration: none; cursor: pointer;">
+          View All
+        </a>
+      </div>
+      <div class="xtable-wrap">
+        <table class="xtable">
+          <thead>
+            <tr><th>Borrower</th><th>Type</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="recentAppsTableBody">
+            <!-- Dynamic Content -->
+            <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="admin-common.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

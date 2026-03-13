@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Admin Control Center</title>
+  <meta name="description" content="LoanPro Admin Control Center — Manage loans, borrowers, payments and analytics with full control."/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <a class="nav-brand" href="#">
+    <div class="bicon"><span class="material-icons-round">admin_panel_settings</span></div>
+    <span class="t1">Loan</span><span class="t2">Pro</span> <em>Admin</em>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#tools">Admin Tools</a>
+    <a href="#cta">Get Started</a>
+  </div>
+  <div class="nav-actions">
+    <a href="../Login/index.html"  class="btn-nav-login">Sign In</a>
+    <a href="../Signup/index.html" class="btn-nav-signup">
+      <span class="material-icons-round">person_add</span> Register
+    </a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#features" onclick="toggleMobileNav()">Features</a>
+  <a href="#tools"    onclick="toggleMobileNav()">Admin Tools</a>
+  <a href="../Login/index.html"  class="mob-login">Sign In</a>
+  <a href="../Signup/index.html" class="mob-signup">Register</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="hero">
+  <canvas id="heroCanvas"></canvas>
+
+  <!-- Decorative blobs — same as Login left panel -->
+  <div class="hero-blob hb-1"></div>
+  <div class="hero-blob hb-2"></div>
+  <div class="hero-blob hb-3"></div>
+
+  <div class="hero-grid">
+
+    <!-- Left: Text -->
+    <div class="hero-text">
+      <div class="hero-eyebrow reveal">
+        <span class="material-icons-round">shield</span>
+        Secure Admin Portal — LoanPro LMS
+      </div>
+
+      <h1 class="reveal" style="transition-delay:.08s">
+        Admin<br/>
+        <span>Control Center</span>
+      </h1>
+
+      <p class="reveal" style="transition-delay:.16s">
+        Take complete command of loans, borrowers, payments, and analytics.
+        Purpose-built for financial operations — fast, secure, and reliable.
+      </p>
+
+      <div class="hero-btns reveal" style="transition-delay:.24s">
+        <a href="../Login/index.html"  class="btn-hero-primary">
+          <span class="material-icons-round">login</span> Admin Login
+        </a>
+        <a href="../Signup/index.html" class="btn-hero-ghost">
+          <span class="material-icons-round">person_add</span> Admin Signup
+        </a>
+      </div>
+
+      <!-- Feature chips — same style as Login page -->
+      <div class="hero-chips reveal" style="transition-delay:.32s">
+        <div class="hero-chip">
+          <span class="material-icons-round">shield</span> Secure Admin Access
+        </div>
+        <div class="hero-chip">
+          <span class="material-icons-round">analytics</span> Real-Time Analytics
+        </div>
+        <div class="hero-chip">
+          <span class="material-icons-round">task_alt</span> Instant Loan Approvals
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Floating stat cards -->
+    <div class="hero-cards reveal" style="transition-delay:.18s">
+      <div class="hcard">
+        <div class="hcard-icon">
+          <span class="material-icons-round">credit_score</span>
+        </div>
+        <div class="hcard-body">
+          <div class="hcard-val">₹2.4 Cr</div>
+          <div class="hcard-lbl">Disbursed Today</div>
+        </div>
+      </div>
+
+      <div class="hcard">
+        <div class="hcard-icon">
+          <span class="material-icons-round">groups</span>
+        </div>
+        <div class="hcard-body">
+          <div class="hcard-val">3,800</div>
+          <div class="hcard-lbl">Active Borrowers</div>
+        </div>
+      </div>
+
+      <div class="hcard">
+        <div class="hcard-icon">
+          <span class="material-icons-round">task_alt</span>
+        </div>
+        <div class="hcard-body">
+          <div class="hcard-val">47</div>
+          <div class="hcard-lbl">Pending Approvals</div>
+        </div>
+      </div>
+
+      <div class="hcard">
+        <div class="hcard-icon">
+          <span class="material-icons-round">trending_up</span>
+        </div>
+        <div class="hcard-body">
+          <div class="hcard-val">+14%</div>
+          <div class="hcard-lbl">Growth This Month</div>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-val" data-count="1250">0</div>
+          <div class="hstat-lbl">Loans Managed</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" data-count="98" data-suffix="%">0</div>
+          <div class="hstat-lbl">Approval Accuracy</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-val" data-count="4" data-suffix=" Roles">0</div>
+          <div class="hstat-lbl">Admin Roles</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end hero-grid -->
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-eyebrow reveal">What You Can Do</div>
+    <h2 class="sec-title reveal" style="transition-delay:.05s">
+      Powerful Admin <span>Features</span>
+    </h2>
+    <p class="sec-sub reveal" style="transition-delay:.1s">
+      Everything you need to run a professional loan management system — from one clean, secure dashboard.
+    </p>
+
+    <div class="features-grid">
+
+      <div class="feat-card reveal" style="transition-delay:.06s">
+        <div class="feat-icon">
+          <span class="material-icons-round">manage_accounts</span>
+        </div>
+        <h3>Manage Users</h3>
+        <p>View, search, and manage all registered borrowers. Update profiles, KYC status, and account standing in real time.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:.12s">
+        <div class="feat-icon">
+          <span class="material-icons-round">fact_check</span>
+        </div>
+        <h3>Approve / Reject Loan Applications</h3>
+        <p>Review applications with full borrower context. Approve or reject with a single click — all decisions logged automatically.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:.18s">
+        <div class="feat-icon">
+          <span class="material-icons-round">payments</span>
+        </div>
+        <h3>Monitor Payments</h3>
+        <p>Track EMI payments, flag overdue accounts, and generate repayment reports — stay on top of every transaction.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:.24s">
+        <div class="feat-icon">
+          <span class="material-icons-round">bar_chart</span>
+        </div>
+        <h3>Generate Reports</h3>
+        <p>Interactive analytics charts for disbursements, approval rates, revenue, and user growth. Export to CSV or PDF with one click.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:.3s">
+        <div class="feat-icon">
+          <span class="material-icons-round">warning</span>
+        </div>
+        <h3>Defaulter Monitoring</h3>
+        <p>Automatically flag at-risk borrowers based on missed EMIs. Generate NPA reports and initiate recovery workflows instantly.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:.36s">
+        <div class="feat-icon">
+          <span class="material-icons-round">security</span>
+        </div>
+        <h3>Role-Based Access Control</h3>
+        <p>Assign granular permissions — Super Admin, Loan Manager, Finance Admin, Support Admin — with full audit trails.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── ADMIN TOOLS ─── -->
+<section class="tools" id="tools">
+  <div class="tools-blob tb-1"></div>
+  <div class="tools-blob tb-2"></div>
+  <div class="wrap">
+    <div class="sec-eyebrow reveal">Admin Toolkit</div>
+    <h2 class="sec-title reveal" style="transition-delay:.05s">
+      Built-in <span>Admin Tools</span>
+    </h2>
+    <p class="sec-sub reveal" style="transition-delay:.1s">
+      Professional-grade tools that make loan management effortless and error-free.
+    </p>
+
+    <div class="tools-grid">
+
+      <div class="tool-row reveal" style="transition-delay:.06s">
+        <div class="tool-num">01</div>
+        <div class="tool-icon"><span class="material-icons-round">approval</span></div>
+        <div class="tool-body">
+          <h4>Loan Approval Workflow</h4>
+          <p>Structured multi-step review process — from application submission to final disbursal. Auto-notify borrowers at each stage.</p>
+        </div>
+        <div class="tool-badge">Core</div>
+      </div>
+
+      <div class="tool-row reveal" style="transition-delay:.14s">
+        <div class="tool-num">02</div>
+        <div class="tool-icon"><span class="material-icons-round">receipt_long</span></div>
+        <div class="tool-body">
+          <h4>Payment Tracking</h4>
+          <p>Real-time EMI monitoring with automated overdue alerts, repayment schedules, and downloadable payment statements.</p>
+        </div>
+        <div class="tool-badge">Real-Time</div>
+      </div>
+
+      <div class="tool-row reveal" style="transition-delay:.22s">
+        <div class="tool-num">03</div>
+        <div class="tool-icon"><span class="material-icons-round">warning</span></div>
+        <div class="tool-body">
+          <h4>Defaulter Monitoring</h4>
+          <p>Automatic flagging of at-risk borrowers based on missed EMIs. Generate and email NPA reports with a single click.</p>
+        </div>
+        <div class="tool-badge">Risk</div>
+      </div>
+
+      <div class="tool-row reveal" style="transition-delay:.3s">
+        <div class="tool-num">04</div>
+        <div class="tool-icon"><span class="material-icons-round">download</span></div>
+        <div class="tool-body">
+          <h4>Report Export</h4>
+          <p>Export loan history, user reports, and revenue data to CSV or PDF. Schedule automated monthly reports to your email.</p>
+        </div>
+        <div class="tool-badge">Export</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS STRIP ─── -->
+<section class="stats-strip">
+  <div class="wrap">
+    <div class="stats-row">
+      <div class="stat-item reveal" style="transition-delay:.04s">
+        <div class="stat-num" data-count="1250">0</div>
+        <div class="stat-desc">Loans Managed</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal" style="transition-delay:.1s">
+        <div class="stat-num" data-count="3800">0</div>
+        <div class="stat-desc">Active Borrowers</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal" style="transition-delay:.16s">
+        <div class="stat-num" data-count="98" data-suffix="%">0</div>
+        <div class="stat-desc">Approval Accuracy</div>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal" style="transition-delay:.22s">
+        <div class="stat-num" data-count="4" data-suffix=" Roles">0</div>
+        <div class="stat-desc">Admin Role Types</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-sec" id="cta">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <div class="cta-blob cb-1"></div>
+      <div class="cta-blob cb-2"></div>
+      <canvas class="cta-canvas" id="ctaCanvas"></canvas>
+      <div class="cta-content">
+        <div class="cta-badge">
+          <span class="material-icons-round">rocket_launch</span> Get Started
+        </div>
+        <h2>Ready to take control<br/>of your loan platform?</h2>
+        <p>Sign in to access your dashboard or create a new admin account. Secure, fast, and built for real-world loan management.</p>
+        <div class="cta-btns">
+          <a href="../Login/index.html"  class="btn-cta-white">
+            <span class="material-icons-round">login</span> Sign In to Dashboard
+          </a>
+          <a href="../Signup/index.html" class="btn-cta-ghost">
+            <span class="material-icons-round">person_add</span> Create Admin Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-brand">
+      <span class="material-icons-round">admin_panel_settings</span>
+      <span>LoanPro</span> <em>Admin Portal</em>
+    </div>
+    <p class="footer-copy">© 2026 LoanPro. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="../Login/index.html">Admin Login</a>
+      <a href="../Signup/index.html">Admin Signup</a>
+      <a href="../../landing/index.html">Borrower Portal</a>
+    </div>
+  </div>
+</footer>
+
+<!-- CDN Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

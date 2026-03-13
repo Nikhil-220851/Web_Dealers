@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro Admin — Analytics</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="material-icons-round">admin_panel_settings</span>
+      <span>LoanPro Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <a href="dashboard.html"><span class="material-icons-round">dashboard</span> Dashboard</a>
+      <a href="loan-requests.html"><span class="material-icons-round">credit_card</span> Loan Requests</a>
+      <a href="borrowers.html"><span class="material-icons-round">groups</span> Borrowers</a>
+      <div class="sidebar-section-label">Insights</div>
+      <a href="analytics.html" class="active"><span class="material-icons-round">show_chart</span> Analytics</a>
+      <div class="sidebar-section-label">Account</div>
+      <a href="settings.html"><span class="material-icons-round">settings</span> Settings</a>
+      <a href="#" onclick="logout(); return false;"><span class="material-icons-round">logout</span> Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <a class="brand-name" href="dashboard.html">
+        <span class="t1">Loan</span><span class="t2">Pro</span>
+      </a>
+    </div>
+    <div class="navbar-right">
+      <div class="admin-badge">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div class="admin-info">
+          <span class="admin-name" id="adminName">Loading…</span>
+          <span class="admin-role" id="adminRole"></span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <span class="material-icons-round">logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="dashboard">
+
+    <div class="page-heading">
+      <h1>Analytics & Reports</h1>
+      <p>Visual insights regarding loan performance and system statistics.</p>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-6">
+        <div class="panel h-100" style="--delay:0.05s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">pie_chart</span></div>
+              Loans by Type
+            </div>
+          </div>
+          <div style="position: relative; height:300px; width:100%">
+            <canvas id="loansByTypeChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="panel h-100" style="--delay:0.1s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">donut_large</span></div>
+              Loans by Status
+            </div>
+          </div>
+          <div style="position: relative; height:300px; width:100%">
+            <canvas id="loansByStatusChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel mt-4" style="--delay:0.15s">
+      <div class="panel-header">
+        <div class="panel-title">
+          <div class="panel-icon-wrap"><span class="material-icons-round">show_chart</span></div>
+          Monthly Loan Applications
+        </div>
+        <div class="panel-tag">Current Year</div>
+      </div>
+      <div style="position: relative; height:350px; width:100%">
+        <canvas id="monthlyLoansChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Defaulters Report -->
+    <div class="panel mt-4" style="--delay:0.2s">
+      <div class="panel-header" style="justify-content: space-between;">
+        <div class="panel-title">
+          <div class="panel-icon-wrap" style="background:#fef2f2; color:#ef4444;"><span class="material-icons-round">warning</span></div>
+          Defaulters & Overdue Report
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="downloadDefaultersCSV()" style="font-weight:600; font-size:13px; display:flex; gap:6px; align-items:center;">
+          <span class="material-icons-round" style="font-size:16px;">download</span> Export CSV
+        </button>
+      </div>
+      <div class="xtable-wrap">
+        <table class="xtable">
+          <thead>
+            <tr>
+              <th>Borrower Name</th>
+              <th>Loan ID</th>
+              <th>Loan Amount</th>
+              <th>EMI Amount</th>
+              <th>Due Date</th>
+              <th>Missed Payments</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="defaultersTableBody">
+            <tr><td colspan="7" style="text-align: center;">Loading report...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="admin-common.js"></script>
+  <script src="analytics.js"></script>
+</body>
+</html>
