@@ -58,16 +58,18 @@
   overflow: hidden;
 }
 
-.bank-logo-large {
+.bank-logo-img-lg {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
 }
 
-.bank-logo {
+.bank-logo-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
 }
 
 .ld-hero-text { flex: 1; }

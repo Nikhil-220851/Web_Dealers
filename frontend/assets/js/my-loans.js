@@ -84,8 +84,8 @@ function renderLoansTable(tab) {
         <div class="card" style="padding:20px;border:1px solid var(--border);border-radius:14px;background:var(--surface);display:flex;flex-direction:column;gap:16px;position:relative">
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:46px;height:46px;border-radius:10px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px">
-                <img src="${getBankLogo(l.bank_name)}" alt="${l.bank_name}" class="bank-logo" onerror="this.style.display='none';this.parentElement.textContent='${l.bank_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}'">
+              <div style="width:46px;height:46px;border-radius:10px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">
+                <img src="${getBankLogo(l.bank_name)}" alt="${l.bank_name}" class="bank-logo-img" style="max-width:100%;max-height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${l.bank_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}'">
               </div>
               <div>
                 <div style="font-size:12px;color:var(--text2);margin-bottom:2px">${l.bank_name}</div>

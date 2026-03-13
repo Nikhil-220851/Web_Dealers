@@ -72,8 +72,8 @@ function renderLoanCards(loans) {
     return `
     <div class="loan-card">
       <div class="loan-card-header">
-        <div class="loan-card-bank-avatar">
-          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo" onerror="this.style.display='none';this.parentElement.textContent='${loan.bank_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}'">
+        <div class="loan-card-bank-avatar" style="overflow:hidden">
+          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${loan.bank_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}'">
         </div>
         <div class="loan-card-info">
           <div class="loan-card-bank-name">${loan.bank_name}</div>

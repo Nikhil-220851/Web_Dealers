@@ -68,7 +68,7 @@ function renderLoanDetails(loan) {
     <div class="ld-hero">
       <div class="ld-hero-top">
         <div class="ld-bank-avatar">
-          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo-large" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
+          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo-img-lg" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
         </div>
         <div class="ld-hero-text">
           <div class="ld-bank-name-hero">${loan.bank_name}</div>

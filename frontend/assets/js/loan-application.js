@@ -92,7 +92,7 @@ async function fetchLoanProduct() {
         document.getElementById('ctx-bank').textContent = match.bank_name;
         document.getElementById('ctx-rate').textContent = (match.interest_rate || 0) + '%';
         document.getElementById('ctx-logo-wrap').innerHTML = `
-          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
+          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
         `;
         
         // Auto-set max loan amount allowed (demo cap)
