@@ -69,6 +69,7 @@
           <div class="u-avatar" id="sidebar-avatar-letter">A</div>
           <div class="u-details">
             <div class="u-name" id="sidebar-user-name">Arjun Sharma</div>
+
             <div class="u-role">Borrower</div>
           </div>
           <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
@@ -171,7 +172,7 @@
                   Loan Payment Timeline
                   <span class="badge badge-purple">Annual View</span>
                 </div>
-                <div class="chart-container">
+                <div class="chart-container"style="position:relative; height:240px;">
                   <canvas id="emiChart"></canvas>
                 </div>
               </div>
@@ -201,7 +202,7 @@
             </div>
 
             <div class="dash-col-right" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-              <div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 30px;">
+              <div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 30px;"onclick="openCreditScore()">
                 <div class="text-sm font-semi text-muted mb-8" style="text-transform:uppercase; letter-spacing:1px;">Credit Score</div>
                 <div style="position:relative; width:120px; height:120px; margin: 16px 0;">
                   <svg viewBox="0 0 36 36" style="width:100%; height:100%; transform: rotate(-90deg);">
@@ -234,25 +235,75 @@
     </main>
   </div>
 
-  <script src="../assets/js/base.js"></script>
-  <script src="../assets/js/dashboard.js"></script>
-  <script>
-    // Logout function
-    function logout() {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
-        alert('You have been logged out.');
-        window.location.href = '../landing/index.html';
+
+  
+
+  
+<script src="../assets/js/base.js"></script>
+<script src="../assets/js/dashboard.js"></script>
+<script>
+
+  // ── Check session ──────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = '../auth/login.html';
+      return;
+    }
+  });
+
+
+
+    const firstname = localStorage.getItem("firstname") || '';
+    const lastname  = localStorage.getItem("lastname")  || '';
+    const userName  = localStorage.getItem("userName")  || '';
+    const photo     = localStorage.getItem("userPhoto") || '';
+
+    // Build full name — works for both login methods
+    const fullName  = (firstname + ' ' + lastname).trim() || userName || 'User';
+    const initial   = fullName.charAt(0).toUpperCase();
+
+    // ── Sidebar name ──
+    const sidebarName = document.getElementById("sidebar-user-name");
+    if (sidebarName) sidebarName.innerText = fullName;
+
+    // ── Welcome message ──
+    const pageSub = document.getElementById("page-sub");
+    if (pageSub) pageSub.innerHTML = "Welcome back, " + fullName + " 👋";
+
+    // ── Avatar — photo for Google, letter for email/password ──
+    const avatarEl = document.getElementById("sidebar-avatar-letter");
+    if (avatarEl) {
+      if (photo) {
+        // Google login — show profile photo
+        avatarEl.innerHTML = `
+          <img src="${photo}"
+            style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+            onerror="this.parentElement.innerText='${initial}'"
+          />`;
+      } else {
+        // Email/password login — show first letter
+        avatarEl.innerText = initial;
+      }
     }
 
-    // Check session
-    window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '../auth/login.html';
-        }
-    });
-  </script>
-</body>
+  
 
-</html>
+  // ── Logout — clears ALL localStorage ──────────
+  function logout() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('firstname');
+    localStorage.removeItem('lastname');
+    localStorage.removeItem('phoneno');
+    localStorage.removeItem('userPhoto');
+    window.location.href = '../landing/index.html';
+  }
 
+  // ── Credit score page ──────────────────────────
+  function openCreditScore() {
+    window.location.href = "credit-score.html";
+  }
+
+</script>

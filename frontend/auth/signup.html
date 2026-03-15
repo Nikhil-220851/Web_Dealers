@@ -150,7 +150,7 @@
 
     <div class="divider">or sign up with</div>
 
-    <button class="btn-google">
+    <button class="btn-google" onclick="signinwithgoogle()">
       <img src="https://developers.google.com/identity/images/g-logo.png" width="18" alt="Google">
       Continue with Google
     </button>
@@ -183,6 +183,19 @@
 
 </div>
 
+
+
+<!-- 1 Firebase libraries -->
+<!-- Firebase libraries -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Firebase configuration -->
+<script src="../assets/js/firebase-config.js"></script>
+
+<!-- Your JS -->
 <script src="../assets/js/signup.js"></script>
+
 </body>
 </html>
