@@ -8,3 +8,5 @@ $DB_USER = 'root';
 $DB_PASS = '';          // XAMPP default is empty password
 $DB_NAME = 'lms_db'; // paste your Database name
 ?>
+backend/vendor/
+.env

@@ -35,6 +35,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/profile.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
@@ -326,12 +327,13 @@
                   <h3><i class="ph ph-translate"></i> Language</h3>
                 </div>
                 <div class="lang-grid">
-                  <button class="lang-chip active" onclick="selectLang(this)">English</button>
-                  <button class="lang-chip" onclick="selectLang(this)">Hindi</button>
-                  <button class="lang-chip" onclick="selectLang(this)">Telugu</button>
-                  <button class="lang-chip" onclick="selectLang(this)">Tamil</button>
-                  <button class="lang-chip" onclick="selectLang(this)">Kannada</button>
-                  <button class="lang-chip" onclick="selectLang(this)">Marathi</button>
+                
+                  <button class="lang-chip" onclick="changeLang('en')">English</button>
+                  <button class="lang-chip" onclick="changeLang('hi')">Hindi</button>
+                  <button class="lang-chip" onclick="changeLang('te')">Telugu</button>
+                  <button class="lang-chip" onclick="changeLang('ta')">Tamil</button>
+                  <button class="lang-chip" onclick="changeLang('kn')">Kannada</button>
+                  <button class="lang-chip" onclick="changeLang('mr')">Marathi</button>
                 </div>
               </div>
 
@@ -405,11 +407,15 @@
       </div>
     </main>
   </div>
-
+<div id="google_translate_element"></div>
 
   <script src="../assets/js/base.js"></script>
   <script src="../assets/js/profile.js"></script>
+<script src="../assets/js/translate.js"></script>
 
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <script>
     // Logout function
     function logout() {

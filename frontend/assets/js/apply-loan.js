@@ -116,3 +116,38 @@ function getBankLogo(bankName) {
   const key = map[bankName] || bankName.split(' ')[0].toUpperCase();
   return `../assets/images/banks/${key}.png`;
 }
+
+async function checkProfileBeforeLoan() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        window.location.href = '../auth/login.html';
+        return false;
+    }
+
+    const res  = await fetch(`../../backend/api/check-profile-complete.php?userId=${encodeURIComponent(userId)}`);
+    const data = await res.json();
+
+    if (!data.complete) {
+        const missing = data.missing.join(', ');
+        const go = confirm(
+            `⚠️ Your profile is incomplete.\n\nMissing: ${missing}\n\n` +
+            `You must complete your profile before applying for a loan.\n\nGo to Profile now?`
+        );
+        if (go) window.location.href = 'profile.html';
+        return false;
+    }
+    return true;
+}
+
+// Call on page load
+window.addEventListener('DOMContentLoaded', async () => {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '../auth/login.html';
+        return;
+    }
+    const allowed = await checkProfileBeforeLoan();
+    if (!allowed) {
+        // Hide the form if incomplete
+        document.querySelector('.apply-form-container')?.style.setProperty('display', 'none');
+    }
+});
