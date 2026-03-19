@@ -3,7 +3,7 @@
    Connected to backend admin-signup.php
 ═══════════════════════════════════════ */
 
-const API_BASE = '/LMS_Web/Web_Dealers/backend/api';
+const API_BASE = 'loan/Loan_Management_System/backend/api';
 
 /* ─── Toggle password visibility ─── */
 function togglePass(inputId, iconId) {
