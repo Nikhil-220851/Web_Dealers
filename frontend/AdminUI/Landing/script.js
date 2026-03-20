@@ -329,10 +329,32 @@ function initTilt() {
 
 /* ─── Bootstrap ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  initHeroCanvas();
-  initCtaCanvas();
-  initReveal();
-  initCounters();
-  initGSAP();
-  initTilt();
+  console.log("Admin Landing Page initializing...");
+
+  const initSteps = [
+    { name: 'Hero Canvas', fn: initHeroCanvas },
+    { name: 'CTA Canvas', fn: initCtaCanvas },
+    { name: 'Scroll Reveal', fn: initReveal },
+    { name: 'Counters', fn: initCounters },
+    { name: 'GSAP', fn: initGSAP },
+    { name: '3D Tilt', fn: initTilt }
+  ];
+
+  initSteps.forEach(step => {
+    try {
+      console.log(`Initializing ${step.name}...`);
+      step.fn();
+      console.log(`${step.name} initialized successfully.`);
+    } catch (err) {
+      console.error(`Error initializing ${step.name}:`, err);
+    }
+  });
+
+  // Fallback for reveals if intersection observer fails or takes too long
+  setTimeout(() => {
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+      console.warn("Forcing visibility for element:", el);
+      el.classList.add('visible');
+    });
+  }, 3000);
 });

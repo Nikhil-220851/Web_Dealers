@@ -19,7 +19,7 @@ async function fetchLoanRequests() {
     const tbody = document.getElementById('allLoanRequestsBody');
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;">
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;">
         <span class="material-icons-round" style="animation:spin 1s linear infinite;font-size:28px;color:var(--pr);">sync</span>
         <p style="margin-top:8px;color:#64748b;">Loading loan requests…</p>
     </td></tr>`;
@@ -32,13 +32,13 @@ async function fetchLoanRequests() {
             allLoans = result.data;
             renderLoanRequests(allLoans);
         } else {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444;padding:24px;">
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#ef4444;padding:24px;">
                 Error: ${result.message}
             </td></tr>`;
         }
     } catch (err) {
         console.error('fetchLoanRequests error:', err);
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#ef4444;padding:24px;">
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#ef4444;padding:24px;">
             Network error. Please refresh.
         </td></tr>`;
     }
@@ -56,90 +56,42 @@ function renderLoanRequests(loans) {
     tbody.innerHTML = '';
 
     if (!loans || loans.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#64748b;padding:32px;">
-            No loan applications found.
-        </td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No loan applications found</td></tr>`;
         return;
     }
 
     loans.forEach(loan => {
-        const shortId   = loan.id.substring(loan.id.length - 6).toUpperCase();
-        const avatarLtr = (loan.borrower_name || 'U').charAt(0).toUpperCase();
-
-        const typeMap   = { personal:'ltype-p', home:'ltype-h', car:'ltype-c', business:'ltype-bus' };
-        const typeClass = typeMap[(loan.loan_type||'').toLowerCase()] || 'ltype-p';
-
-        const statusMap   = { pending:'spill-wait', approved:'spill-ok', rejected:'spill-no' };
-        const statusClass = statusMap[loan.status] || 'spill-wait';
-
-        /* ── ACTION BUTTONS ──
-           PENDING  = View + Approve + Reject (all 3)
-           APPROVED = View only + "Processed" label
-           REJECTED = View only + "Processed" label
-        ── */
-        let actionHtml = '';
-
-        if (loan.status === 'pending') {
-            // PENDING: show all 3 buttons
-            actionHtml = `
-            <div class="act-btns">
-                <button class="btn btn-sm btn-outline-primary"
-                    style="font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:5px 10px;"
-                    onclick="openReviewModal('${loan.id}')"
-                    title="View borrower details">
-                    <span class="material-icons-round" style="font-size:14px;">visibility</span>
-                </button>
-                <button class="act-approve" onclick="openRemarksModal('${loan.id}','approved')">
-                    <span class="material-icons-round">check</span> Approve
-                </button>
-                <button class="act-reject" onclick="openRemarksModal('${loan.id}','rejected')">
-                    <span class="material-icons-round">close</span> Reject
-                </button>
-            </div>`;
-        } else {
-            // APPROVED or REJECTED: show eye + processed label
-            const icon  = loan.status === 'approved' ? 'check_circle' : 'cancel';
-            const color = loan.status === 'approved' ? '#16a34a'      : '#ef4444';
-            actionHtml = `
-            <div style="display:flex;align-items:center;gap:8px;">
-                <span style="color:${color};font-size:12px;font-weight:700;
-                    display:flex;align-items:center;gap:4px;">
-                    <span class="material-icons-round" style="font-size:15px;">${icon}</span>
-                    Processed
-                </span>
-                <button class="btn btn-sm btn-outline-primary"
-                    style="font-size:12px;font-weight:600;display:inline-flex;align-items:center;padding:5px 10px;"
-                    onclick="openReviewModal('${loan.id}')"
-                    title="View details">
-                    <span class="material-icons-round" style="font-size:14px;">visibility</span>
-                </button>
-            </div>`;
-        }
+        const shortId = loan.id.substring(loan.id.length - 6).toUpperCase();
+        const dateObj = new Date(loan.application_date);
+        const dateStr = isNaN(dateObj.valueOf()) ? loan.application_date : dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
         const tr = document.createElement('tr');
         tr.id    = `row-${loan.id}`;
         tr.innerHTML = `
-            <td><span class="lid" title="${loan.id}">${shortId}</span></td>
-            <td>
-                <div class="borrower">
-                    <div class="ava ava-t">${avatarLtr}</div>
-                    <div>
-                        <div style="font-weight:700;">${loan.borrower_name || 'Unknown'}</div>
-                        <div style="font-size:11px;color:#94a3b8;">${loan.borrower_id || ''}</div>
-                    </div>
-                </div>
-            </td>
-            <td style="font-weight:600;">${loan.bank_name || '—'}</td>
-            <td><span class="ltype ${typeClass}">${capitalize(loan.loan_type||'N/A')}</span></td>
-            <td class="money">₹${Number(loan.amount||0).toLocaleString('en-IN')}</td>
-            <td>${loan.tenure ? loan.tenure+' mo' : '—'}</td>
-            <td style="color:#64748b;font-size:13px;">${loan.application_date||'—'}</td>
-            <td>
-                <span class="spill ${statusClass}" id="status-${loan.id}">
-                    ${capitalize(loan.status||'pending')}
-                </span>
-            </td>
-            <td>${actionHtml}</td>
+          <td>${loan.borrower_name || "User"}</td>
+          <td><span class="lid" title="${loan.id}">${shortId}</span></td>
+          <td>${dateStr}</td>
+          <td>
+            <button onclick="openReviewModal('${loan.id}')" class="btn btn-sm btn-outline-primary" style="font-size:16px; padding:4px 8px; border:none; background:transparent;" title="View application details">
+              <span class="material-icons-round" style="font-size:18px; vertical-align:middle; color:#0f4c5c;">visibility</span>
+            </button>
+          </td>
+          <td>
+            ${
+              loan.status === "pending"
+                ? `
+                  <div style="display:flex; gap:6px;">
+                    <button onclick="openRemarksModal('${loan.id}', 'approved')" class="btn btn-sm btn-outline-success" style="font-size:12px; font-weight:600;">
+                      Approve
+                    </button>
+                    <button onclick="openRemarksModal('${loan.id}', 'rejected')" class="btn btn-sm btn-outline-danger" style="font-size:12px; font-weight:600;">
+                      Reject
+                    </button>
+                  </div>
+                `
+                : `<span class="processed-text" style="color: #64748b; font-weight: 600; font-size: 13px;">Processed</span>`
+            }
+          </td>
         `;
         tbody.appendChild(tr);
     });
@@ -485,38 +437,11 @@ async function confirmDecision() {
    with "Processed" label
 ───────────────────────────────────── */
 function updateRowInTable(loanId, newStatus) {
-    // Update status pill
-    const statusEl = document.getElementById(`status-${loanId}`);
-    if (statusEl) {
-        statusEl.className   = `spill ${newStatus==='approved'?'spill-ok':'spill-no'}`;
-        statusEl.textContent = capitalize(newStatus);
-    }
-
-    // Replace action buttons
     const row = document.getElementById(`row-${loanId}`);
     if (row) {
         const actionCell = row.querySelector('td:last-child');
         if (actionCell) {
-            const icon  = newStatus === 'approved' ? 'check_circle' : 'cancel';
-            const color = newStatus === 'approved' ? '#16a34a'      : '#ef4444';
-            const loan  = allLoans.find(l => l.id === loanId);
-            const bid   = loan?.borrower_id || '';
-
-            actionCell.innerHTML = `
-            <div style="display:flex;align-items:center;gap:8px;">
-                <span style="color:${color};font-size:12px;font-weight:700;
-                    display:flex;align-items:center;gap:4px;">
-                    <span class="material-icons-round" style="font-size:15px;">${icon}</span>
-                    Processed
-                </span>
-                <button class="btn btn-sm btn-outline-primary"
-                    style="font-size:12px;font-weight:600;display:inline-flex;
-                           align-items:center;padding:5px 10px;"
-                    onclick="openReviewModal('${loanId}')"
-                    title="View details">
-                    <span class="material-icons-round" style="font-size:14px;">visibility</span>
-                </button>
-            </div>`;
+            actionCell.innerHTML = `<span class="processed-text" style="color: #64748b; font-weight: 600; font-size: 13px;">Processed</span>`;
         }
         row.style.animation = 'rowFlash 1.2s ease forwards';
     }

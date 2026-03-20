@@ -92,7 +92,7 @@ async function fetchLoanProduct() {
         document.getElementById('ctx-bank').textContent = match.bank_name;
         document.getElementById('ctx-rate').textContent = (match.interest_rate || 0) + '%';
         document.getElementById('ctx-logo-wrap').innerHTML = `
-          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
+          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.src='../assets/images/banks/default.png'">
         `;
         
         // Auto-set max loan amount allowed (demo cap)
@@ -245,6 +245,9 @@ function getBankLogo(bankName) {
     'Axis Bank':           'AXIS',
     'Kotak Mahindra Bank': 'KOTAK',
     'Canara Bank':         'CANARA',
+    'IndusInd Bank':       'INDUSLAND',
+    'Punjab National Bank':'PUNJABNATIONALBANK',
+    'Bank of Baroda':      'BANKOFBARODA',
   };
   const key = map[bankName] || bankName.split(' ')[0].toUpperCase();
   return `../assets/images/banks/${key}.png`;

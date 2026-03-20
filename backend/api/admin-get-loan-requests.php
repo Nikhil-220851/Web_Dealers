@@ -22,11 +22,8 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 try {
-    // Fetch all loan requests sorted by latest first
-    $cursor = $database->loan_applications->find(
-        [],
-        ['sort' => ['application_date' => -1]]
-    );
+    // Fetch all loan requests, sorted by application date descending (prefer stashed)
+    $cursor = $database->loan_applications->find([], ['sort' => ['applied_date' => -1]]);
 
     $loanRequests = [];
 
@@ -34,6 +31,7 @@ try {
         $userId    = $app['user_id'] ?? '';
         $productId = $app['loan_product_id'] ?? '';
         $product   = null;
+        $userFirstName = 'User';
 
         // ── FETCH LOAN PRODUCT (bank name, loan type) ──
         if (!empty($productId)) {
@@ -82,11 +80,12 @@ try {
             }
         }
 
-        // ── BUILD LOAN REQUEST ENTRY ──
+        // ── BUILD LOAN REQUEST ENTRY ── (prefer stashed: borrower_name from users firstname)
+        $displayName = $borrowerName !== 'Unknown User' ? $borrowerName : $userFirstName;
         $loanRequests[] = [
             'id'               => (string) $app['_id'],
             'borrower_id'      => $userId,
-            'borrower_name'    => $borrowerName ?: 'Unknown User',
+            'borrower_name'    => $displayName ?: 'Unknown User',
             'loan_type'        => $loanType,
             'bank_name'        => $bankName,
             'amount'           => $app['loan_amount'] ?? ($app['amount'] ?? 0),

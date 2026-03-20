@@ -1,7 +1,16 @@
 /* ═══════════════════════════════════════════════
    EMI CALCULATOR
 ═══════════════════════════════════════════════ */
-function fmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function fmt(n) { 
+  return '₹' + Math.round(n).toLocaleString('en-IN'); 
+}
+
+function updateSliderFill(sliderId) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+  const value = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.setProperty('--value', value + '%');
+}
 
 const animationStates = new Map();
 function animateValue(elId, endValue, formatter) {
@@ -13,7 +22,8 @@ function animateValue(elId, endValue, formatter) {
   if (currentState) {
     startValue = currentState.value;
   } else {
-    const parsed = parseFloat(el.textContent.replace(/[^0-9.-]+/g, ""));
+    const textContent = el.textContent || "0";
+    const parsed = parseFloat(textContent.replace(/[^0-9.-]+/g, ""));
     startValue = isNaN(parsed) ? endValue : parsed;
     currentState = { value: startValue };
   }
@@ -25,7 +35,7 @@ function animateValue(elId, endValue, formatter) {
     return;
   }
   
-  const duration = 250; // ms
+  const duration = 250; 
   const startTime = performance.now();
   
   if (currentState.rafId) cancelAnimationFrame(currentState.rafId);
@@ -51,17 +61,32 @@ function animateValue(elId, endValue, formatter) {
 }
 
 function calcEMI() {
-  const P = +document.getElementById('amt-slider').value;
-  const rateslider = +document.getElementById('rate-slider').value;
-  const r = rateslider / 12 / 100;
-  const n = +document.getElementById('tenure-slider').value;
+  const amtSlider = document.getElementById('amt-slider');
+  const rateSlider = document.getElementById('rate-slider');
+  const tenureSlider = document.getElementById('tenure-slider');
+
+  updateSliderFill('amt-slider');
+  updateSliderFill('rate-slider');
+  updateSliderFill('tenure-slider');
+
+  const P = +amtSlider.value;
+  const ratesliderVal = +rateSlider.value;
+  const r = ratesliderVal / 12 / 100;
+  const n = +tenureSlider.value;
+
   const emi = r === 0 ? P / n : P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
   const total = emi * n;
   const interest = total - P;
 
   document.getElementById('amt-display').textContent = fmt(P);
-  document.getElementById('rate-display').textContent = rateslider.toFixed(1) + '% p.a.';
-  document.getElementById('tenure-display').textContent = n + ' months (' + Math.round(n / 12) + ' yrs)';
+  document.getElementById('rate-display').textContent = ratesliderVal.toFixed(1) + '% p.a.';
+  
+  // Tenure display: X Years (primary)
+  const years = Math.floor(n / 12);
+  const remainingMonths = n % 12;
+  let tenureText = years + ' Years';
+  if (remainingMonths > 0) tenureText += ' ' + remainingMonths + ' Mos';
+  document.getElementById('tenure-display').textContent = tenureText;
   
   animateValue('emi-display', emi, fmt);
   animateValue('b-principal', P, fmt);
@@ -92,10 +117,10 @@ function renderEmiChart() {
   const pointBgColors = [];
   const pointBorderColors = [];
   
-  for (let m = 12; m <= 360; m++) {
+  // More granular labels: only show years
+  for (let m = 12; m <= 360; m += 12) {
     let yrs = m / 12;
-    let label = Number.isInteger(yrs) ? yrs + ' Yrs' : yrs.toFixed(2) + ' Yrs';
-    labels.push(label);
+    labels.push(yrs + ' Yrs');
     
     let calcEmi = r === 0 ? P / m : P * r * Math.pow(1 + r, m) / (Math.pow(1 + r, m) - 1);
     data.push(Math.round(calcEmi));
@@ -103,17 +128,17 @@ function renderEmiChart() {
     if (m === currentN) {
       pointRadii.push(6);
       pointBgColors.push('#ffffff');
-      pointBorderColors.push('#6C47FF');
+      pointBorderColors.push('#4f46e5');
     } else {
       pointRadii.push(0);
-      pointBgColors.push('rgba(108,71,255,1)');
+      pointBgColors.push('rgba(79, 70, 229, 1)');
       pointBorderColors.push('transparent');
     }
   }
 
   const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, 'rgba(108,71,255,0.4)');
-  gradient.addColorStop(1, 'rgba(108,71,255,0.0)');
+  gradient.addColorStop(0, 'rgba(79, 70, 229, 0.4)');
+  gradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
 
   if (emiChart) {
     emiChart.data.labels = labels;
@@ -121,7 +146,7 @@ function renderEmiChart() {
     emiChart.data.datasets[0].pointRadius = pointRadii;
     emiChart.data.datasets[0].pointBackgroundColor = pointBgColors;
     emiChart.data.datasets[0].pointBorderColor = pointBorderColors;
-    emiChart.update('none'); // Update without animation so dragging is smooth
+    emiChart.update('none'); 
   } else {
     emiChart = new Chart(ctx, {
       type: 'line',
@@ -132,7 +157,7 @@ function renderEmiChart() {
           data: data,
           fill: true,
           backgroundColor: gradient,
-          borderColor: '#6C47FF',
+          borderColor: '#4f46e5',
           borderWidth: 2,
           tension: 0.4,
           pointRadius: pointRadii,
@@ -141,7 +166,7 @@ function renderEmiChart() {
           pointBorderWidth: 2,
           pointHoverRadius: 6,
           pointHoverBackgroundColor: '#ffffff',
-          pointHoverBorderColor: '#6C47FF',
+          pointHoverBorderColor: '#4f46e5',
           pointHoverBorderWidth: 2
         }]
       },
@@ -157,7 +182,7 @@ function renderEmiChart() {
           tooltip: {
             backgroundColor: '#fff',
             titleColor: '#1A1433',
-            bodyColor: '#6C47FF',
+            bodyColor: '#4f46e5',
             borderColor: '#E4E0F5',
             borderWidth: 1,
             padding: 10,
@@ -173,8 +198,8 @@ function renderEmiChart() {
             grid: { display: false },
             ticks: { 
               color: '#9B94B8', 
-              font: { size: 11, family: "'Plus Jakarta Sans'" },
-              maxTicksLimit: 8,
+              font: { size: 11, family: "'Inter', sans-serif" },
+              maxTicksLimit: 10,
               maxRotation: 0
             }
           },
@@ -183,8 +208,8 @@ function renderEmiChart() {
             border: { display: false },
             ticks: {
               color: '#9B94B8',
-              font: { size: 11, family: "'Plus Jakarta Sans'" },
-              callback: v => '₹' + (v / 1000).toFixed(0) + 'K'
+              font: { size: 11, family: "'Inter', sans-serif" },
+              callback: v => '₹' + Math.round(v).toLocaleString('en-IN')
             }
           }
         }
@@ -193,7 +218,6 @@ function renderEmiChart() {
   }
 }
 
-// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   calcEMI();
 });

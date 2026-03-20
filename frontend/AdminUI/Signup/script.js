@@ -3,7 +3,12 @@
    Connected to backend admin-signup.php
 ═══════════════════════════════════════ */
 
-const API_BASE = 'loan/Loan_Management_System/backend/api';
+// Auto-detect API base from current path
+const API_BASE = (() => {
+  const p = window.location.pathname;
+  const m = p.match(/^(.*?\/Web_Dealers)\//);
+  return m ? `${m[1]}/backend/api` : '../../../backend/api';
+})();
 
 /* ─── Toggle password visibility ─── */
 function togglePass(inputId, iconId) {

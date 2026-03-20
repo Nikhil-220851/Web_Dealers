@@ -2,92 +2,204 @@
    LoanPro Admin Dashboard — dashboard.js
 ═══════════════════════════════════════ */
 
-async function fetchStats() {
+function formatTime(timestamp) {
+    if (!timestamp) return 'Recently';
+    const diff = Date.now() - timestamp;
+    const mins = Math.floor(diff / 60000);
+
+    if (mins < 1) return "Just now";
+    if (mins < 60) return mins + " min ago";
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + " hrs ago";
+
+    const days = Math.floor(hrs / 24);
+    if (days === 1) return "Yesterday";
+    return days + " days ago";
+}
+
+function safeValue(val) {
+    return val === null || val === undefined ? 0 : val;
+}
+
+async function fetchDashboardData() {
     try {
-        const res = await fetch(`${API_BASE}/admin-get-dashboard-stats.php`);
+        const res = await fetch(`${API_BASE}/admin-dashboard-data.php`);
         const result = await res.json();
         
         if (result.status === 'success') {
             const data = result.data;
             
-            // Stats cards
-            document.getElementById('statTotalAmount').textContent = `₹${data.totalAmount.toLocaleString('en-IN')}`;
-            document.getElementById('statBorrowers').textContent = data.totalBorrowers;
-            document.getElementById('statTotalLoans').textContent = data.totalLoans;
-            document.getElementById('statApprovedLoans').textContent = data.approvedLoans;
+            // 1. Populate KPI Cards with safety
+            document.getElementById('statTotalApps').textContent = safeValue(data.kpis.totalApplications);
+            document.getElementById('statPending').textContent = safeValue(data.kpis.pending);
+            document.getElementById('statApproved').textContent = safeValue(data.kpis.approved);
+            document.getElementById('statDisbursed').textContent = `₹${safeValue(data.kpis.disbursed).toLocaleString('en-IN')}`;
+            document.getElementById('statActive').textContent = safeValue(data.kpis.activeLoans);
+            document.getElementById('statDefaulters').textContent = safeValue(data.kpis.defaulters);
 
-            // Optional: you can dynamically build Daily Loan Status panels, but we stick to the HTML structure for now if it requires more data or just update numbers.
-            // Update Recent Applications table
-            renderRecentApplications(data.recentApplications);
+            // 2. Render Alerts
+            renderPendingApprovals(data.pendingApprovals);
+            renderDefaulters(data.defaultersPreview);
+
+            // 3. Render Activity Feed
+            renderActivities(data.recentActivities);
         }
     } catch (err) {
-        console.error('Failed to load dashboard stats:', err);
+        console.error('Failed to load dashboard data:', err);
     }
 }
 
-function renderRecentApplications(apps) {
-    const tbody = document.getElementById('recentAppsTableBody');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-    if (apps.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No recent applications</td></tr>`;
+function renderActivities(activities) {
+    const container = document.getElementById("activityList");
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!activities || !activities.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                <p>No recent activity yet</p>
+            </div>
+        `;
         return;
     }
 
-    apps.forEach(app => {
-        const avatarLetter = app.borrower_name.charAt(0).toUpperCase();
-        // Type color mapping
-        const typeMap = {
-            'Personal': 'ltype-p',
-            'Business': 'ltype-bus', // example
-            'Home': 'ltype-h',
-            'Car': 'ltype-c'
-        };
-        const typeClass = typeMap[app.loan_type] || 'ltype-p';
-        
-        const statusMap = {
-            'pending': 'spill-wait',
-            'approved': 'spill-ok',
-            'rejected': 'spill-no'
-        };
-        const statusClass = statusMap[app.status] || 'spill-wait';
-        const stId = `st_${app.id}`;
-
-        let actionHtml = '';
-        if (app.status === 'pending') {
-            actionHtml = `
-            <div class="act-btns">
-              <button class="act-approve" onclick="updateLoanStatusDash('${app.id}', 'approved')"><span class="material-icons-round">check</span> Approve</button>
-              <button class="act-reject"  onclick="updateLoanStatusDash('${app.id}', 'rejected')"><span class="material-icons-round">close</span> Reject</button>
-            </div>`;
-        } else {
-            actionHtml = `<span style="color: #64748b; font-size: 0.9rem;">Processed</span>`;
-        }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><div class="borrower"><div class="ava ava-t">${avatarLetter}</div>${app.borrower_name}</div></td>
-            <td><span class="ltype ${typeClass}">${app.loan_type}</span></td>
-            <td class="money">₹${app.amount.toLocaleString('en-IN')}</td>
-            <td><span class="spill ${statusClass}" id="${stId}">${capitalize(app.status)}</span></td>
-            <td>${actionHtml}</td>
+    activities.forEach(act => {
+        const div = document.createElement("div");
+        div.classList.add("activity-card");
+        div.innerHTML = `
+            <div class="activity-left">
+                <i class="fas ${getIcon(act.type)}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">${act.title || 'Activity'}</div>
+                <div class="activity-desc">${act.description || ''}</div>
+                <div class="activity-time">${formatTime(act.time)}</div>
+            </div>
         `;
-        tbody.appendChild(tr);
+        container.appendChild(div);
     });
 }
 
-async function updateLoanStatusDash(loanId, newStatus) {
+function getIcon(type) {
+    switch (type) {
+        case "loan_created": return "fa-file-invoice";
+        case "loan_approved": return "fa-check-circle";
+        case "loan_rejected": return "fa-times-circle";
+        case "emi_paid": return "fa-credit-card";
+        case "borrower_added": return "fa-user-plus";
+        case "loan_scheme_created": return "fa-briefcase";
+        default: return "fa-bell";
+    }
+}
+
+function goTo(page) {
+    document.body.classList.add("fade-out");
+    setTimeout(() => {
+        window.location.href = page;
+    }, 200);
+}
+
+
+function renderPendingApprovals(list) {
+    const container = document.getElementById('pendingApprovalsList');
+    if (!container) return;
+    if (!list || list.length === 0) {
+        container.innerHTML = `
+            <div class="pending-empty-state">
+                <span class="material-icons-round">inbox</span>
+                <p>No pending requests</p>
+                <span class="pending-empty-sub">All loan applications have been reviewed</span>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="pending-table-wrap">
+            <table class="pending-table">
+                <thead><tr>
+                    <th>Borrower</th><th>Loan Type</th><th>Amount</th><th>Applied</th><th>Status</th><th>Actions</th>
+                </tr></thead>
+                <tbody>
+                    ${list.map(item => `
+                        <tr class="pending-row">
+                            <td><strong>${escapeHtml(item.borrower_name)}</strong></td>
+                            <td><span class="loan-type-badge">${escapeHtml(item.loan_type || 'N/A')}</span></td>
+                            <td class="amount-cell">₹${Number(item.amount || 0).toLocaleString('en-IN')}</td>
+                            <td>${escapeHtml(item.date || 'N/A')}</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-approve" onclick="updateDashboardLoanStatus('${item.id}', 'approved')" title="Approve">
+                                    <span class="material-icons-round">check</span> Approve
+                                </button>
+                                <button class="btn-reject" onclick="updateDashboardLoanStatus('${item.id}', 'rejected')" title="Reject">
+                                    <span class="material-icons-round">close</span> Reject
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>`;
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+}
+
+function renderDefaulters(list) {
+    const container = document.getElementById('defaultersList');
+    if (!container) return;
+    if (!list || list.length === 0) {
+        container.innerHTML = `
+            <div class="defaulters-empty-state">
+                <span class="material-icons-round">check_circle</span>
+                <p>No defaulters</p>
+                <span class="defaulters-empty-sub">All borrowers are up to date</span>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="defaulters-table-wrap">
+            <table class="defaulters-table">
+                <thead><tr>
+                    <th>Borrower</th><th>Overdue</th><th>Missed EMIs</th><th>Last Paid</th><th>Due Amount</th><th>Action</th>
+                </tr></thead>
+                <tbody>
+                    ${list.map(item => `
+                        <tr class="defaulter-row">
+                            <td><strong>${escapeHtml(item.borrower_name)}</strong></td>
+                            <td><span class="overdue-badge">${item.days_overdue || 0} days</span></td>
+                            <td>${item.missed_emis || 0}</td>
+                            <td>${item.last_paid_date ? escapeHtml(item.last_paid_date) : '—'}</td>
+                            <td class="amount-cell">₹${Number(item.total_due || item.amount || 0).toLocaleString('en-IN')}</td>
+                            <td>
+                                <a href="loan-requests.html" class="btn-view-defaulter" title="View Details">
+                                    <span class="material-icons-round">visibility</span>
+                                </a>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>`;
+}
+
+
+async function updateDashboardLoanStatus(loanId, newStatus) {
     try {
         const res = await fetch(`${API_BASE}/admin-update-loan-status.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ loan_id: loanId, status: newStatus })
+            body: JSON.stringify({ loan_id: loanId, status: newStatus, remarks: newStatus === 'approved' ? 'Approved from dashboard' : 'Rejected from dashboard' })
         });
         const data = await res.json();
         if (data.status === 'success') {
-            // refresh data
-            fetchStats();
+            fetchDashboardData();
         } else {
             alert('Error: ' + data.message);
         }
@@ -97,66 +209,7 @@ async function updateLoanStatusDash(loanId, newStatus) {
     }
 }
 
-function capitalize(s) {
-    if (typeof s !== 'string') return '';
-    return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-/* ─── Revenue Chart (Placeholder for now, could be dynamic later) ─── */
-function initChart() {
-  const canvas = document.getElementById('revenueChart');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-      datasets: [{
-        label: 'Revenue (₹)',
-        data: [120000,150000,180000,130000,200000,220000,170000,250000,210000,230000,260000,300000],
-        borderColor:           '#6366f1',
-        backgroundColor:       'rgba(99,102,241,0.08)',
-        borderWidth:           2.5,
-        pointBackgroundColor:  '#fff',
-        pointBorderColor:      '#6366f1',
-        pointBorderWidth:      2,
-        pointRadius:           4,
-        pointHoverRadius:      7,
-        tension:               0.42,
-        fill:                  true
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0b1120',
-          titleColor:      '#a5b4fc',
-          bodyColor:       '#fff',
-          padding:         12,
-          cornerRadius:    10,
-          callbacks: {
-            label: ctx => ' ₹' + ctx.parsed.y.toLocaleString('en-IN')
-          }
-        }
-      },
-      scales: {
-        y: {
-          grid:  { color: 'rgba(99,102,241,0.08)', drawBorder: false },
-          ticks: { color: '#94a3b8', font: { size: 12 }, padding: 8, callback: val => '₹' + (val/1000) + 'K' }
-        },
-        x: {
-          grid:  { display: false },
-          ticks: { color: '#94a3b8', font: { size: 12 }, padding: 8 }
-        }
-      }
-    }
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    fetchStats();
-    initChart();
+    fetchDashboardData();
 });
+

@@ -16,7 +16,8 @@ $mongoUri = $_ENV['MONGODB_URI'] ?? 'mongodb+srv://localhost:27017/test';
 try {
     $client = new MongoDB\Client($mongoUri);
 
-    $database = $client->Loan_Management_System;
+    $dbName   = $_ENV['MONGO_DB'] ?? 'Loan_Management_System';
+    $database = $client->selectDatabase($dbName);
 
 } catch (Exception $e) {
     die("Database connection failed: " . $e->getMessage());

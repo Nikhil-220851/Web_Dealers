@@ -68,7 +68,7 @@ function renderLoanDetails(loan) {
     <div class="ld-hero">
       <div class="ld-hero-top">
         <div class="ld-bank-avatar">
-          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo-img-lg" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
+          <img src="${logoSrc}" alt="${loan.bank_name}" class="bank-logo-img-lg" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.src='../assets/images/banks/default.png'">
         </div>
         <div class="ld-hero-text">
           <div class="ld-bank-name-hero">${loan.bank_name}</div>
@@ -266,6 +266,9 @@ function getBankLogo(bankName) {
     'Axis Bank':           'AXIS',
     'Kotak Mahindra Bank': 'KOTAK',
     'Canara Bank':         'CANARA',
+    'IndusInd Bank':       'INDUSLAND',
+    'Punjab National Bank':'PUNJABNATIONALBANK',
+    'Bank of Baroda':      'BANKOFBARODA',
   };
   const key = map[bankName] || bankName.split(' ')[0].toUpperCase();
   return `../assets/images/banks/${key}.png`;

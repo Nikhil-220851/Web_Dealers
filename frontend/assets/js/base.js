@@ -134,6 +134,33 @@
         }
 
         /* ═══════════════════════════════════════════════
+           THEME MANAGEMENT
+        ═══════════════════════════════════════════════ */
+        function selectTheme(btn, theme) {
+          if (btn) {
+            const grid = btn.closest('.theme-grid');
+            if (grid) {
+              grid.querySelectorAll('.theme-opt').forEach(c => c.classList.remove('active'));
+              btn.classList.add('active');
+            }
+          }
+
+          localStorage.setItem("theme", theme);
+
+          if (theme === "dark") {
+            document.body.classList.add("dark-theme");
+          } else if (theme === "light") {
+            document.body.classList.remove("dark-theme");
+          } else if (theme === "auto") {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              document.body.classList.add("dark-theme");
+            } else {
+              document.body.classList.remove("dark-theme");
+            }
+          }
+        }
+
+        /* ═══════════════════════════════════════════════
            ANIMATIONS — wired in on DOMContentLoaded
         ═══════════════════════════════════════════════ */
 
@@ -228,8 +255,36 @@
           Chart.defaults.animation.easing = 'easeInOutQuart';
         } catch (e) { }
 
-        /* ── INIT ALL ANIMATIONS ── */
-        document.addEventListener('DOMContentLoaded', () => {
+        /* ── INIT ALL ANIMATIONS & THEME ── */
+        function initDashboardUI() {
+          console.log("Dashboard UI Initializing...");
+          const savedTheme = localStorage.getItem("theme");
+          console.log("Saved Theme:", savedTheme);
+          
+          if (savedTheme) {
+            if (savedTheme === "dark") {
+              document.body.classList.add("dark-theme");
+              console.log("Dark theme class applied to body.");
+            } else if (savedTheme === "auto" && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              document.body.classList.add("dark-theme");
+              console.log("Auto-dark theme class applied to body.");
+            } else {
+              document.body.classList.remove("dark-theme");
+              console.log("Dark theme removed/not applied.");
+            }
+            
+            // Re-sync active state on buttons if they exist
+            const themeBtns = document.querySelectorAll('.theme-opt');
+            if (themeBtns.length > 0) {
+              themeBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${savedTheme}'`)) {
+                  btn.classList.add('active');
+                }
+              });
+            }
+          }
+
           updateUserUI(); // Populate global UI elements
           initRipples();
           runDashboardStagger();
@@ -239,7 +294,13 @@
           initSidebarToggle();
           // Re-run ripple init after dynamic content renders too
           setTimeout(initRipples, 800);
-        });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initDashboardUI);
+        } else {
+          initDashboardUI();
+        }
 
         /* Re-init ripples whenever a new page is shown (dynamic buttons) */
         const _origShowPage = showPage;
@@ -255,4 +316,5 @@
           }, 60);
         };
 
-        
+        
+

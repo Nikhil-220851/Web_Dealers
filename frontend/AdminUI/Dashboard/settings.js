@@ -1,68 +1,128 @@
 /* ═══════════════════════════════════════
    LoanPro Admin — settings.js
+   Enhanced Profile Management (Simplified)
 ═══════════════════════════════════════ */
 
-async function fetchSettings() {
-    try {
-        const res = await fetch(`${API_BASE}/admin-settings.php`);
-        const result = await res.json();
-        
-        if (result.status === 'success') {
-            document.getElementById('settingsEmail').value = result.data.email || '';
-            document.getElementById('settingsFirstName').value = result.data.firstname || '';
-            document.getElementById('settingsLastName').value = result.data.lastname || '';
-        }
-    } catch (err) {
-        console.error('Failed to load settings:', err);
-    }
+// ── Elements ──
+const settingsForm    = document.getElementById('settingsForm');
+const btnUpdate       = document.getElementById('btnUpdateProfile');
+
+const profileFields = {
+  firstname:   document.getElementById('firstName'),
+  lastname:    document.getElementById('lastName'),
+  email:       document.getElementById('profileEmail'),
+  phone:       document.getElementById('phone'),
+  currentPass: document.getElementById('currentPassword'),
+  newPass:     document.getElementById('newPassword'),
+  confirmPass: document.getElementById('confirmPassword')
+};
+
+// ── Toast System ──
+function showToast(message, isError = false) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast-custom ${isError ? 'error' : ''}`;
+  toast.innerHTML = `
+    <span class="material-icons-round toast-icon">${isError ? 'error' : 'check_circle'}</span>
+    <div class="toast-content">${message}</div>
+  `;
+  container.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 100);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
-document.getElementById('settingsForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('btnSaveParams');
-    const msg = document.getElementById('settingsMsg');
-    
-    btn.disabled = true;
-    btn.innerHTML = 'Saving...';
-    
-    const payload = {
-        firstname: document.getElementById('settingsFirstName').value,
-        lastname: document.getElementById('settingsLastName').value,
-        password: document.getElementById('settingsPassword').value
-    };
+// ── Fetch Profile ──
+async function loadProfile() {
+  try {
+    const res = await fetch(`${API_BASE}/admin-profile.php`);
+    const result = await res.json();
 
-    try {
-        const res = await fetch(`${API_BASE}/admin-settings.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        
-        msg.style.display = 'block';
-        if (data.status === 'success') {
-            msg.style.color = '#10b981'; // Green
-            msg.textContent = 'Settings updated successfully.';
-            document.getElementById('settingsPassword').value = '';
-            
-            // Re-fetch admin info for navbar
-            const updatedAdmin = await checkAuth();
-            if (updatedAdmin) populateAdminInfo(updatedAdmin);
+    if (result.status === 'success') {
+      const d = result.data;
+      
+      // Inputs
+      profileFields.firstname.value = d.firstname || '';
+      profileFields.lastname.value  = d.lastname  || '';
+      profileFields.email.value     = d.email     || '';
+      profileFields.phone.value     = d.phone     || '';
 
-        } else {
-            msg.style.color = '#ef4444'; // Red
-            msg.textContent = data.message || 'Error updating settings.';
-        }
-    } catch (err) {
-        msg.style.display = 'block';
-        msg.style.color = '#ef4444';
-        msg.textContent = 'Network error. Please try again.';
+    } else {
+      showToast('Error loading profile: ' + result.message, true);
     }
+  } catch (err) {
+    console.error('Fetch failed:', err);
+    showToast('Failed to connect to server', true);
+  }
+}
 
-    btn.disabled = false;
-    btn.innerHTML = '<span class="material-icons-round" style="font-size: 1.1rem; vertical-align: middle; margin-right: 4px;">save</span> Save Changes';
+// ── Submit Update ──
+settingsForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const firstNameValue = profileFields.firstname.value.trim();
+  const lastNameValue  = profileFields.lastname.value.trim();
+  const currentPass    = profileFields.currentPass.value;
+  const newPass        = profileFields.newPass.value;
+  const confirmPass    = profileFields.confirmPass.value;
+
+  // Validation
+  if (newPass && newPass.length < 6) {
+    return showToast('New password must be at least 6 characters', true);
+  }
+  if (newPass !== confirmPass) {
+    return showToast('Passwords do not match', true);
+  }
+  if (newPass && !currentPass) {
+    return showToast('Current password is required to change password', true);
+  }
+
+  // Prep Payload (JSON)
+  const payload = {
+    first_name: firstNameValue,
+    last_name:  lastNameValue,
+    phone:      profileFields.phone.value.trim(),
+    current_password: currentPass,
+    new_password:     newPass
+  };
+
+  try {
+    btnUpdate.disabled = true;
+    btnUpdate.textContent = 'Updating...';
+
+    const res = await fetch(`${API_BASE}/admin-update-profile.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+
+    if (result.status === 'success') {
+      showToast('Profile updated successfully!');
+      
+      // Clear password fields
+      profileFields.currentPass.value = '';
+      profileFields.newPass.value     = '';
+      profileFields.confirmPass.value = '';
+      
+      // Refresh navbar info from common.js
+      const updatedAdmin = await checkAuth();
+      if (updatedAdmin) populateAdminInfo(updatedAdmin);
+
+    } else {
+      showToast(result.message || 'Update failed', true);
+    }
+  } catch (err) {
+    showToast('Network error during update', true);
+  } finally {
+    btnUpdate.disabled = false;
+    btnUpdate.textContent = 'Update Profile';
+  }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchSettings();
-});
+// ── Init ──
+document.addEventListener('DOMContentLoaded', loadProfile);
