@@ -3,7 +3,8 @@
    Shared functions for Sidebar, Auth, and Header
 ═══════════════════════════════════════ */
 
-const API_BASE = '/LMS_Web/Web_Dealers/backend/api';
+// const API_BASE = '/LMS_Web/Web_Dealers/backend/api';
+const API_BASE = '/loan/Loan_Management_System/backend/api';
 
 /* ─── Auth Guard ─── */
 async function checkAuth() {
