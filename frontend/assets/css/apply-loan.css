@@ -107,7 +107,7 @@
 
     .bank-card.selected {
       border-color: var(--primary);
-      background: #F4F0FF;
+      background: var(--primary-light);
     }
 
     .bank-card .check-icon {

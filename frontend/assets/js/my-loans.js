@@ -22,7 +22,7 @@ async function loadUserLoans() {
   if (wrap) wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2)">Loading your loans…</div>';
 
   try {
-    const res  = await fetch(`../../backend/api/get-user-loans.php?userId=${userId}`);
+    const res = await fetch(`../../backend/api/get-user-loans.php?userId=${userId}`);
     const json = await res.json();
 
     if (json.status === 'success') {
@@ -49,10 +49,10 @@ function updateTabCounts() {
   const counts = { pending: 0, approved: 0, rejected: 0 };
   allLoans.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
 
-  const pendingBadge   = document.getElementById('tab-count-pending');
-  const approvedBadge  = document.getElementById('tab-count-approved');
-  const rejectedBadge  = document.getElementById('tab-count-rejected');
-  if (pendingBadge)  pendingBadge.textContent  = counts.pending;
+  const pendingBadge = document.getElementById('tab-count-pending');
+  const approvedBadge = document.getElementById('tab-count-approved');
+  const rejectedBadge = document.getElementById('tab-count-rejected');
+  if (pendingBadge) pendingBadge.textContent = counts.pending;
   if (approvedBadge) approvedBadge.textContent = counts.approved;
   if (rejectedBadge) rejectedBadge.textContent = counts.rejected;
 }
@@ -73,7 +73,7 @@ function renderLoansTable(tab) {
   }
 
   const badgeStyle = {
-    pending:  'background:#fef3c7;color:#92400e',
+    pending: 'background:#fef3c7;color:#92400e',
     approved: 'background:var(--green-bg);color:var(--green)',
     rejected: 'background:#fee2e2;color:#991b1b',
   };
@@ -85,7 +85,7 @@ function renderLoansTable(tab) {
           <div style="display:flex;justify-content:space-between;align-items:flex-start">
             <div style="display:flex;align-items:center;gap:12px">
               <div style="width:46px;height:46px;border-radius:10px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:4px;overflow:hidden">
-                <img src="${getBankLogo(l.bank_name)}" alt="${l.bank_name}" class="bank-logo-img" style="max-width:100%;max-height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${l.bank_name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}'">
+                <img src="${getBankLogo(l.bank_name)}" alt="${l.bank_name}" class="bank-logo-img" style="max-width:100%;max-height:100%;object-fit:contain;display:block" onerror="this.src='../assets/images/banks/default.png'">
               </div>
               <div>
                 <div style="font-size:12px;color:var(--text2);margin-bottom:2px">${l.bank_name}</div>
@@ -118,12 +118,15 @@ function renderLoansTable(tab) {
 
 function getBankLogo(bankName) {
   const map = {
-    'HDFC Bank':           'HDFC',
+    'HDFC Bank': 'HDFC',
     'State Bank of India': 'SBI',
-    'ICICI Bank':          'ICICI',
-    'Axis Bank':           'AXIS',
+    'ICICI Bank': 'ICICI',
+    'Axis Bank': 'AXIS',
     'Kotak Mahindra Bank': 'KOTAK',
-    'Canara Bank':         'CANARA',
+    'Canara Bank': 'CANARA',
+    'IndusInd Bank': 'INDUSLAND',
+    'Punjab National Bank': 'PUNJABNATIONALBANK',
+    'Bank of Baroda': 'BANKOFBARODA',
   };
   const key = map[bankName] || bankName.split(' ')[0].toUpperCase();
   return `../assets/images/banks/${key}.png`;

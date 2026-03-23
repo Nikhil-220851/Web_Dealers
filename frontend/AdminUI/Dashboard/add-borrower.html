@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Add Borrower</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="page-container">
+    <div class="page-header d-flex justify-content-between align-items-center">
+      <div>
+        <h2>Add New Borrower</h2>
+        <p>Register a new user into the system</p>
+      </div>
+      <button class="btn-secondary" onclick="window.location.href='dashboard.html'">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </button>
+    </div>
+
+    <div class="form-card">
+      <form id="addBorrowerForm">
+        
+        <!-- Section 1: Personal Information -->
+        <div class="form-section">
+          <h4><i class="fas fa-user"></i> Personal Information</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>First Name</label>
+              <div class="input-icon">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="first_name" placeholder="e.g. Rahul" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <div class="input-icon">
+                <i class="fas fa-id-card"></i>
+                <input type="text" id="last_name" placeholder="e.g. Sharma" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <div class="input-icon">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" placeholder="rahul@example.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <div class="input-icon">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="phone" placeholder="9876543210" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Security Credentials -->
+        <div class="form-section">
+          <h4><i class="fas fa-lock"></i> Security Credentials</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Temporary Password</label>
+              <div class="input-icon">
+                <i class="fas fa-key"></i>
+                <input type="password" id="password" placeholder="••••••••" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <div class="input-icon">
+                <i class="fas fa-shield-alt"></i>
+                <input type="password" id="confirm_password" placeholder="••••••••" required>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted small mt-3"><i class="fas fa-info-circle"></i> Passwords must be at least 6 characters. They are securely hashed before storage.</p>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-user-plus"></i> Register Borrower
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="add-borrower.js"></script>
+</body>
+</html>

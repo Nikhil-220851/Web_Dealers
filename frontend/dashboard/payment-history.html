@@ -107,7 +107,11 @@
         <a href="profile.html" class="user-chip">
           <div class="u-avatar" id="sidebar-avatar-letter">?</div>
           <div class="u-details">
+<<<<<<< HEAD
             <div class="u-name" id="sidebar-user-name">Loading...</div>
+=======
+            <div class="u-name" id="sidebar-user-name">Loading�</div>
+>>>>>>> c11f2d08594a4e54ca1bba36c0b8cb943894c964
             <div class="u-role">Borrower</div>
           </div>
           <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
@@ -131,26 +135,20 @@
           </div>
           <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
         </div>
+<<<<<<< HEAD
+=======
+
+        <!-- Notifications Dropdown (real data via notifications-shared.js) -->
+>>>>>>> c11f2d08594a4e54ca1bba36c0b8cb943894c964
         <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
-          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <div class="font-bold">Notifications</div>
-            <div class="text-xs text-primary" style="cursor:pointer">Mark all read</div>
-          </div>
-          <div style="max-height:300px; overflow-y:auto;">
-            <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
-              <div>
-                <div class="text-sm font-semi">Payment Received</div>
-                <div class="text-xs text-muted" style="margin-top:4px">Your EMI of ₹8,200 for LN-2024-001 was processed successfully.</div>
-                <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
-              </div>
-            </div>
-          </div>
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border);"><div class="font-bold">Notifications</div></div>
+          <div style="max-height:300px; overflow-y:auto;"><div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">Loading…</div></div>
         </div>
       </header>
 
       <!-- PAYMENT HISTORY CONTENT -->
       <div id="page-payments" class="page-body active">
+<<<<<<< HEAD
         <div class="card active-loan-banner">
           <div>
             <div class="font-bold" style="font-size:15px">SBI Home Loan — LN-2024-001</div>
@@ -160,6 +158,10 @@
             <span class="badge badge-yellow">Due in 28 days</span>
             <button class="btn btn-primary" id="rzp-button1">Pay Now ₹8,200</button>
           </div>
+=======
+        <div class="card active-loan-banner" style="display:none;">
+          <div style="padding:20px;text-align:center;color:var(--text3);">Loading active loans…</div>
+>>>>>>> c11f2d08594a4e54ca1bba36c0b8cb943894c964
         </div>
 
         <div class="card">
@@ -167,55 +169,17 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th class="date-col">Date</th>
+                <th class="txn-col">Transaction ID</th>
                 <th>Loan ID</th>
-                <th>Type</th>
-                <th class="amount-col">Amount</th>
+                <th class="date-col">Payment Date</th>
+                <th class="amount-col">EMI Amount</th>
+                <th class="method-col">Payment Method</th>
                 <th class="status-col">Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="date-col">Mar 05, 2024</td>
-                <td><span class="loan-id">LN-2024-001</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹8,200</td>
-                <td class="status-col"><span class="badge badge-green">Paid</span></td>
-              </tr>
-              <tr>
-                <td class="date-col">Feb 05, 2024</td>
-                <td><span class="loan-id">LN-2024-001</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹8,200</td>
-                <td class="status-col"><span class="badge badge-green">Paid</span></td>
-              </tr>
-              <tr>
-                <td class="date-col">Jan 05, 2024</td>
-                <td><span class="loan-id">LN-2024-001</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹8,200</td>
-                <td class="status-col"><span class="badge badge-green">Paid</span></td>
-              </tr>
-              <tr>
-                <td class="date-col">Dec 05, 2023</td>
-                <td><span class="loan-id">LN-2023-055</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹3,100</td>
-                <td class="status-col"><span class="badge badge-green">Paid</span></td>
-              </tr>
-              <tr>
-                <td class="date-col">Nov 05, 2023</td>
-                <td><span class="loan-id">LN-2023-055</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹3,100</td>
-                <td class="status-col"><span class="badge badge-red">Failed</span></td>
-              </tr>
-              <tr>
-                <td class="date-col">Oct 05, 2023</td>
-                <td><span class="loan-id">LN-2023-055</span></td>
-                <td>EMI</td>
-                <td class="amount-col">₹3,100</td>
-                <td class="status-col"><span class="badge badge-green">Paid</span></td>
+                <td colspan="6" style="text-align:center; padding: 20px;">Loading payment history...</td>
               </tr>
             </tbody>
           </table>
@@ -225,7 +189,9 @@
     </main>
   </div><!-- end .shell -->
 
+  <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/notifications-shared.js"></script>
   <script src="../assets/js/payment-history.js"></script>
 
   <script>
@@ -242,6 +208,7 @@
       }
     });
   </script>
+<<<<<<< HEAD
 
   <!-- ── Razorpay Script ── -->
   <script>
@@ -350,3 +317,16 @@
 
 </body>
 </html>
+=======
+  <script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+
+</html>
+
+
+>>>>>>> c11f2d08594a4e54ca1bba36c0b8cb943894c964

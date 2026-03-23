@@ -289,4 +289,266 @@
       flex-direction: column;
       gap: 10px;
     }
-
+
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TRANSACTION ROWS & STATUS VARIABLES
+    ═══════════════════════════════════════════════ */
+    :root {
+      --green-bg: var(--green-bg);
+      --yellow-bg: var(--yellow-bg);
+      --red-bg: var(--red-bg);
+    }
+
+    .txn-row {
+      transition: background-color 0.2s;
+      border-radius: var(--r);
+      padding: 8px !important;
+      margin: 0 -8px;
+    }
+
+    .txn-row:hover {
+      background-color: var(--ghost-hover);
+    }
+
+    #recent-apps-list {
+      margin-top: 10px;
+    }
+
+    .badge-blue {
+      background: rgba(30, 64, 175, 0.1);
+      color: #1E40AF;
+      padding: 4px 10px;
+      border-radius: var(--r-pill);
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LOAN CARD CAROUSEL
+    ═══════════════════════════════════════════════ */
+
+    /* Outer container: positions arrows absolutely over the card */
+    .loan-carousel {
+      position: relative;
+      width: 100%;
+    }
+
+    /* Clips the sliding track, hides overflow cards */
+    .loan-cards-wrapper {
+      overflow: hidden;
+      width: 100%;
+      border-radius: var(--r);
+    }
+
+    /* The inner sliding track — all slides sit in a flex row */
+    .loan-carousel-track {
+      display: flex;
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+
+    /* Each slide takes 100% of the wrapper width */
+    .loan-card-slide {
+      min-width: 100%;
+      width: 100%;
+      transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      border-radius: var(--r);
+    }
+
+    /* Active slide — fully visible, slight lift */
+    .loan-card-slide.active-slide {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 2;
+    }
+
+    /* Placeholder / inactive slides */
+    .loan-card-slide.placeholder-slide {
+      opacity: 0.55;
+      transform: scale(0.96);
+      z-index: 1;
+    }
+
+    /* ── Placeholder Card (grey ghost) ── */
+    .loan-placeholder-card {
+      background: linear-gradient(135deg, rgba(108, 71, 255, 0.06) 0%, rgba(0, 210, 200, 0.04) 100%);
+      border: 1.5px dashed rgba(108, 71, 255, 0.25);
+      border-radius: var(--r);
+      padding: 22px;
+      color: var(--text2);
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    .loan-placeholder-card:hover {
+      border-color: rgba(108, 71, 255, 0.5);
+      background: linear-gradient(135deg, rgba(108, 71, 255, 0.10) 0%, rgba(0, 210, 200, 0.07) 100%);
+    }
+
+    .lp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(108, 71, 255, 0.10);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: var(--r-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      width: fit-content;
+      margin-bottom: 12px;
+    }
+
+    .lp-amt {
+      font-family: var(--font-d);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .lp-lbl {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 4px;
+    }
+
+    .lp-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .lp-meta-item label {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .lp-meta-item span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+    }
+
+    .lp-hint {
+      font-size: 11px;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 14px;
+    }
+
+    /* ── Arrow Buttons ── */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(108, 71, 255, 0.3);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.22s ease;
+      box-shadow: 0 2px 12px rgba(108, 71, 255, 0.18);
+      line-height: 1;
+      backdrop-filter: blur(4px);
+    }
+
+    body.dark-theme .carousel-arrow {
+      background: rgba(30, 41, 59, 0.92);
+      border-color: rgba(108, 71, 255, 0.4);
+      color: #a78bfa;
+    }
+
+    .carousel-arrow:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 18px rgba(108, 71, 255, 0.45);
+      transform: translateY(-50%) scale(1.08);
+    }
+
+    .carousel-arrow-left {
+      left: -14px;
+    }
+
+    .carousel-arrow-right {
+      right: -14px;
+    }
+
+    /* Hidden state when single card */
+    .carousel-arrow.hidden,
+    .carousel-dots.hidden {
+      display: none;
+    }
+
+    /* ── Dot Indicators ── */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .carousel-dot.active-dot {
+      background: var(--primary);
+      border-color: var(--primary);
+      width: 18px;
+      border-radius: 99px;
+      box-shadow: 0 0 8px rgba(108, 71, 255, 0.4);
+    }
+
+    /* ── Responsive: compact arrows on narrow screens ── */
+    @media (max-width: 400px) {
+      .carousel-arrow {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+      }
+
+      .carousel-arrow-left {
+        left: -10px;
+      }
+
+      .carousel-arrow-right {
+        right: -10px;
+      }
+    }

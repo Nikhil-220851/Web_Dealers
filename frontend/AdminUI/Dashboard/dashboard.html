@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -65,108 +66,150 @@
       <p>Welcome back, <strong id="headingName">Admin</strong>! Here's what's happening with your loans today.</p>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- KPI Cards -->
+    <div class="kpi-row top-row mb-3">
+      <div class="stats-card card-purple">
+        <span class="material-icons-round stats-icon">description</span>
+        <div class="kpi-info">
+          <h4>Total Apps</h4>
+          <p class="kpi-value" id="statTotalApps">0</p>
+        </div>
+      </div>
+      <div class="stats-card card-teal">
+        <span class="material-icons-round stats-icon">pending</span>
+        <div class="kpi-info">
+          <h4>Pending</h4>
+          <p class="kpi-value" id="statPending">0</p>
+        </div>
+      </div>
+      <div class="stats-card card-green">
+        <span class="material-icons-round stats-icon">check_circle</span>
+        <div class="kpi-info">
+          <h4>Approved</h4>
+          <p class="kpi-value" id="statApproved">0</p>
+        </div>
+      </div>
+      <div class="stats-card card-indigo">
+        <span class="material-icons-round stats-icon">account_balance_wallet</span>
+        <div class="kpi-info">
+          <h4>Active</h4>
+          <p class="kpi-value" id="statActive">0</p>
+        </div>
+      </div>
+      <div class="stats-card card-orange">
+        <span class="material-icons-round stats-icon">warning</span>
+        <div class="kpi-info">
+          <h4>Defaulters</h4>
+          <p class="kpi-value" id="statDefaulters">0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-row bottom-row mb-4">
+      <div class="stats-card card-blue">
+        <span class="material-icons-round stats-icon">payments</span>
+        <div class="kpi-info">
+          <h4>Total Disbursed Amount</h4>
+          <p class="kpi-value currency" id="statDisbursed">₹0</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header mb-4">
+      <h3>Dashboard Overview</h3>
+      <p>System summary and recent activities</p>
+    </div>
+
+    <!-- Alerts Section -->
     <div class="row g-4 mb-4">
-      <div class="col-6 col-md-3">
-        <div class="stats-card card-purple">
-          <span class="material-icons-round stats-icon">account_balance</span>
-          <h4>Total Loan Amount</h4>
-          <p id="statTotalAmount">₹0</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stats-card card-teal">
-          <span class="material-icons-round stats-icon">groups</span>
-          <h4>Total Borrowers</h4>
-          <p id="statBorrowers">0</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stats-card card-green">
-          <span class="material-icons-round stats-icon">credit_card</span>
-          <h4>Total Loans</h4>
-          <p id="statTotalLoans">0</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-3">
-        <div class="stats-card card-orange">
-          <span class="material-icons-round stats-icon">task_alt</span>
-          <h4>Loans Approved</h4>
-          <p id="statApprovedLoans">0</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Daily Loan Status (Static Example for visual appeal) -->
-    <div class="panel" style="--delay:0.05s">
-      <div class="panel-header">
-        <div class="panel-title">
-          <div class="panel-icon-wrap"><span class="material-icons-round">calendar_today</span></div>
-          Daily Loan Status
-        </div>
-        <div class="panel-tag">Last 3 Days</div>
-      </div>
-      <div class="day-cards-grid">
-        <div class="day-card">
-          <div class="day-card-date">Mon, 10 Mar 2026</div>
-          <div class="day-metrics">
-            <div class="dm"><span class="dm-val">15</span><span class="dm-lbl">Applications</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val g">10</span><span class="dm-lbl">Approved</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val t">66%</span><span class="dm-lbl">Rate</span></div>
+      <div class="col-md-6">
+        <div class="panel h-100">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">schedule</span></div>
+              Pending Approvals
+            </div>
           </div>
-          <div class="rate-track"><div class="rate-fill" style="--pct:66%"></div></div>
-        </div>
-        <div class="day-card day-card--peak">
-          <div class="peak-badge">&#9650; Peak</div>
-          <div class="day-card-date">Tue, 11 Mar 2026</div>
-          <div class="day-metrics">
-            <div class="dm"><span class="dm-val">20</span><span class="dm-lbl">Applications</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val g">14</span><span class="dm-lbl">Approved</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val t">70%</span><span class="dm-lbl">Rate</span></div>
-          </div>
-          <div class="rate-track"><div class="rate-fill" style="--pct:70%"></div></div>
-        </div>
-        <div class="day-card">
-          <div class="day-card-date">Wed, 12 Mar 2026</div>
-          <div class="day-metrics">
-            <div class="dm"><span class="dm-val">18</span><span class="dm-lbl">Applications</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val g">12</span><span class="dm-lbl">Approved</span></div>
-            <div class="dm-sep"></div>
-            <div class="dm"><span class="dm-val t">67%</span><span class="dm-lbl">Rate</span></div>
-          </div>
-          <div class="rate-track"><div class="rate-fill" style="--pct:67%"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Applications -->
-    <div class="panel mt-4 mb-4" style="--delay:0.2s">
-      <div class="panel-header">
-        <div class="panel-title">
-          <div class="panel-icon-wrap"><span class="material-icons-round">pending_actions</span></div>
-          Recent Applications
-        </div>
-        <a href="loan-requests.html" class="panel-tag tag-amber" style="text-decoration: none; cursor: pointer;">
-          View All
-        </a>
-      </div>
-      <div class="xtable-wrap">
-        <table class="xtable">
-          <thead>
-            <tr><th>Borrower</th><th>Type</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="recentAppsTableBody">
+          <div class="compact-list" id="pendingApprovalsList">
             <!-- Dynamic Content -->
-            <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
-          </tbody>
-        </table>
+            <p class="text-muted text-center py-3">Loading...</p>
+          </div>
+          <div class="mt-3 text-center">
+            <a href="loan-requests.html" class="ghost-btn w-100">View All Requests</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel h-100">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap" style="background: #fee2e2;"><span class="material-icons-round" style="color: #ef4444;">error_outline</span></div>
+              Defaulters
+            </div>
+          </div>
+          <div class="compact-list" id="defaultersList">
+            <!-- Dynamic Content -->
+            <p class="text-muted text-center py-3">Loading...</p>
+          </div>
+          <div class="mt-3 text-center">
+            <a href="analytics.html" class="ghost-btn w-100">View All Defaulters</a>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="row g-4 mb-4">
+      <!-- Recent Activity Feed -->
+      <div class="col-lg-8">
+        <div class="panel h-100">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">history</span></div>
+              Recent Activity
+            </div>
+          </div>
+          <div class="activity-feed" id="activityList">
+            <!-- Dynamic Content -->
+            <p class="text-muted text-center py-3">Loading activity...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="col-lg-4">
+        <div class="panel h-100">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">bolt</span></div>
+              Quick Actions
+            </div>
+          </div>
+          <div class="actions-grid">
+            <div class="action-card" onclick="goTo('add-loan.html')">
+              <div class="icon"><i class="fas fa-briefcase"></i></div>
+              <h4>Add Loan Scheme</h4>
+              <p>Create new loan offerings</p>
+            </div>
+            <div class="action-card" onclick="goTo('analytics.html')">
+              <div class="icon"><i class="fas fa-chart-bar"></i></div>
+              <h4>View Reports</h4>
+              <p>Analyze system performance</p>
+            </div>
+            <div class="action-card" onclick="goTo('add-borrower.html')">
+              <div class="icon"><i class="fas fa-user-plus"></i></div>
+              <h4>Add Borrower</h4>
+              <p>Register a new user</p>
+            </div>
+            <div class="action-card" onclick="goTo('loan-requests.html')">
+              <div class="icon"><i class="fas fa-tasks"></i></div>
+              <h4>Review Requests</h4>
+              <p>Approve or reject applications</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
   </main>
 

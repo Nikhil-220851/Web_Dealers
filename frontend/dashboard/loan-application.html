@@ -226,11 +226,17 @@
     </main>
   </div>
 
+  <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
   <script src="../assets/js/loan-application.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = '../landing/index.html'; }
     window.addEventListener('DOMContentLoaded', () => { if (localStorage.getItem('isLoggedIn') !== 'true') window.location.href = '../auth/login.html'; });
   </script>
+  <script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
