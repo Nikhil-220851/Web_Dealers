@@ -131,7 +131,7 @@ try {
             
             $message = $newStatus === 'approved' 
                 ? "Your loan application for ₹{$formattedAmount} has been approved."
-                : "Your loan application has been rejected.";
+                : "Your loan application for ₹{$formattedAmount} has been rejected." . (!empty($remarks) ? " Reason: {$remarks}" : "");
             
             $notification = [
                 'user_id' => (string)$loanApp['user_id'],

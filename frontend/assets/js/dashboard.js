@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initDashboard() {
     // Attempt to get userId from localStorage
     let userId = localStorage.getItem('userId');
-    
+
     // Fallback search if userId not found (sometimes it might be stored differently)
     if (!userId) {
         const userEmail = localStorage.getItem('userEmail');
@@ -32,7 +32,7 @@ async function initDashboard() {
     try {
         const response = await fetch(`../../backend/api/get-dashboard-data.php?userId=${userId}`);
         const result = await response.json();
-        
+
         console.log('Dashboard API Result:', result);
 
         if (result.status === 'success') {
@@ -46,7 +46,7 @@ async function initDashboard() {
             renderRecentApplications(data.recentApplications);
             renderRecommendations(data.recommendations);
             updateEMIWidget(data.summary);
-            initDashChart(data.activeLoans);
+            await initDashChart(data.activeLoans);
         } else {
             console.error('Failed to fetch dashboard data:', result.message);
         }
@@ -72,10 +72,10 @@ function updateWelcomeHeader(user) {
 }
 
 function updateSummaryCards(summary) {
-    if(document.getElementById('stat-total-loans')) document.getElementById('stat-total-loans').textContent = summary.totalLoans;
-    if(document.getElementById('stat-active-loans')) document.getElementById('stat-active-loans').textContent = summary.activeLoans;
-    if(document.getElementById('stat-pending-loans')) document.getElementById('stat-pending-loans').textContent = summary.pendingLoans;
-    if(document.getElementById('stat-total-borrowed')) document.getElementById('stat-total-borrowed').textContent = `₹${Math.round(summary.totalAmount).toLocaleString('en-IN')}`;
+    if (document.getElementById('stat-total-loans')) document.getElementById('stat-total-loans').textContent = summary.totalLoans;
+    if (document.getElementById('stat-active-loans')) document.getElementById('stat-active-loans').textContent = summary.activeLoans;
+    if (document.getElementById('stat-pending-loans')) document.getElementById('stat-pending-loans').textContent = summary.pendingLoans;
+    if (document.getElementById('stat-total-borrowed')) document.getElementById('stat-total-borrowed').textContent = `₹${Math.round(summary.totalAmount).toLocaleString('en-IN')}`;
 }
 
 function updateCreditScore(score) {
@@ -192,10 +192,10 @@ let _currentLoanIndex = 0;
  * Builds the carousel or the "no loan" placeholder as appropriate.
  */
 function renderActiveLoansCarousel(activeLoans) {
-    const wrapper  = document.getElementById('loan-cards-wrapper');
-    const dotsRow  = document.getElementById('carousel-dots');
-    const prevBtn  = document.getElementById('carousel-prev');
-    const nextBtn  = document.getElementById('carousel-next');
+    const wrapper = document.getElementById('loan-cards-wrapper');
+    const dotsRow = document.getElementById('carousel-dots');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
 
     if (!wrapper) return;
 
@@ -219,7 +219,7 @@ function renderActiveLoansCarousel(activeLoans) {
             </div>`;
         if (prevBtn) prevBtn.classList.add('hidden');
         if (nextBtn) nextBtn.classList.add('hidden');
-        if (dotsRow)  dotsRow.classList.add('hidden');
+        if (dotsRow) dotsRow.classList.add('hidden');
         return;
     }
 
@@ -232,14 +232,14 @@ function renderActiveLoansCarousel(activeLoans) {
         wrapper.appendChild(track);
         if (prevBtn) prevBtn.classList.add('hidden');
         if (nextBtn) nextBtn.classList.add('hidden');
-        if (dotsRow)  dotsRow.classList.add('hidden');
+        if (dotsRow) dotsRow.classList.add('hidden');
         return;
     }
 
     /* ── 2+ active loans — full carousel ── */
     if (prevBtn) prevBtn.classList.remove('hidden');
     if (nextBtn) nextBtn.classList.remove('hidden');
-    if (dotsRow)  dotsRow.classList.remove('hidden');
+    if (dotsRow) dotsRow.classList.remove('hidden');
 
     // Build the sliding track
     const track = document.createElement('div');
@@ -273,7 +273,7 @@ function renderActiveLoansCarousel(activeLoans) {
         `<span class="carousel-dot${i === 0 ? ' active-dot' : ''}" 
                data-i="${i}" 
                onclick="_currentLoanIndex=${i}; updateCarousel();"
-               title="Loan ${i+1}"></span>`
+               title="Loan ${i + 1}"></span>`
     ).join('');
 
     // Touch / swipe support
@@ -287,7 +287,7 @@ function renderActiveLoansCarousel(activeLoans) {
  * @param {boolean} [animate=true]  pass false for first paint
  */
 function updateCarousel(animate = true) {
-    const track  = document.getElementById('carousel-track');
+    const track = document.getElementById('carousel-track');
     const dotsRow = document.getElementById('carousel-dots');
     const n = _carouselLoans.length;
     if (!track || n < 2) return;
@@ -295,7 +295,7 @@ function updateCarousel(animate = true) {
     // Slide the track
     const offset = -(_currentLoanIndex * 100);
     track.style.transition = animate ? 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
-    track.style.transform  = `translateX(${offset}%)`;
+    track.style.transform = `translateX(${offset}%)`;
 
     // Update slide classes & rebuild card content for active → full card
     const slides = track.querySelectorAll('.loan-card-slide');
@@ -338,7 +338,7 @@ function carouselPrev() {
 function _initCarouselSwipe(el) {
     let startX = 0;
     el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    el.addEventListener('touchend',   e => {
+    el.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - startX;
         if (Math.abs(dx) > 40) {
             dx < 0 ? carouselNext() : carouselPrev();
@@ -399,7 +399,7 @@ function buildActiveLoanCard(loan) {
 let currentLoanId = null;
 let currentEmiAmount = null;
 
-window.startEmiFlow = function(loanId) {
+window.startEmiFlow = function (loanId) {
     if (!loanId) return;
     sessionStorage.setItem('payEmiLoanId', loanId);
     window.location.href = "../borrower/emi-payment.html";
@@ -412,7 +412,7 @@ function initEmiTimers() {
 
 // Re-init timers after carousel render
 const _origUpdateCarousel = updateCarousel;
-updateCarousel = function(animate = true) {
+updateCarousel = function (animate = true) {
     _origUpdateCarousel(animate);
 };
 
@@ -448,7 +448,7 @@ function buildPlaceholderCard(loan, idx) {
 function renderRecentApplications(apps) {
     const list = document.getElementById('recent-apps-list');
     if (!list) return;
-    
+
     if (!apps || apps.length === 0) {
         list.innerHTML = '<div class="text-center py-20 text-muted text-sm">No recent applications found.</div>';
         return;
@@ -585,9 +585,9 @@ function updateEMIWidget(summary) {
 
     if (summary.monthlyEMI > 0) {
         const formattedEMI = `₹${Math.round(summary.monthlyEMI).toLocaleString('en-IN')}`;
-        if(amountDisplay) amountDisplay.textContent = formattedEMI;
-        if(badge) badge.textContent = `${formattedEMI}/mo`;
-        
+        if (amountDisplay) amountDisplay.textContent = formattedEMI;
+        if (badge) badge.textContent = `${formattedEMI}/mo`;
+
         let nextDueDate = 'N/A';
         // Check if there's any active loan to calculate the next date 
         // We'll rely on the global `_carouselLoans` that has standard structure
@@ -597,15 +597,15 @@ function updateEMIWidget(summary) {
             let totalMonths = primaryLoan.tenure * 12;
             let remaining = primaryLoan.remaining_emis !== undefined ? primaryLoan.remaining_emis : totalMonths;
             let paid = totalMonths - remaining;
-            
+
             // Due date is next month after paid EMIs (mocking to 5th)
             startDate.setMonth(startDate.getMonth() + paid + 1);
             startDate.setDate(5);
-            
+
             if (remaining > 0) {
-               nextDueDate = startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                nextDueDate = startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
             } else {
-               nextDueDate = 'Completed';
+                nextDueDate = 'Completed';
             }
         } else {
             // Fallback
@@ -614,35 +614,135 @@ function updateEMIWidget(summary) {
             nextMonth.setDate(5);
             nextDueDate = nextMonth.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
         }
-        
-        if(dateDisplay) dateDisplay.textContent = nextDueDate;
+
+        if (dateDisplay) dateDisplay.textContent = nextDueDate;
     }
 }
 
-function initDashChart(activeLoans) {
+async function initDashChart(activeLoans) {
     const ctx = document.getElementById('emiChart');
     if (!ctx) return;
 
-    // Default data if no active loans
-    let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    if (activeLoans && activeLoans.length > 0) {
-        // Simple projection: same EMI for next 12 months
-        const monthlyEMI = activeLoans.reduce((sum, loan) => {
-            const P = loan.amount;
-            const r = (loan.interest_rate / 100) / 12;
-            const n = loan.tenure * 12;
-            if (r > 0 && n > 0) {
-                return sum + ((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
-            }
-            return sum;
-        }, 0);
-        
-        values = values.map(() => Math.round(monthlyEMI));
+    if (window._emiChartInstance) {
+        window._emiChartInstance.destroy();
     }
 
-    new Chart(ctx, {
+    let userId = localStorage.getItem('userId');
+    let paymentData = [];
+    if (userId) {
+        try {
+            const response = await fetch(`../../backend/api/get-emi-payments.php?userId=${userId}`);
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+                paymentData = result.data;
+            }
+        } catch (error) {
+            console.error('Error fetching EMI payments:', error);
+        }
+    }
+
+    let minDate = new Date();
+    minDate.setMonth(minDate.getMonth() - 11);
+    let maxDate = new Date();
+    let hasDataBounds = false;
+
+    if (activeLoans && activeLoans.length > 0) {
+        let activeOnly = activeLoans.filter(l => l.status === 'active' || l.status === 'approved');
+        if (activeOnly.length > 0) {
+            activeOnly.sort((a, b) => new Date(a.loan_start_date || a.applied_date) - new Date(b.loan_start_date || b.applied_date));
+            let startDateStr = activeOnly[0].loan_start_date || activeOnly[0].applied_date;
+            if (startDateStr) {
+                let sDate = new Date(startDateStr);
+                if (!isNaN(sDate.getTime())) {
+                    minDate = new Date(sDate);
+                    maxDate = new Date(sDate);
+                    hasDataBounds = true;
+
+                    activeOnly.forEach(l => {
+                        let lsDate = new Date(l.loan_start_date || l.applied_date);
+                        if (!isNaN(lsDate.getTime())) {
+                            let eDate = new Date(lsDate.getFullYear(), lsDate.getMonth() + (l.tenure * 12), 1);
+                            if (eDate > maxDate) maxDate = new Date(eDate);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    let processedPayments = [];
+    if (paymentData.length > 0) {
+        paymentData.forEach(payment => {
+            let pMonth, pYear, pDateObj;
+            if (payment.payment_month && payment.payment_year) {
+                let pMonthVal = payment.payment_month;
+                if (typeof pMonthVal === 'string' && isNaN(parseInt(pMonthVal))) {
+                    const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+                    pMonth = monthNames.indexOf(pMonthVal.toLowerCase().trim());
+                    if (pMonth === -1 && payment.created_at) {
+                        pDateObj = new Date(payment.created_at);
+                        pMonth = pDateObj.getMonth();
+                        pYear = pDateObj.getFullYear();
+                    } else {
+                        pYear = parseInt(payment.payment_year);
+                        pDateObj = new Date(pYear, pMonth, 1);
+                    }
+                } else {
+                    pMonth = parseInt(pMonthVal) - 1; // 1-12 to 0-11
+                    pYear = parseInt(payment.payment_year);
+                    pDateObj = new Date(pYear, pMonth, 1);
+                }
+            } else if (payment.created_at) {
+                pDateObj = new Date(payment.created_at);
+                pMonth = pDateObj.getMonth();
+                pYear = pDateObj.getFullYear();
+            } else {
+                return;
+            }
+
+            if (pDateObj && !isNaN(pDateObj.getTime())) {
+                processedPayments.push({
+                    payment: payment,
+                    pMonth: pMonth,
+                    pYear: pYear,
+                    dateObj: pDateObj
+                });
+
+                if (!hasDataBounds) {
+                    minDate = new Date(pDateObj);
+                    maxDate = new Date(pDateObj);
+                    hasDataBounds = true;
+                } else {
+                    if (pDateObj < minDate) minDate = new Date(pDateObj);
+                    if (pDateObj > maxDate) maxDate = new Date(pDateObj);
+                }
+            }
+        });
+    }
+
+    let startMonth = minDate.getMonth();
+    let startYear = minDate.getFullYear();
+    let numMonths = (maxDate.getFullYear() - startYear) * 12 + (maxDate.getMonth() - startMonth) + 1;
+    if (numMonths <= 0 || isNaN(numMonths)) numMonths = 12;
+
+    let labels = [];
+    let values = new Array(numMonths).fill(0);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (let i = 0; i < numMonths; i++) {
+        let d = new Date(startYear, startMonth + i, 1);
+        labels.push(`${months[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
+    }
+
+    processedPayments.forEach(item => {
+        const diffMonths = (item.pYear - startYear) * 12 + (item.pMonth - startMonth);
+        if (diffMonths >= 0 && diffMonths < numMonths) {
+            const amount = parseFloat(item.payment.amount_paid || item.payment.amount || item.payment.emi_amount || 0);
+            values[diffMonths] += amount;
+        }
+    });
+
+    window._emiChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -659,25 +759,44 @@ function initDashChart(activeLoans) {
                     g.addColorStop(1, 'rgba(108,71,255,0.01)');
                     return g;
                 },
-                tension: 0.4
+                tension: 0.5
             }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }, 
+                legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#fff', titleColor: '#1A1433', bodyColor: '#6C47FF',
-                    borderColor: '#E4E0F5', borderWidth: 1, padding: 10,
-                    callbacks: { label: ctx3 => '  ₹' + ctx3.raw.toLocaleString('en-IN') }
+                    backgroundColor: '#1A1433', titleColor: '#fff', bodyColor: '#fff',
+                    titleFont: { size: 13, weight: 'bold' }, bodyFont: { size: 14 },
+                    padding: 12, cornerRadius: 8, displayColors: false,
+                    callbacks: { label: ctx3 => 'Paid: ₹' + ctx3.raw.toLocaleString('en-IN') }
                 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: '#9B94B8', font: { size: 10 } } },
-                y: { 
-                    grid: { color: '#E4E0F5', borderDash: [5, 5] }, 
-                    ticks: { color: '#9B94B8', font: { size: 10 }, callback: v => '₹' + (v / 1000).toFixed(1) + 'K' } 
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: {
+                        color: '#9B94B8',
+                        font: { size: 11, family: "'Inter', sans-serif" },
+                        padding: 10,
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 0
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(228, 224, 245, 0.5)', drawBorder: false, borderDash: [5, 5] },
+                    ticks: {
+                        color: '#9B94B8', font: { size: 11, family: "'Inter', sans-serif" },
+                        padding: 10,
+                        callback: v => v >= 1000 ? '₹' + (v / 1000).toFixed(1) + 'K' : '₹' + v
+                    }
                 }
+            },
+            animation: {
+                y: { duration: 1500, easing: 'easeOutElastic' }
             }
         }
     });
@@ -730,7 +849,7 @@ async function fetchNotifications(userId) {
 function renderNotifications(notifications, unreadCount) {
     const notifDrop = document.getElementById('notif-drop');
     const notifDot = document.querySelector('.notif-dot');
-    
+
     if (notifDot) {
         if (unreadCount > 0) {
             notifDot.style.display = 'block';
@@ -738,27 +857,27 @@ function renderNotifications(notifications, unreadCount) {
             notifDot.style.display = 'none';
         }
     }
-    
+
     if (!notifDrop) return;
-    
+
     const listContainer = notifDrop.querySelector('div[style*="max-height"]');
     if (!listContainer) return;
-    
+
     if (!notifications || notifications.length === 0) {
         listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No new notifications.</div>';
         return;
     }
-    
+
     listContainer.innerHTML = notifications.slice(0, 5).map(notif => {
         let icon = 'ph-bell';
         let bg = 'var(--surface)';
         let color = 'var(--text)';
-        
+
         if (notif.type === 'approval') { icon = 'ph-check-circle'; bg = 'rgba(34, 197, 94, 0.1)'; color = '#22C55E'; }
         else if (notif.type === 'rejection') { icon = 'ph-x-circle'; bg = 'rgba(239, 68, 68, 0.1)'; color = '#EF4444'; }
         else if (notif.type === 'loan_applied') { icon = 'ph-file-text'; bg = 'rgba(59, 130, 246, 0.1)'; color = '#3B82F6'; }
         else if (notif.type.includes('emi')) { icon = 'ph-calendar-blank'; bg = 'rgba(108, 71, 255, 0.1)'; color = '#6C47FF'; }
-        
+
         return `
         <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item" onclick="markNotificationRead('${notif.id}')">
             <div style="width:36px; height:36px; border-radius:50%; background:${bg}; color:${color}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -788,7 +907,7 @@ function renderNotificationsPage(notifications) {
         let icon = 'ph-bell';
         let bg = 'var(--surface)';
         let color = 'var(--text)';
-        
+
         if (notif.type === 'approval') { icon = 'ph-check-circle'; bg = 'rgba(34, 197, 94, 0.1)'; color = '#22C55E'; }
         else if (notif.type === 'rejection') { icon = 'ph-x-circle'; bg = 'rgba(239, 68, 68, 0.1)'; color = '#EF4444'; }
         else if (notif.type === 'loan_applied') { icon = 'ph-file-text'; bg = 'rgba(59, 130, 246, 0.1)'; color = '#3B82F6'; }
@@ -816,14 +935,14 @@ async function markNotificationRead(notifId) {
     try {
         const response = await fetch('../../backend/api/mark-notification-read.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({notification_id: notifId, user_id: userId})
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notification_id: notifId, user_id: userId })
         });
         const result = await response.json();
         if (result.status === 'success') {
             fetchNotifications(userId); // Refresh the lists
         }
-    } catch(err) {
+    } catch (err) {
         console.error('Error marking notification read:', err);
     }
 }
