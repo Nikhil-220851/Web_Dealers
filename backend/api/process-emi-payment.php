@@ -184,6 +184,16 @@ try {
         ['$set' => $updateData]
     );
 
+    // Update Credit Score automatically when EMI is paid successfully
+    $user = $database->users->findOne(['_id' => $userObjectId]);
+    $currentScore = isset($user['credit_score']) ? (int)$user['credit_score'] : 726;
+    $newCreditScore = min(900, $currentScore + 15);
+    
+    $database->users->updateOne(
+        ['_id' => $userObjectId],
+        ['$set' => ['credit_score' => $newCreditScore]]
+    );
+
     // Create notification for borrower
     try {
         $formattedAmt = number_format($emiAmount);
@@ -228,7 +238,8 @@ try {
             "payment_method" => $paymentMethod,
             "next_due_date" => $nextDueDate->format(DateTime::ATOM),
             "total_emis_paid" => $emiNumber,
-            "loan_completed" => ($tenure > 0 && $emiNumber >= $tenure)
+            "loan_completed" => ($tenure > 0 && $emiNumber >= $tenure),
+            "new_credit_score" => $newCreditScore
         ]
     ]);
 

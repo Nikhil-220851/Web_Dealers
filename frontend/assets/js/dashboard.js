@@ -39,6 +39,9 @@ async function initDashboard() {
             const data = result.data;
             updateWelcomeHeader(data.user);
             updateSummaryCards(data.summary);
+            if (data.user.credit_score) {
+                updateCreditScore(data.user.credit_score);
+            }
             renderActiveLoansCarousel(data.activeLoans);
             renderRecentApplications(data.recentApplications);
             renderRecommendations(data.recommendations);
@@ -73,6 +76,108 @@ function updateSummaryCards(summary) {
     if(document.getElementById('stat-active-loans')) document.getElementById('stat-active-loans').textContent = summary.activeLoans;
     if(document.getElementById('stat-pending-loans')) document.getElementById('stat-pending-loans').textContent = summary.pendingLoans;
     if(document.getElementById('stat-total-borrowed')) document.getElementById('stat-total-borrowed').textContent = `₹${Math.round(summary.totalAmount).toLocaleString('en-IN')}`;
+}
+
+function updateCreditScore(score) {
+    localStorage.setItem('credit_score', score);
+    const scoreVal = document.getElementById('credit-score-value');
+    const scoreLbl = document.getElementById('credit-score-label');
+    const scoreBadge = document.getElementById('credit-score-badge');
+
+    const parsedScore = parseInt(score) || 726;
+
+    if (scoreVal) {
+        animateValue(scoreVal, 300, parsedScore, 1000);
+    }
+    
+    let label = 'Poor Score';
+    let badgeText = 'High Risk';
+    let badgeClass = 'badge-red'; 
+    let chartColor = '#EF4444'; // Red
+    
+    if (parsedScore >= 750) {
+        label = 'Excellent Score';
+        badgeText = 'Good Standing';
+        badgeClass = 'badge-green';
+        chartColor = '#22C55E'; // Green
+    } else if (parsedScore >= 650) {
+        label = 'Good Score';
+        badgeText = 'Fair Standing';
+        badgeClass = 'badge-blue';
+        chartColor = '#3B82F6'; // Blue
+    } else if (parsedScore >= 550) {
+        label = 'Average Score';
+        badgeText = 'Needs Improvement';
+        badgeClass = 'badge-yellow';
+        chartColor = '#F97316'; // Orange
+    }
+
+    if (scoreLbl) scoreLbl.innerText = label;
+    if (scoreBadge) {
+        scoreBadge.innerText = badgeText;
+        scoreBadge.className = 'badge ' + badgeClass;
+    }
+
+    // Mini Chart Initialization
+    const ctx = document.getElementById('miniCreditChart');
+    if (ctx) {
+        // Destroy existing chart if it exists to prevent overlap
+        let chartStatus = Chart.getChart(ctx);
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+
+        const minScore = 300;
+        const maxScore = 900;
+        const filledData = Math.max(0, parsedScore - minScore);
+        const emptyData = Math.max(0, maxScore - parsedScore);
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [filledData, emptyData],
+                    backgroundColor: [chartColor, '#E4E0F5'],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                rotation: 270,
+                circumference: 180,
+                animation: {
+                    animateRotate: true,
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+
+// Helper to animate numbers smoothly
+function animateValue(obj, start, end, duration) {
+    if (start === end) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const currentScore = Math.floor(progress * (end - start) + start);
+        obj.innerHTML = currentScore;
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            obj.innerHTML = end;
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 /* ═══════════════════════════════════════════════
@@ -368,6 +473,36 @@ function renderRecentApplications(apps) {
     `).join('');
 }
 
+function getEligibilityForLoan(type) {
+    const t = (type || '').toLowerCase();
+    if (t.includes('home')) {
+        return { salary: '₹40,000+', score: '750+', employment: 'Salaried / Self-employed' };
+    } else if (t.includes('personal') || t.includes('festival')) {
+        return { salary: '₹20,000+', score: '650+', employment: 'Salaried' };
+    } else if (t.includes('auto') || t.includes('car')) {
+        return { salary: '₹25,000+', score: '700+', employment: 'Salaried / Self-employed' };
+    } else if (t.includes('education') || t.includes('student')) {
+        return { salary: 'Co-applicant min ₹30,000', score: '650+', employment: 'Salaried Co-applicant' };
+    } else if (t.includes('business')) {
+        return { salary: '₹50,000+ (Business Income)', score: '700+', employment: 'Self-employed / Business Owner' };
+    }
+    return { salary: '₹25,000+', score: '700+', employment: 'Salaried / Self-employed' };
+}
+
+window.toggleLoanDetails = function(event, id) {
+    event.stopPropagation(); // prevent clicking the card from navigating
+    const detailsDiv = document.getElementById('loan-details-' + id);
+    if (detailsDiv) {
+        if (detailsDiv.style.display === 'none') {
+            detailsDiv.style.display = 'block';
+            event.target.innerText = 'See Less';
+        } else {
+            detailsDiv.style.display = 'none';
+            event.target.innerText = 'See More';
+        }
+    }
+}
+
 function renderRecommendations(recs) {
     const container = document.getElementById('recommendations-container');
     if (!container) return;
@@ -377,16 +512,70 @@ function renderRecommendations(recs) {
         return;
     }
 
-    container.innerHTML = recs.map(rec => `
-        <div class="rec-card" onclick="window.location.href='apply-loan.html'">
-            <div class="rec-icon" style="background:rgba(108,71,255,0.1); color:var(--primary);"><i class="ph ph-sparkle"></i></div>
-            <div style="flex:1">
-                <div class="font-semi text-sm">${rec.loan_type}</div>
-                <div class="text-xs text-muted">${rec.bank_name}</div>
+    let globalIndex = 0;
+    container.innerHTML = recs.map(rec => {
+        globalIndex++;
+        const elg = getEligibilityForLoan(rec.loan_type);
+        const cardId = `rec-${rec.id || globalIndex}`;
+
+        return `
+        <div class="rec-card-wrapper" style="border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: var(--surface); transition: all 0.3s ease;">
+            <div class="rec-card" style="border: none; margin-bottom: 0; box-shadow: none; cursor: default;">
+                <div class="rec-icon" style="background:rgba(108,71,255,0.1); color:var(--primary);"><i class="ph ph-sparkle"></i></div>
+                <div style="flex:1">
+                    <div class="font-semi text-sm">${rec.loan_type}</div>
+                    <div class="text-xs text-muted">${rec.bank_name}</div>
+                </div>
+                <div class="rec-rate" style="margin-right: 15px;">${rec.interest_rate}%</div>
+                <button class="btn btn-outline" style="padding: 4px 12px; font-size: 11px; height: 28px;" onclick="toggleLoanDetails(event, '${cardId}')">See More</button>
             </div>
-            <div class="rec-rate">${rec.interest_rate}%</div>
+            
+            <div id="loan-details-${cardId}" style="display: none; padding: 18px; border-top: 1px solid var(--border); background: rgba(248,250,252,0.8);">
+                <h4 style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Eligibility Criteria</h4>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(59,130,246,0.1); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+                            <i class="ph ph-wallet" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Min. Monthly Salary</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.salary}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(34,197,94,0.1); display:flex; align-items:center; justify-content:center; color:var(--green);">
+                            <i class="ph ph-chart-line-up" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Required Credit Score</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.score}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(249,115,22,0.1); display:flex; align-items:center; justify-content:center; color:var(--orange);">
+                            <i class="ph ph-briefcase" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Employment Type</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.employment}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 style="font-size: 12px; font-weight: 700; color: var(--text); margin-top: 18px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Key Features</h4>
+                <ul style="font-size: 13px; color: var(--text-secondary); padding-left: 20px; line-height: 1.6; margin: 0;">
+                    <li>Quick approval process with minimal documentation.</li>
+                    <li>Flexible repayment tenure options available.</li>
+                    <li>Zero hidden charges on foreclosure.</li>
+                </ul>
+                
+                <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='apply-loan.html'">Apply Now <i class="ph ph-arrow-right" style="margin-left:5px"></i></button>
+                </div>
+            </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function updateEMIWidget(summary) {

@@ -158,7 +158,7 @@ async function handleSignUp() {
       }, 1500);
     } else {
       setLoading(false);
-      showError(result.message || 'Registration failed. Please try again.');
+      showError(result.message ||'Registration failed. Please try again.');
     }
   } catch (err) {
     setLoading(false);
