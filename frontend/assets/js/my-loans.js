@@ -119,17 +119,10 @@ function renderLoansTable(tab) {
         // Action buttons
         let actionHtml = '';
         if (l.status === 'approved') {
-          actionHtml = `
-            <a href="../borrower/payment.html"
-               class="btn btn-primary btn-sm">
-              <i class="ph ph-credit-card"></i> Pay EMI
-            </a>`;
+         
         } else if (l.status === 'rejected') {
-          actionHtml = `
-            <a href="apply-loan.html"
-               class="btn btn-primary btn-sm">
-              <i class="ph ph-sparkle"></i> Apply Again
-            </a>`;
+       
+           
         } else if (l.status === 'pending') {
           actionHtml = `
             <span style="font-size:12px;color:var(--text3);
