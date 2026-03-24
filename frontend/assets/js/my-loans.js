@@ -121,8 +121,9 @@ function renderLoansTable(tab) {
         if (l.status === 'approved') {
          
         } else if (l.status === 'rejected') {
-       
+
            
+
         } else if (l.status === 'pending') {
           actionHtml = `
             <span style="font-size:12px;color:var(--text3);

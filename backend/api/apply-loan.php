@@ -21,6 +21,23 @@ $loanProductId = trim($data['loanProductId'] ?? '');
 $loanAmount    = floatval($data['loanAmount']  ?? 0);
 $loanTenure    = intval($data['loanTenure']    ?? 0);
 $applicantDetails = $data['applicantDetails'] ?? [];
+    // Upsert KYC details so they are fixed for future loans
+    if (!empty($applicantDetails)) {
+        $kycUpdate = [
+            'user_id' => $userId,
+            'updated_at' => new MongoDB\BSON\UTCDateTime()
+        ];
+        if (!empty($applicantDetails['f_aadhaar'])) $kycUpdate['aadhaar_number'] = $applicantDetails['f_aadhaar'];
+        if (!empty($applicantDetails['f_pan'])) $kycUpdate['pan_number'] = $applicantDetails['f_pan'];
+        if (!empty($applicantDetails['f_dob'])) $kycUpdate['dob'] = $applicantDetails['f_dob'];
+        if (!empty($applicantDetails['f_address'])) $kycUpdate['address'] = $applicantDetails['f_address'];
+        
+        $database->kyc_details->updateOne(
+            ['user_id' => $userId],
+            ['$set' => $kycUpdate],
+            ['upsert' => true]
+        );
+    }
 
 if (!$userId || !$loanProductId || !$loanAmount || !$loanTenure) {
     http_response_code(400);
