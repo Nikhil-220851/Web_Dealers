@@ -7,7 +7,7 @@ let firebaseReady = false;
 async function initFirebase() {
   try {
     const response = await fetch('../../backend/api/firebase-config-public.php');
-    const config   = await response.json();
+    const config   = await response.json();.
 
     if (config.error) {
       console.error("Firebase config error:", config.error);
