@@ -1,0 +1,443 @@
+/* ================================================================
+   payment_success.css
+   Matches LoanPro signup / login visual style exactly.
+   No steps panel — replaced with brand info panel.
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Keyframes ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-7px); }
+}
+@keyframes checkPop {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  60%  { transform: scale(1.18) rotate(4deg);  opacity: 1; }
+  100% { transform: scale(1) rotate(0deg);     opacity: 1; }
+}
+@keyframes ringSuccess {
+  0%   { box-shadow: 0 0 0 0    rgba(22,163,74,0.4); }
+  70%  { box-shadow: 0 0 0 16px rgba(22,163,74,0); }
+  100% { box-shadow: 0 0 0 0    rgba(22,163,74,0); }
+}
+@keyframes ringError {
+  0%   { box-shadow: 0 0 0 0    rgba(239,68,68,0.4); }
+  70%  { box-shadow: 0 0 0 16px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0    rgba(239,68,68,0); }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(37,99,235,0.22); }
+  70%  { box-shadow: 0 0 0 10px transparent; }
+  100% { box-shadow: 0 0 0 0   transparent; }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+/* ── Body ── */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f0f4ff;                   /* exact same as login/signup */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* decorative blobs — same as login/signup */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .4;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, #a5c8ff, transparent 70%);
+  top: -100px; left: -100px;
+}
+body::after {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, #c7d7ff, transparent 70%);
+  bottom: -80px; right: -80px;
+}
+
+/* ── Wrapper ── */
+.wrapper {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  max-width: 900px;
+  border-radius: 20px;                   /* same as signup/login */
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(30,58,110,0.18);  /* same */
+  position: relative;
+  z-index: 1;
+  animation: fadeUp .6s ease both;
+}
+
+/* ════════════════════════════════
+   LEFT BRAND PANEL
+   (same gradient + texture as login/signup)
+   ════════════════════════════════ */
+.brand-panel {
+  width: 260px;
+  flex-shrink: 0;
+  background: linear-gradient(160deg, #1a3461 0%, #1e4080 50%, #163065 100%);
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* grid texture — same as login/signup */
+.brand-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.panel-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* floating icon — same as login/signup */
+.panel-icon {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,.1);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+  animation: float 3.5s ease-in-out infinite;
+}
+
+.panel-brand {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: #fff;
+  letter-spacing: -.5px;
+  margin-bottom: 4px;
+}
+
+.panel-tagline {
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .06em;
+  margin-bottom: 32px;
+}
+
+.panel-divider {
+  height: 1px;
+  background: rgba(255,255,255,.1);
+  margin-bottom: 28px;
+}
+
+/* info blocks */
+.panel-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  flex: 1;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.info-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-item strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,.8);
+  margin-bottom: 2px;
+}
+
+.info-item p {
+  font-size: 11px;
+  color: rgba(255,255,255,.35);
+  line-height: 1.5;
+}
+
+/* panel footer — same as login/signup */
+.panel-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.panel-footer p {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+}
+.panel-footer a {
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  font-weight: 600;
+}
+.panel-footer a:hover {
+  color: rgba(255,255,255,.85);
+  text-decoration: underline;
+}
+
+/* ════════════════════════════════
+   RIGHT CARD
+   (same white card style as login/signup)
+   ════════════════════════════════ */
+.card {
+  flex: 1;
+  background: #fff;
+  padding: 48px 42px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow-y: auto;
+  animation: fadeUp .6s .1s ease both;
+}
+
+/* ── Result icon ── */
+.result-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+.result-icon.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 8px 28px rgba(22,163,74,.3);
+  animation: ringSuccess 2.2s ease infinite;
+}
+.result-icon.failed {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 8px 28px rgba(239,68,68,.28);
+  animation: ringError 2.2s ease infinite;
+}
+.result-icon svg {
+  width: 34px; height: 34px;
+  animation: checkPop .5s .25s cubic-bezier(.4,0,.2,1) both;
+}
+
+/* ── Title — uses Sora exactly like login/signup ── */
+.card-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 28px; font-weight: 800;
+  color: #111827;
+  letter-spacing: -.4px;
+  margin-bottom: 8px;
+}
+.card-title .highlight       { color: #16a34a; }
+.card-title .highlight-error { color: #ef4444; }
+
+/* ── Subtitle ── */
+.card-sub {
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  max-width: 340px;
+}
+.card-sub strong { color: #111827; }
+
+/* ── Receipt card — mimics input field style ── */
+.receipt-card {
+  width: 100%;
+  border: 1.5px solid #D1D5DB;          /* same as input borders */
+  border-radius: 12px;
+  background: #fafbff;                   /* same as input background */
+  overflow: hidden;
+  margin-bottom: 20px;
+  text-align: left;
+  transition: border-color .25s;
+}
+.receipt-card:hover { border-color: #9db5f7; }
+.receipt-card.minimal { margin-bottom: 20px; }
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  gap: 12px;
+}
+.receipt-row.last { border-bottom: none; }
+
+.receipt-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: .01em;
+  flex-shrink: 0;
+}
+
+.receipt-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111827;
+  text-align: right;
+  word-break: break-all;
+}
+.receipt-value.mono {
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  color: #374151;
+}
+.receipt-value.amount-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: #16a34a;
+}
+.receipt-card.minimal .receipt-value.amount-val {
+  color: #ef4444;
+}
+
+/* ── Status badges ── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 20px;
+  letter-spacing: .02em;
+}
+.success-badge {
+  background: rgba(22,163,74,.1);
+  color: #16a34a;
+  border: 1px solid rgba(22,163,74,.2);
+}
+.failed-badge {
+  background: rgba(239,68,68,.1);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,.2);
+}
+
+/* ── Redirect note ── */
+.redirect-note {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 22px;
+}
+.redirect-note strong { color: #374151; font-weight: 700; }
+.redirect-note span#countdown {
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* ── Error box — same style as login error banner ── */
+.error-box {
+  width: 100%;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  border-radius: 9px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #dc2626;
+  text-align: left;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  line-height: 1.55;
+}
+.error-box svg { flex-shrink: 0; margin-top: 1px; }
+
+/* ── Primary button — exactly same as signup/login CTA ── */
+.btn-primary {
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 15px; font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  border: none; border-radius: 10px; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(37,99,235,.35);
+  letter-spacing: .02em;
+  text-decoration: none;
+  display: block; text-align: center;
+  position: relative; overflow: hidden;
+  margin-bottom: 12px;
+  transition: all .25s;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  background-size: 400px 100%;
+  transform: translateX(-400px);
+  transition: transform .5s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(37,99,235,.45);
+}
+.btn-primary:hover::after { transform: translateX(400px); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ── Secondary button — same border style as inputs ── */
+.btn-secondary {
+  width: 100%; padding: 12px;
+  background: transparent;
+  color: #2563eb;
+  font-size: 13.5px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  border: 1.5px solid #D1D5DB;          /* same as input border */
+  border-radius: 10px; cursor: pointer;
+  text-decoration: none;
+  display: block; text-align: center;
+  transition: all .22s;
+}
+.btn-secondary:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+/* ── Mobile ── */
+@media (max-width: 700px) {
+  .wrapper { flex-direction: column; }
+  .brand-panel {
+    width: 100%; padding: 22px 20px;
+    flex-direction: row; align-items: center; gap: 14px;
+  }
+  .panel-inner { flex-direction: row; align-items: center; height: auto; }
+  .panel-icon { margin: 0; width: 38px; height: 38px; font-size: 18px; animation: none; }
+  .panel-brand { font-size: 18px; }
+  .panel-tagline, .panel-divider,
+  .panel-info-block, .panel-footer { display: none; }
+  .card { padding: 30px 22px 26px; }
+  .card-title { font-size: 22px; }
+}
