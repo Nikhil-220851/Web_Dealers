@@ -1289,3 +1289,8 @@ body {
   .defaulters-table th, .defaulters-table td { padding: 10px 8px; }
   .btn-approve, .btn-reject { padding: 5px 8px; font-size: 11px; }
 }
+/* Closed status pill */
+.spill-closed {
+  background: #f1f5f9;
+  color: #475569;
+}

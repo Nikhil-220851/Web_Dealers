@@ -16,36 +16,52 @@ if (!$userId) {
 }
 
 try {
-    $cursor = $database->loan_applications->find(['user_id' => $userId]);
+    // Sort latest first
+    $cursor = $database->loan_applications->find(
+        ['user_id' => $userId],
+        ['sort' => ['applied_date' => -1]]
+    );
 
     $loans = [];
     foreach ($cursor as $app) {
         $productId = $app['loan_product_id'] ?? '';
         $product   = null;
 
-        // Try to fetch matching loan product
         if ($productId) {
             try {
                 if (preg_match('/^[a-f\d]{24}$/i', $productId)) {
-                    $product = $database->loan_products->findOne(['_id' => new MongoDB\BSON\ObjectId($productId)]);
+                    $product = $database->loan_products->findOne([
+                        '_id' => new MongoDB\BSON\ObjectId($productId)
+                    ]);
                 }
             } catch (Exception $ignored) {}
         }
 
-        $date = '';
-        if (isset($app['applied_date']) && $app['applied_date'] instanceof MongoDB\BSON\UTCDateTime) {
-            $date = $app['applied_date']->toDateTime()->format('d M Y');
+        // Applied date
+        $appliedDate = '';
+        if (isset($app['applied_date']) &&
+            $app['applied_date'] instanceof MongoDB\BSON\UTCDateTime) {
+            $appliedDate = $app['applied_date']->toDateTime()->format('d M Y');
+        }
+
+        // Reviewed date — set when admin approves or rejects
+        $reviewedAt = '';
+        if (isset($app['reviewed_at']) &&
+            $app['reviewed_at'] instanceof MongoDB\BSON\UTCDateTime) {
+            $reviewedAt = $app['reviewed_at']->toDateTime()->format('d M Y');
         }
 
         $loans[] = [
-            'id'           => (string) $app['_id'],
-            'loan_type'    => $product['loan_type']     ?? 'Unknown',
-            'bank_name'    => $product['bank_name']     ?? 'Unknown',
-            'interest_rate'=> $product['interest_rate'] ?? 0,
-            'loan_amount'  => $app['loan_amount']       ?? 0,
-            'loan_tenure'  => $app['loan_tenure']       ?? 0,
-            'status'       => $app['status']            ?? 'pending',
-            'applied_date' => $date,
+            'id'            => (string) $app['_id'],
+            'loan_type'     => $product['loan_type']     ?? ($app['loan_type']     ?? 'Unknown'),
+            'bank_name'     => $product['bank_name']     ?? ($app['bank_name']     ?? 'Unknown'),
+            'interest_rate' => $product['interest_rate'] ?? ($app['interest_rate'] ?? 0),
+            'loan_amount'   => $app['loan_amount']       ?? 0,
+            'loan_tenure'   => $app['loan_tenure']       ?? 0,
+            'status'        => $app['status']            ?? 'pending',
+            'remarks'       => $app['remarks']           ?? '',   // admin reason
+            'applied_date'  => $appliedDate,
+            'reviewed_at'   => $reviewedAt,                       // decision date
         ];
     }
 
