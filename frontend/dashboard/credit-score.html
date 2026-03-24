@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Credit Score</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f3f4f6;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.top-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.back-btn{
+padding:8px 15px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.back-btn:hover{
+background:#1d4ed8;
+}
+
+.info-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.info-item{
+padding:8px;
+border-bottom:1px solid #eee;
+}
+
+/* .score-section{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:30px;
+padding:20px;
+background:#f9fafb;
+border-radius:10px;
+} */
+.score-section{
+display:flex;
+align-items:center;
+gap:30px;
+
+}
+
+
+.score{
+font-size:60px;
+font-weight:bold;
+color:#0ea5e9;
+}
+
+.factors{
+margin-top:25px;
+}
+.chart-box{
+width:120px;
+height:70px;
+}
+
+.chart-box canvas{
+width:100% !important;
+height:100% !important;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top-bar">
+
+<h2>Credit Score Report</h2>
+
+<button class="back-btn" onclick="goBack()">← Back</button>
+
+</div>
+
+<h3>Consumer Information</h3>
+
+<div class="info-grid">
+
+<div class="info-item"><b>Name:</b> <span id="name"></span></div>
+<div class="info-item"><b>Email:</b> <span id="email"></span></div>
+
+<div class="info-item"><b>Phone:</b> <span id="phone"></span></div>
+<div class="info-item"><b>User ID:</b> <span id="userid"></span></div>
+
+</div>
+
+
+<div class="score-section">
+
+<div>
+
+<h3>CIBIL Score</h3>
+
+<div class="score">726</div>
+
+<p>Range: 300 - 900</p>
+
+</div>
+
+<div class="chart-box">
+    <canvas id="scoreChart"></canvas>
+</div>
+
+
+
+</div>
+
+
+<div class="factors">
+
+<h3>Scoring Factors</h3>
+
+<ul>
+<li>Presence Of Delinquency</li>
+<li>High Balance Build-Up On Loans</li>
+<li>Low Credit Age</li>
+<li>Recent Payment Delay</li>
+</ul>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/credit-score.js"></script>
+<script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+</html>

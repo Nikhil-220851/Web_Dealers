@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Loans — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/my-loans.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+        
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+      
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
+      </nav>
+
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
+          <div class="u-details">
+            <div class="u-name" id="sidebar-user-name">Loading�</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>My Loans</h1>
+            <div class="topbar-sub">Track your applications</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+          <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
+        </div>
+
+        <!-- Notifications Dropdown (real data via notifications-shared.js) -->
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border);"><div class="font-bold">Notifications</div></div>
+          <div style="max-height:300px; overflow-y:auto;"><div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">Loading…</div></div>
+        </div>
+      </header>
+
+      <!-- MY LOANS CONTENT -->
+      <div id="page-loans" class="page-body active">
+        <div class="card">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchLoanTab('pending',this)">Pending <span class="tab-count" id="tab-count-pending">0</span></button>
+            <button class="tab-btn" onclick="switchLoanTab('approved',this)">Active <span class="tab-count" id="tab-count-approved">0</span></button>
+            <button class="tab-btn" onclick="switchLoanTab('rejected',this)">Closed <span class="tab-count" id="tab-count-rejected">0</span></button>
+          </div>
+          <div id="loans-table-wrap"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <script src="../assets/js/borrower-auth.js"></script>
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/notifications-shared.js"></script>
+  <script src="../assets/js/my-loans.js"></script>
+
+  <script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        alert('You have been logged out.');
+        window.location.href = '../landing/index.html';
+    }
+
+    // Check session
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
+  <script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+
+</html>
+
+

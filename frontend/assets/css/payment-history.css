@@ -1,0 +1,83 @@
+    /* ═══════════════════════════════════════════════
+   PAYMENT HISTORY
+═══════════════════════════════════════════════ */
+    .active-loan-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Modern Transaction Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .data-table th {
+      padding: 14px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .data-table td {
+      padding: 18px 16px;
+      font-size: 13.5px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Row Hover */
+    .data-table tbody tr {
+      transition: background 0.2s ease;
+    }
+    .data-table tbody tr:hover {
+      background: var(--surface2);
+    }
+
+    /* Column Typography & Alignment */
+    .data-table td.date-col {
+      font-size: 13px;
+      color: var(--text2);
+      white-space: nowrap;
+    }
+
+    .data-table th.amount-col,
+    .data-table td.amount-col {
+      text-align: right;
+      font-family: var(--font-d);
+    }
+    .data-table td.amount-col {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .data-table th.status-col,
+    .data-table td.status-col {
+      text-align: right;
+    }
+
+    .data-table td .loan-id {
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+    }
+

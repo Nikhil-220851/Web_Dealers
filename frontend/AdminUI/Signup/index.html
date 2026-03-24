@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Admin Sign Up</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Left Panel -->
+  <div class="left">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <a class="left-brand" href="../Landing/index.html">
+      <span class="material-icons-round">admin_panel_settings</span>
+      <span class="t1">Loan</span><span class="t2">Pro</span>
+    </a>
+
+    <div class="left-body">
+      <h1>Create your<br/>Admin account.</h1>
+      <p>Join LoanPro and get full control over loans, borrowers, payments, and analytics.</p>
+
+      <div class="stat-previews">
+        <div class="spm">
+          <div class="spm-ico ico-purple">
+            <span class="material-icons-round">account_balance</span>
+          </div>
+          <div class="spm-info">
+            <div class="spm-val">&#8377;10.5L</div>
+            <div class="spm-lbl">Total Loan Amount</div>
+          </div>
+        </div>
+        <div class="spm">
+          <div class="spm-ico ico-teal">
+            <span class="material-icons-round">groups</span>
+          </div>
+          <div class="spm-info">
+            <div class="spm-val">120</div>
+            <div class="spm-lbl">Active Users</div>
+          </div>
+        </div>
+        <div class="spm">
+          <div class="spm-ico ico-green">
+            <span class="material-icons-round">task_alt</span>
+          </div>
+          <div class="spm-info">
+            <div class="spm-val">60</div>
+            <div class="spm-lbl">Loans Approved</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="left-foot">© 2026 LoanPro · All rights reserved.</div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right">
+    <div class="form-box">
+
+      <div class="form-eyebrow">Admin Portal</div>
+      <h2>Create your account</h2>
+      <p class="sub">Fill in your details to get started as a LoanPro admin.</p>
+
+      <!-- Name row -->
+      <div class="two-col">
+        <div class="field">
+          <label for="fname">First Name</label>
+          <div class="input-wrap">
+            <span class="material-icons-round ico">person</span>
+            <input type="text" id="fname" placeholder="First name"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="lname">Last Name</label>
+          <div class="input-wrap">
+            <span class="material-icons-round ico">person</span>
+            <input type="text" id="lname" placeholder="Last name"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">mail</span>
+          <input type="email" id="email" placeholder="admin@loanpro.com"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone Number</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">phone</span>
+          <input type="tel" id="phone" placeholder="+91 00000 00000"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="role">Admin Role</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">badge</span>
+          <select id="role">
+            <option value="" disabled selected>Select your role</option>
+            <option value="super">Super Admin</option>
+            <option value="loan">Loan Manager</option>
+            <option value="support">Support Admin</option>
+            <option value="finance">Finance Admin</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">lock</span>
+          <input
+            type="password"
+            id="password"
+            placeholder="Create a password"
+            oninput="checkStrength(this.value)"
+          />
+          <button class="eye-btn" type="button" onclick="togglePass('password','eye1')">
+            <span class="material-icons-round" id="eye1">visibility</span>
+          </button>
+        </div>
+        <div class="strength-wrap">
+          <div class="strength-bar"><div class="strength-fill" id="strFill"></div></div>
+          <div class="strength-lbl" id="strLbl"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="confirm">Confirm Password</label>
+        <div class="input-wrap">
+          <span class="material-icons-round ico">lock_reset</span>
+          <input type="password" id="confirm" placeholder="Re-enter your password"/>
+          <button class="eye-btn" type="button" onclick="togglePass('confirm','eye2')">
+            <span class="material-icons-round" id="eye2">visibility</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="terms"/>
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of LoanPro.</span>
+      </div>
+
+      <button class="btn-submit" onclick="handleSignUp()">
+        <span class="material-icons-round">how_to_reg</span> Create Account
+      </button>
+
+      <div class="divider">OR</div>
+
+      <div class="link-row">
+        Already have an account? <a href="../Login/index.html">Sign in</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

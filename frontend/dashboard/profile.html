@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/profile.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+        
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+      
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
+      </nav>
+
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
+          <div class="u-details">
+            <div class="u-name" id="sidebar-user-name">Loading…</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>Profile</h1>
+            <div class="topbar-sub">Manage your account</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+          <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
+        </div>
+
+        <!-- Notifications Dropdown (populated by notifications-shared.js) -->
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div class="font-bold">Notifications</div>
+          </div>
+          <div style="max-height:300px; overflow-y:auto;">
+            <div style="padding:20px; text-align:center; color:var(--text3); font-size:12px;">Loading…</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PROFILE CONTENT -->
+      <div id="page-profile" class="page-body active">
+        <div class="profile-layout">
+
+          <!-- ═══════ COMPLETION BANNER (full width) ═══════ -->
+          <div class="completion-banner">
+            <div class="completion-banner-left">
+              <div class="completion-avatar-ring">
+                <i class="ph ph-user-circle"></i>
+              </div>
+              <div>
+                <div class="completion-title">Profile Completion</div>
+                <div class="completion-sub">Complete your profile to unlock all features</div>
+              </div>
+            </div>
+            <div class="completion-banner-right">
+              <div class="completion-meta">
+                <span class="completion-fields-text"><span id="completion-filled">0</span> of <span id="completion-total">10</span> fields filled</span>
+                <span class="completion-pct-text"><span id="completion-pct">0</span>%</span>
+              </div>
+              <div class="completion-track">
+                <div id="completion-bar" class="completion-fill"></div>
+              </div>
+              <div class="completion-hint">💡 Add Bank KYC details to reach 100%</div>
+            </div>
+          </div>
+
+          <!-- ═══════ TWO-COLUMN LAYOUT ═══════ -->
+          <div class="profile-cols">
+
+            <!-- LEFT COLUMN: Profile Settings + KYC -->
+            <div class="profile-left">
+
+              <!-- Profile Settings Card -->
+              <div class="card">
+                <div class="profile-card-title">
+                  <h3><i class="ph ph-user-gear"></i> Profile Settings</h3>
+                </div>
+
+                <!-- Avatar + user info -->
+                <div class="profile-header-row">
+                  <div class="big-avatar" id="profile-avatar-letter">?<div class="avatar-edit"><i class="ph ph-pencil-simple"></i></div></div>
+                  <div>
+                    <div id="profile-display-name" style="font-family:var(--font-d);font-weight:700;font-size:19px;color:var(--text);">Loading…</div>
+                    <div id="profile-display-email" style="font-size:12.5px;color:var(--text2);margin-top:4px;"></div>
+                    <div id="profile-member-since" style="font-size:12px;color:var(--text3);margin-top:2px;"></div>
+                    <div style="margin-top:8px;"><span class="badge badge-green"><i class="ph ph-seal-check"></i> Verified</span></div>
+                  </div>
+                </div>
+
+                <!-- Form fields -->
+                <div class="input-grid">
+                  <div class="input-wrap"><label class="input-lbl">First Name</label><input class="input-field" id="prof-firstname" placeholder="First name" oninput="updateKycFromProfile()" /></div>
+                  <div class="input-wrap"><label class="input-lbl">Last Name</label><input class="input-field" id="prof-lastname" placeholder="Last name" oninput="updateKycFromProfile()" /></div>
+                  <div class="input-wrap"><label class="input-lbl">Phone</label><input class="input-field" id="prof-phone" placeholder="+91 98765 43210" oninput="updateKycFromProfile()" /></div>
+                  <div class="input-wrap"><label class="input-lbl">Email</label><input class="input-field" id="prof-email" placeholder="you@email.com" oninput="updateKycFromProfile()" /></div>
+                  <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="prof-address" placeholder="Full residential address" oninput="updateKycFromProfile()" /></div>
+                </div>
+
+                <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+                  <button class="btn-save-profile" onclick="saveProfileSettings(event)">
+                    <i class="ph ph-floppy-disk"></i> Save Changes
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bank & KYC Details Card -->
+              <div class="card">
+                <div class="profile-card-title">
+                  <h3><i class="ph ph-bank"></i> Bank &amp; KYC Details</h3>
+                  <button class="btn btn-outline btn-sm" id="kyc-edit-btn" onclick="toggleKycEdit()">
+                    <i class="ph ph-pencil-simple"></i> Edit
+                  </button>
+                </div>
+
+                <!-- KYC View Mode -->
+                <div id="kyc-view-mode">
+
+                  <!-- Basic Identity (always shown from signup data) -->
+                  <div class="kyc-grid">
+                    <div class="kyc-cell">
+                      <div class="kyc-label">Full Name</div>
+                      <div class="kyc-value" id="kyc-view-fullname">—</div>
+                    </div>
+                    <div class="kyc-cell">
+                      <div class="kyc-label">Phone Number</div>
+                      <div class="kyc-value" id="kyc-view-phone">—</div>
+                    </div>
+                    <div class="kyc-cell">
+                      <div class="kyc-label">Email Address</div>
+                      <div class="kyc-value" id="kyc-view-email">—</div>
+                    </div>
+                  </div>
+
+                  <!-- Bank Details sub-section -->
+                  <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
+                    <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;"><i class="ph ph-bank"></i> Bank Details</div>
+                    <div id="no-bank-msg" style="font-size:13px; color:var(--text3); padding:10px 0;">🏦 Bank details not added yet</div>
+                    <div class="kyc-grid" id="bank-view-grid" style="display:none;">
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Account Holder</div>
+                        <div class="kyc-value" id="kyc-view-account-holder">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Bank Name</div>
+                        <div class="kyc-value" id="kyc-view-bank">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Account Number</div>
+                        <div class="kyc-value" id="kyc-view-account">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">IFSC Code</div>
+                        <div class="kyc-value" id="kyc-view-ifsc">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Branch Name</div>
+                        <div class="kyc-value" id="kyc-view-branch">—</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- KYC Details sub-section -->
+                  <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
+                    <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;"><i class="ph ph-identification-card"></i> KYC Information</div>
+                    <div id="no-kyc-msg" style="font-size:13px; color:var(--text3); padding:10px 0;">📋 KYC not completed</div>
+                    <div class="kyc-grid" id="kyc-view-grid" style="display:none;">
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Date of Birth</div>
+                        <div class="kyc-value" id="kyc-view-dob">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">PAN Number</div>
+                        <div class="kyc-value" id="kyc-view-pan">—</div>
+                      </div>
+                      <div class="kyc-cell">
+                        <div class="kyc-label">Aadhaar Number</div>
+                        <div class="kyc-value" id="kyc-view-aadhaar">—</div>
+                      </div>
+                      <div class="kyc-cell full">
+                        <div class="kyc-label">Address</div>
+                        <div class="kyc-value" id="kyc-view-address">—</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Success flash message -->
+                <div id="kyc-save-success" style="display:none; margin-top:12px; padding:10px 14px; background:var(--green-bg); color:var(--green); border-radius:8px; font-size:13px; font-weight:600;">
+                  ✓ Details saved successfully!
+                </div>
+
+                <!-- KYC Edit Mode -->
+                <div id="kyc-edit-mode" style="display:none;">
+                  <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;"><i class="ph ph-bank"></i> Bank Details</div>
+                  <div class="input-grid">
+                    <div class="input-wrap"><label class="input-lbl">Account Holder Name</label><input class="input-field" id="kyc-account-holder" placeholder="As on bank records" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Bank Name</label><input class="input-field" id="kyc-bankname" placeholder="e.g. State Bank of India" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Account Number</label><input class="input-field" id="kyc-account" placeholder="9–18 digit account number" /></div>
+                    <div class="input-wrap"><label class="input-lbl">IFSC Code</label><input class="input-field" id="kyc-ifsc" placeholder="SBIN0001234" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Branch Name <span style="color:var(--text3);">(optional)</span></label><input class="input-field" id="kyc-branch" placeholder="e.g. MG Road" /></div>
+                  </div>
+
+                  <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin:18px 0 12px;"><i class="ph ph-identification-card"></i> KYC Information</div>
+                  <div class="input-grid">
+                    <div class="input-wrap"><label class="input-lbl">Full Name</label><input class="input-field" id="kyc-fullname" readonly style="background:var(--bg2);" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Date of Birth</label><input class="input-field" id="kyc-dob" type="date" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Phone Number</label><input class="input-field" id="kyc-phone" readonly style="background:var(--bg2);" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Email Address</label><input class="input-field" id="kyc-email" readonly style="background:var(--bg2);" /></div>
+                    <div class="input-wrap"><label class="input-lbl">PAN Number</label><input class="input-field" id="kyc-pan" placeholder="ABCDE1234F" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Aadhaar Number</label><input class="input-field" id="kyc-aadhaar" placeholder="XXXX XXXX XXXX" /></div>
+                    <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="kyc-address" placeholder="Full residential address" /></div>
+                  </div>
+
+                  <div style="margin-top:18px;display:flex;justify-content:flex-end;gap:10px;">
+                    <button class="btn btn-ghost" onclick="cancelKycEdit()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveKycDetails()"><i class="ph ph-floppy-disk"></i> Save KYC Details</button>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- end .profile-left -->
+
+            <!-- RIGHT COLUMN: Settings Panels -->
+            <div class="profile-right">
+
+              <!-- Language Card -->
+              <div class="card">
+                <div class="profile-card-title">
+                  <h3><i class="ph ph-translate"></i> Language</h3>
+                </div>
+                <div class="lang-grid">
+                
+                  <button class="lang-chip" onclick="changeLang('en')">English</button>
+                  <button class="lang-chip" onclick="changeLang('hi')">Hindi</button>
+                  <button class="lang-chip" onclick="changeLang('te')">Telugu</button>
+                  <button class="lang-chip" onclick="changeLang('ta')">Tamil</button>
+                  <button class="lang-chip" onclick="changeLang('kn')">Kannada</button>
+                  <button class="lang-chip" onclick="changeLang('mr')">Marathi</button>
+                </div>
+              </div>
+
+              <!-- Appearance Card -->
+              <div class="card">
+                <div class="profile-card-title">
+                  <h3><i class="ph ph-palette"></i> Appearance</h3>
+                </div>
+                <div class="theme-grid">
+                  <button class="theme-opt active" onclick="selectTheme(this, 'light')">
+                    <i class="ph ph-sun"></i> Light
+                  </button>
+                  <button class="theme-opt" onclick="selectTheme(this, 'dark')">
+                    <i class="ph ph-moon"></i> Dark
+                  </button>
+                  <button class="theme-opt" onclick="selectTheme(this, 'auto')">
+                    <i class="ph ph-circle-half"></i> Auto
+                  </button>
+                </div>
+              </div>
+
+              <!-- Danger Zone Card -->
+              <div class="card danger-zone-card">
+                <div class="profile-card-title">
+                  <h3 style="color:#EF4444;"><i class="ph ph-warning" style="color:#EF4444;"></i> Danger Zone</h3>
+                </div>
+                <p style="font-size:12.5px;color:var(--text3);margin-bottom:16px;">These actions are irreversible. Please be absolutely certain before proceeding.</p>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <button class="btn btn-outline w-full" style="justify-content:center;border-color:rgba(239,68,68,.3);color:#EF4444;" onclick="alert('Change password feature coming soon. Contact support for assistance.')">
+                    <i class="ph ph-lock-key"></i> Change Password
+                  </button>
+                  <button class="btn-danger w-full" style="justify-content:center;" onclick="confirmDeleteAccount()">
+                    <i class="ph ph-trash"></i> Delete Account
+                  </button>
+                </div>
+              </div>
+
+            </div><!-- end .profile-right -->
+
+          </div><!-- end .profile-cols -->
+
+        </div><!-- end .profile-layout -->
+      </div>
+    </main>
+  </div>
+<div id="google_translate_element"></div>
+
+  <script src="../assets/js/borrower-auth.js"></script>
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/notifications-shared.js"></script>
+  <script src="../assets/js/profile.js"></script>
+<script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script>
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('firstname');
+        localStorage.removeItem('lastname');
+        localStorage.removeItem('phoneno');
+        localStorage.removeItem('userPhoto');
+        window.location.href = '../landing/index.html';
+    }
+
+    async function confirmDeleteAccount() {
+        if (!confirm('Are you sure you want to delete your account? This cannot be undone. All your data will be permanently removed.')) return;
+        const userId = localStorage.getItem('userId');
+        if (!userId) { alert('Session expired. Please log in again.'); return; }
+        try {
+            const res = await fetch('../../backend/api/delete-borrower-profile.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                logout();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to delete account'));
+            }
+        } catch (e) {
+            alert('Network error. Please try again.');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
+</body>
+
+
+</html>
+

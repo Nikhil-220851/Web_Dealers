@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Details — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/loan-details.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
+          <div class="u-details">
+            <div class="u-name" id="sidebar-user-name">Loading…</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>Loan Details</h1>
+            <div class="topbar-sub">Review the full offer before applying</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+        </div>
+      </header>
+
+      <!-- PAGE CONTENT -->
+      <div class="page-body active" style="padding:24px">
+        <!-- All content is injected here by loan-details.js -->
+        <div id="ld-content">
+          <div class="ld-loading">
+            <i class="ph ph-spinner" style="font-size:36px;animation:spin 1s linear infinite;color:var(--primary)"></i>
+            <div>Loading loan details…</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/borrower-auth.js"></script>
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/loan-details.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = '../landing/index.html'; }
+  </script>
+<script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

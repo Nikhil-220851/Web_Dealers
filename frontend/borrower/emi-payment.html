@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay EMI — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/emi-payment.css">
+</head>
+<body>
+  <header class="checkout-header">
+    <div class="logo-wrap" onclick="window.location.href='../dashboard/dashboard.html'">
+      <div class="logo-mark"><i class="ph ph-arrow-left" style="color:white;"></i></div>
+      <div class="logo-text">Return</div>
+    </div>
+    <div class="secure-badge">
+      <i class="ph-fill ph-lock-key"></i> Secure EMI Payment
+    </div>
+  </header>
+
+  <main class="flow-container">
+    <div class="flow-card">
+      <div class="flow-top">
+        <div class="progress-steps" aria-label="EMI payment steps">
+          <div class="ps-step" id="ps1"><span class="dot"></span><span class="lbl">EMI Summary</span></div>
+          <div class="ps-line"></div>
+          <div class="ps-step" id="ps2"><span class="dot"></span><span class="lbl">Method</span></div>
+          <div class="ps-line"></div>
+          <div class="ps-step" id="ps3"><span class="dot"></span><span class="lbl">Review</span></div>
+          <div class="ps-line"></div>
+          <div class="ps-step" id="ps4"><span class="dot"></span><span class="lbl">Success</span></div>
+        </div>
+        <div class="step-indicator">
+          <span class="step-num" id="stepNumText">Step 1 of 4</span>
+          <span class="step-title" id="stepTitleText">Loan EMI Summary</span>
+        </div>
+      </div>
+
+      <!-- STEP 1 -->
+      <section id="step1" class="step-section active">
+        <h2 class="section-heading">Loan EMI Summary</h2>
+
+        <div class="summary-grid">
+          <div class="sum-item">
+            <div class="k">Loan ID</div>
+            <div class="v mono" id="s-loan-id">—</div>
+          </div>
+          <div class="sum-item">
+            <div class="k">Loan Amount</div>
+            <div class="v" id="s-loan-amount">—</div>
+          </div>
+          <div class="sum-item">
+            <div class="k">EMI Amount</div>
+            <div class="v emph" id="s-emi-amount">—</div>
+          </div>
+          <div class="sum-item">
+            <div class="k">Remaining EMIs</div>
+            <div class="v" id="s-remaining-emis">—</div>
+          </div>
+          <div class="sum-item">
+            <div class="k">Remaining Balance</div>
+            <div class="v" id="s-remaining-balance">—</div>
+          </div>
+          <div class="sum-item">
+            <div class="k">Next EMI Month</div>
+            <div class="v" id="s-next-emi">—</div>
+          </div>
+        </div>
+
+        <div class="alert error" id="step1Error" style="display:none;"></div>
+
+        <div class="step-footer">
+          <button class="btn btn-primary" id="btnNext1" onclick="goToStep(2)" disabled>
+            Continue to Payment Method
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section id="step2" class="step-section">
+        <h2 class="section-heading">Select Payment Method</h2>
+
+        <div class="methods-grid">
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="Credit Card">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-credit-card"></i></div>
+              <div class="method-info">
+                <h3>Credit Card</h3>
+                <p>Visa / Mastercard / RuPay</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="Debit Card">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-credit-card"></i></div>
+              <div class="method-info">
+                <h3>Debit Card</h3>
+                <p>All major banks supported</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="UPI">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-device-mobile"></i></div>
+              <div class="method-info">
+                <h3>UPI</h3>
+                <p>GPay / PhonePe / Paytm</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+
+          <label class="method-card">
+            <input type="radio" name="payment_method" value="Net Banking">
+            <div class="method-content">
+              <div class="method-icon"><i class="ph ph-bank"></i></div>
+              <div class="method-info">
+                <h3>Net Banking</h3>
+                <p>All major banks available</p>
+              </div>
+              <div class="method-check"><i class="ph-fill ph-check-circle"></i></div>
+            </div>
+          </label>
+        </div>
+
+        <div class="alert error" id="step2Error" style="display:none;"></div>
+
+        <div class="step-footer split">
+          <button class="btn btn-ghost" onclick="goToStep(1)">Back</button>
+          <button class="btn btn-primary" id="btnNext2" onclick="goToStep(3)" disabled>Continue to Review</button>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section id="step3" class="step-section">
+        <h2 class="section-heading">Review and Confirm Payment</h2>
+
+        <div class="review-box">
+          <div class="r-row"><span>Loan ID</span><span class="mono" id="r-loan-id">—</span></div>
+          <div class="r-row"><span>Payment Month</span><span id="r-month">—</span></div>
+          <div class="r-row"><span>EMI Amount</span><span class="emph" id="r-amount">—</span></div>
+          <div class="r-row"><span>Payment Method</span><span id="r-method">—</span></div>
+        </div>
+
+        <div class="alert error" id="step3Error" style="display:none;"></div>
+
+        <div class="step-footer split">
+          <button class="btn btn-ghost" onclick="goToStep(2)">Back</button>
+          <button class="btn btn-primary btn-pay" id="btnConfirm" onclick="confirmPayment()">
+            <i class="ph-fill ph-lock-key"></i> Confirm Payment
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 4 -->
+      <section id="step4" class="step-section">
+        <div class="success-wrap">
+          <div class="success-circle"><i class="ph-fill ph-check"></i></div>
+          <h1 class="success-heading">EMI Payment Successful</h1>
+          <p class="text-muted mt-2">Your payment has been recorded.</p>
+        </div>
+
+        <div class="receipt-card mt-6">
+          <div class="rc-row"><span>Transaction ID</span><span class="mono" id="rc-txn">—</span></div>
+          <div class="rc-row"><span>Loan ID</span><span class="mono" id="rc-loan">—</span></div>
+          <div class="rc-row"><span>EMI Amount</span><span id="rc-amount">—</span></div>
+          <div class="rc-row"><span>Payment Date</span><span id="rc-date">—</span></div>
+          <div class="rc-row"><span>Payment Method</span><span id="rc-method">—</span></div>
+        </div>
+
+        <div class="step-footer" style="margin-top:22px;">
+          <a href="../dashboard/dashboard.html" class="btn btn-primary w-full" style="width:100%;">Return to Dashboard</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text mt-4 font-bold text-white">Processing Payment...</div>
+    <div class="text-sm mt-2 text-white" style="opacity: 0.7;">Please do not refresh or close this window</div>
+  </div>
+
+  <script src="../assets/js/borrower-auth.js"></script>
+  <script src="../assets/js/emi-payment.js"></script>
+</body>
+</html>
+
+

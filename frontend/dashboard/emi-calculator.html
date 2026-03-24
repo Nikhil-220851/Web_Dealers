@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMI Calculator — LoanPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/emi-calculator.css">
+</head>
+
+<body>
+
+  <div class="shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">L</div>
+        <div class="logo-text">Loan<span>Pro</span></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">Main Menu</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-squares-four"></i></span> <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="apply-loan.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-sparkle"></i></span> <span class="nav-label">Apply for Loans</span>
+        </a>
+        <a href="my-loans.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-clipboard-text"></i></span> <span class="nav-label">My Loans</span>
+        </a>
+        <a href="payment-history.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-credit-card"></i></span> <span class="nav-label">Payment History</span>
+        </a>
+        <a href="emi-calculator.html" class="nav-item active">
+          <span class="nav-icon"><i class="ph ph-calculator"></i></span> <span class="nav-label">EMI Calculator</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
+        </a>
+
+
+        <a href="notifications.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
+        </a>
+
+        <div class="nav-section" style="margin-top:10px">Support</div>
+        <a href="help-center.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-question"></i></span> <span class="nav-label">Help Center</span>
+        </a>
+        <a href="contact.html" class="nav-item">
+          <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
+        </a>
+      
+        <div class="nav-section" style="margin-top:10px">Account</div>
+        <a href="#" class="nav-item" onclick="logout()">
+          <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
+        </a>
+      </nav>
+
+
+      <div class="sidebar-footer">
+        <a href="profile.html" class="user-chip">
+          <div class="u-avatar" id="sidebar-avatar-letter">?</div>
+          <div class="u-details">
+            <div class="u-name" id="sidebar-user-name">Loading�</div>
+            <div class="u-role">Borrower</div>
+          </div>
+          <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1>EMI Calculator</h1>
+            <div class="topbar-sub">Plan your finances</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span
+              class="notif-dot"></span></div>
+          <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
+        </div>
+
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border);"><div class="font-bold">Notifications</div></div>
+          <div style="max-height:300px; overflow-y:auto;"><div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">Loading…</div></div>
+        </div>
+      </header>
+
+      <!-- EMI CONTENT -->
+      <div id="page-emi" class="page-body active">
+        <div class="emi-layout">
+
+          <!-- ═══════ LEFT COLUMN ═══════ -->
+          <div class="emi-left">
+
+            <!-- Loan Variables Card -->
+            <div class="card">
+              <div class="emi-card-title">
+                <i class="ph ph-sliders-horizontal"></i>
+                Loan Variables
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span class="slider-label">Loan Amount</span>
+                  <span class="slider-val" id="amt-display">₹25,00,000</span>
+                </div>
+                <input type="range" id="amt-slider" min="100000" max="10000000" step="50000" value="2500000" oninput="calcEMI()" />
+                <div class="slider-hint"><span>₹1L</span><span>₹1Cr</span></div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span class="slider-label">Interest Rate</span>
+                  <span class="slider-val" id="rate-display">8.4% p.a.</span>
+                </div>
+                <input type="range" id="rate-slider" min="6" max="24" step="0.1" value="8.4" oninput="calcEMI()" />
+                <div class="slider-hint"><span>6%</span><span>24%</span></div>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span class="slider-label">Tenure</span>
+                  <span class="slider-val" id="tenure-display">240 months (20 yrs)</span>
+                </div>
+                <input type="range" id="tenure-slider" min="12" max="360" step="12" value="240" oninput="calcEMI()" />
+                <div class="slider-hint"><span>1 yr</span><span>30 yrs</span></div>
+              </div>
+            </div>
+
+            <!-- Result Summary Card -->
+            <div class="card">
+              <div class="emi-card-title">
+                <i class="ph ph-chart-pie-slice"></i>
+                Result Summary
+              </div>
+
+              <!-- Big EMI Hero -->
+              <div class="emi-hero">
+                <div class="emi-hero-label">Monthly EMI</div>
+                <div class="emi-hero-value" id="emi-display">₹21,543</div>
+                <div class="emi-hero-sub">Based on your selected parameters</div>
+              </div>
+
+              <!-- Three breakdown mini-cards -->
+              <div class="emi-breakdown">
+                <div class="breakdown-item">
+                  <div class="breakdown-lbl">Principal</div>
+                  <div class="breakdown-val text-primary" id="b-principal">₹25,00,000</div>
+                </div>
+                <div class="breakdown-item">
+                  <div class="breakdown-lbl">Total Interest</div>
+                  <div class="breakdown-val" style="color:var(--accent2)" id="b-interest">₹26,70,320</div>
+                </div>
+                <div class="breakdown-item">
+                  <div class="breakdown-lbl">Total Payable</div>
+                  <div class="breakdown-val" style="color:var(--green)" id="b-total">₹51,70,320</div>
+                </div>
+              </div>
+            </div>
+          </div><!-- end .emi-left -->
+
+          <!-- ═══════ RIGHT COLUMN ═══════ -->
+          <div class="emi-right">
+            <div class="card emi-chart-card">
+              <div class="emi-card-title">
+                <i class="ph ph-chart-bar"></i>
+                Repayment Chart
+              </div>
+              <div class="emi-chart-wrap">
+                <canvas id="emiBarChart"></canvas>
+              </div>
+              <!-- Mini stat strip below chart -->
+              <div class="emi-stat-strip">
+                <div class="emi-stat">
+                  <div class="emi-stat-label">Loan Amount</div>
+                  <div class="emi-stat-value" id="chart-stat-principal">₹25,00,000</div>
+                </div>
+                <div class="emi-stat">
+                  <div class="emi-stat-label">Total Interest</div>
+                  <div class="emi-stat-value" id="chart-stat-interest">₹26,70,320</div>
+                </div>
+                <div class="emi-stat">
+                  <div class="emi-stat-label">Monthly EMI</div>
+                  <div class="emi-stat-value" id="chart-stat-emi">₹21,543</div>
+                </div>
+              </div>
+            </div>
+          </div><!-- end .emi-right -->
+
+        </div><!-- end .emi-layout -->
+      </div>
+
+    </main>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="../assets/js/borrower-auth.js"></script>
+  <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/notifications-shared.js"></script>
+  <script src="../assets/js/emi-calculator.js"></script>
+
+  <script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userEmail');
+        alert('You have been logged out.');
+        window.location.href = '../landing/index.html';
+    }
+
+    // Check session
+    window.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '../auth/login.html';
+        }
+    });
+  </script>
+  <script src="../assets/js/translate.js"></script>
+
+
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+
+</html>
