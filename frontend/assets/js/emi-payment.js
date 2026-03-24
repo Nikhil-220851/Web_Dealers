@@ -194,6 +194,39 @@ async function confirmPayment() {
     document.getElementById('rc-date').textContent = json.data.payment_date || new Date().toLocaleDateString('en-IN');
     document.getElementById('rc-method').textContent = json.data.payment_method || selectedMethod;
 
+    // ----- CREDIT SCORE LOGIC INTEGRATION -----
+    // 1. Fetch updated automatic score from backend if provided, otherwise boost fallback up to 900
+    let newScore = json.data.new_credit_score;
+    if (!newScore) {
+      let currentScore = parseInt(localStorage.getItem('credit_score')) || 726;
+      newScore = Math.min(900, currentScore + 15);
+    }
+    fetch(`../../backend/api/get-emi-summary.php?loan_id=${encodeURIComponent(loanSummary.loan_id)}&user_id=${encodeURIComponent(userId)}`);
+    //localStorage.setItem('credit_score', newScore);
+
+    // 2. Append to history for line chart
+    let histJSON = localStorage.getItem('credit_score_history') || '[]';
+    let cHistory = [];
+    try { cHistory = JSON.parse(histJSON); } catch(e){}
+    cHistory.push(newScore);
+    if(cHistory.length > 12) cHistory.shift();
+    localStorage.setItem('credit_score_history', JSON.stringify(cHistory));
+
+    // 3. Append to payment status log
+    let payLogJSON = localStorage.getItem('payment_history') || '[]';
+    let payLog = [];
+    try { payLog = JSON.parse(payLogJSON); } catch(e){}
+    const paymentAmt = json.data.amount || loanSummary.emi_amount;
+    payLog.unshift({
+       date: new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}),
+       status: 'Paid',
+       amount: paymentAmt,
+       loan_id: loanSummary.loan_id
+    });
+    if(payLog.length > 20) payLog.pop();
+    localStorage.setItem('payment_history', JSON.stringify(payLog));
+    // ------------------------------------------
+
     // Helpful for next pages
     sessionStorage.removeItem('payEmiLoanId');
 

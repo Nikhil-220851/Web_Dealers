@@ -185,17 +185,114 @@
             </div>
 
             <div class="dash-col-right" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-              <div class="card"
-                style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 20px;">
-                <div class="text-sm font-semi text-muted mb-8" style="text-transform:uppercase; letter-spacing:1px;">
-                  Upcoming EMI</div>
-                <div id="emi-widget-content" style="width: 100%;">
-                  <div class="d-family font-bold" id="emi-amount-display" style="font-size:32px; color:var(--primary);">
-                    ₹0</div>
-                  <div class="text-xs text-muted" style="margin-top:4px;">Next Due: <span
-                      id="emi-date-display">N/A</span></div>
-                  <div class="badge badge-blue" style="margin-top:12px; font-size:11px;">Automatic Payment</div>
-                </div>
+              
+                <div class="stat-card" style="grid-column: span 2; --stat-clr: rgba(108,71,255,.10); cursor: pointer;"
+  onclick="window.location.href='credit-score.html'"
+  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow)';"
+  onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow-sm)';">
+
+  <!-- Header -->
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <span class="stat-lbl">Credit Score</span>
+    <i class="ph ph-arrow-up-right" style="font-size:14px; color:var(--text3);"></i>
+  </div>
+
+  <!-- Gauge -->
+  <div style="display:flex; flex-direction:column; align-items:center; gap:12px; padding:8px 0 4px;">
+    
+    <div style="position:relative; width:220px; height:220px; filter:drop-shadow(0 0 18px rgba(108,71,255,0.28));">
+      
+      <svg viewBox="0 0 220 220" width="220" height="220" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        
+        <defs>
+          <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00D2C8"/>
+            <stop offset="50%" stop-color="#9B6BFF"/>
+            <stop offset="100%" stop-color="#6C47FF"/>
+          </linearGradient>
+
+          <filter id="arcGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Outer ring -->
+        <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(108,71,255,0.06)" stroke-width="1"/>
+
+        <!-- Track -->
+        <circle cx="110" cy="110" r="85" fill="none" stroke="var(--border)" stroke-width="12" stroke-linecap="round"/>
+
+        <!-- Inner glow -->
+        <circle cx="110" cy="110" r="85" fill="none" stroke="rgba(108,71,255,0.08)" stroke-width="20"/>
+
+        <!-- Progress Arc (826/900 ≈ 91.7%) -->
+        <circle id="progressArc"
+          cx="110" cy="110" r="85"
+          fill="none"
+          stroke="url(#arcGrad)"
+          stroke-width="12"
+          stroke-linecap="round"
+          stroke-dasharray="534"
+          stroke-dashoffset="534"
+          transform="rotate(-90 110 110)"
+          filter="url(#arcGlow)"
+          style="transition: stroke-dashoffset 1.5s ease;">
+        </circle>
+
+        <!-- End Dot -->
+        <circle id="endDot" cx="110" cy="25" r="8" fill="#6C47FF" filter="url(#arcGlow)">
+          <animate attributeName="r" values="8;10;8" dur="2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Inner ring -->
+        <circle cx="110" cy="110" r="70" fill="none" stroke="rgba(108,71,255,0.07)" stroke-width="1"/>
+
+      </svg>
+
+      <!-- Center Text -->
+      <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <span id="credit-score-value" style="font-size:52px; font-weight:bold;">826</span>
+        <span style="font-size:13px;">of 900</span>
+      </div>
+
+    </div>
+
+    <!-- Labels -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <span id="credit-score-label" style="font-size:14px; font-weight:600;">Excellent Score</span>
+      <span style="color:green; font-size:13px;">▲ +12 pts this month</span>
+
+      <span style="background:rgba(34,197,94,.12); color:#16a34a; font-size:12px;
+        padding:4px 12px; border-radius:20px;">
+        ● Good Standing
+      </span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ JavaScript for animation -->
+<script>
+  const score = 826;
+  const maxScore = 900;
+
+  const radius = 85;
+  const circumference = 2 * Math.PI * radius;
+
+  const percent = score / maxScore;
+  const offset = circumference * (1 - percent);
+
+  const arc = document.getElementById("progressArc");
+
+  // Animate after load
+  setTimeout(() => {
+    arc.style.strokeDashoffset = offset;
+  }, 300);
+</script>
               </div>
 
               <div class="card" style="display:flex; flex-direction:column;">
@@ -243,7 +340,7 @@
 
   <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
-  <script src="../assets/js/dashboard.js"></script>
+  <script src="../assets/js/dashboard.js?v=2.1"></script>
   <div id="google_translate_element"></div>
 
   

@@ -1,24 +1,33 @@
-<?php
+<?php 
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json; charset=UTF-8");
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit(); }
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 require_once '../config/db.php';
 
+// Validate loanId param
+if (empty($_GET['loanId'])) {
+    http_response_code(400);
+    echo json_encode(["status" => "error", "message" => "loanId is required"]);
+    exit();
+}
+
 try {
-    $loanId = $_GET['loanId'] ?? '';
+    // Convert string ID to MongoDB ObjectId
+    $loanId = new MongoDB\BSON\ObjectId($_GET['loanId']);
 
-    if (empty($loanId)) {
-        http_response_code(400);
-        echo json_encode(["status" => "error", "message" => "loanId is required"]);
-        exit();
-    }
-
-    $objectId = new MongoDB\BSON\ObjectId($loanId);
-    $doc = $database->loan_products->findOne(['_id' => $objectId]);
+    $doc = $database->loan_products->findOne(['_id' => $loanId]);
 
     if (!$doc) {
         http_response_code(404);
@@ -28,25 +37,32 @@ try {
 
     $loan = [
         'id'              => (string) $doc['_id'],
-        'loan_type'       => $doc['loan_type']       ?? '',
-        'bank_name'       => $doc['bank_name']        ?? '',
-        'interest_rate'   => $doc['interest_rate']    ?? 0,
-        'max_amount'      => $doc['max_amount']       ?? 0,
-        'min_amount'      => $doc['min_amount']       ?? 0,
-        'processing_fee'  => $doc['processing_fee']   ?? 0,
-        'tenure'          => $doc['tenure']           ?? 0,
-        'min_salary'      => $doc['min_salary']       ?? 0,
-        'credit_score'    => $doc['credit_score']     ?? 0,
+        'loan_name'       => $doc['loan_name']       ?? ($doc['loan_type'] ?? 'Unnamed Loan'),
+        'loan_type'       => $doc['loan_type']       ?? 'General',
+        'bank_name'       => $doc['bank_name']       ?? 'Unknown Bank',
+        'interest_rate'   => (float)($doc['interest_rate']  ?? 0),
+        'tenure'          => (int)($doc['tenure']            ?? 0),
+        'min_amount'      => (float)($doc['min_amount']      ?? 0),
+        'max_amount'      => (float)($doc['max_amount']      ?? 0),
+        'processing_fee'  => (float)($doc['processing_fee']  ?? 0),
+        'description'     => $doc['description']     ?? '',
+        // ── Eligibility fields — shown on loan details page ──
+        'min_salary'      => (float)($doc['min_salary']      ?? 0),
+        'credit_score'    => (int)($doc['credit_score']      ?? 0),
         'employment_type' => $doc['employment_type']  ?? '',
     ];
 
-    echo json_encode(["status" => "success", "data" => $loan]);
+    echo json_encode([
+        "status" => "success",
+        "data"   => $loan
+    ]);
 
 } catch (MongoDB\Driver\Exception\InvalidArgumentException $e) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Invalid loanId format"]);
+    echo json_encode(["status" => "error", "message" => "Invalid loan ID format"]);
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+    echo json_encode(["status" => "error", "message" => "System error: " . $e->getMessage()]);
 }
+
 ?>
