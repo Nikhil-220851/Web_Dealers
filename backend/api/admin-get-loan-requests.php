@@ -26,9 +26,27 @@ try {
     $pipeline = [
         ['$sort' => ['applied_date' => -1]],
         [
+            '$addFields' => [
+                'user_id_obj' => [
+                    '$cond' => [
+                        'if' => ['$eq' => [['$type' => '$user_id'], 'string']],
+                        'then' => ['$toObjectId' => '$user_id'],
+                        'else' => '$user_id'
+                    ]
+                ],
+                'loan_product_id_obj' => [
+                    '$cond' => [
+                        'if' => ['$eq' => [['$type' => '$loan_product_id'], 'string']],
+                        'then' => ['$toObjectId' => '$loan_product_id'],
+                        'else' => '$loan_product_id'
+                    ]
+                ]
+            ]
+        ],
+        [
             '$lookup' => [
                 'from' => 'users',
-                'localField' => 'user_id',
+                'localField' => 'user_id_obj',
                 'foreignField' => '_id',
                 'as' => 'borrower'
             ]
@@ -42,7 +60,7 @@ try {
         [
             '$lookup' => [
                 'from' => 'loan_products',
-                'localField' => 'loan_product_id',
+                'localField' => 'loan_product_id_obj',
                 'foreignField' => '_id',
                 'as' => 'product'
             ]
@@ -56,7 +74,18 @@ try {
         [
             '$addFields' => [
                 'borrower_name_unified' => [
-                    '$ifNull' => ['$borrower.name', '$borrower.firstname', '$borrower_name', 'Unknown User']
+                    '$ifNull' => [
+                        '$borrower.name',
+                        [
+                            '$concat' => [
+                                ['$ifNull' => ['$borrower.firstname', '']],
+                                ' ',
+                                ['$ifNull' => ['$borrower.lastname', '']]
+                            ]
+                        ],
+                        '$borrower_name',
+                        'Unknown User'
+                    ]
                 ],
                 'loan_type_unified' => [
                     '$ifNull' => ['$product.loan_type', '$loan_type', 'Unknown']

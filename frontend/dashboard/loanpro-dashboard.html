@@ -2591,8 +2591,7 @@
           </div>
           <div class="flex items-center gap-10">
             <span class="badge badge-yellow">Due in 28 days</span>
-            <button class="btn btn-primary" onclick="window.location.href='../borrower/payment.html'"><i class="ph ph-credit-card"></i> Pay
-              Now</button>
+            <button class="btn btn-primary" onclick="initiateRazorpayPayment('', 0, '')"><i class="ph ph-credit-card"></i> Pay Now</button>
           </div>
         </div>
         <div class="card">
@@ -3657,7 +3656,7 @@
         <td><span class="badge ${badgeMap[l.status]}">${labelMap[l.status]}</span></td>
         <td><div class="flex gap-8">
           <button class="btn btn-ghost btn-sm">View</button>
-          ${l.status === 'accepted' ? '<button class="btn btn-outline btn-sm" onclick="window.location.href=\'../borrower/payment.html\'"><span>Pay EMI</span></button>' : ''}
+          ${(l.status === 'accepted' || l.status === 'approved' || l.status === 'active') ? `<button class="btn btn-outline btn-sm" onclick="initiateRazorpayPayment('${l.id}', ${l.emi_amount || 0}, '${l.next_emi_id || ''}')"><span>Pay EMI</span></button>` : ''}
         </div></td>
       </tr>`).join('')}
     </tbody>
@@ -4114,6 +4113,8 @@
         }
     });
   </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="../assets/js/razorpay-checkout.js"></script>
   <script src="../assets/js/translate.js"></script>
 
 

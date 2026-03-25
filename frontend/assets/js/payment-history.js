@@ -91,7 +91,14 @@ async function loadActiveLoanBanner() {
                   </div>
                 </div>
                 <div style="margin-top:10px; text-align:right;">
-                  <button class="btn btn-primary" data-emi-pay-btn data-loan-id="${loan.id}" onclick="startEmiFlow('${loan.id}')" ${loan.remaining_emis === 0 || loan.emi_status === 'paid' ? 'disabled' : ''}>
+                  <button 
+                    class="btn btn-primary" 
+                    data-emi-pay-btn 
+                    data-loan-id="${loan.id}" 
+                    data-amount="${loan.emi_amount || 0}"
+                    data-emi-id="${loan.next_emi_id || ''}"
+                    onclick="initiateRazorpayPayment('${loan.id}', ${loan.emi_amount || 0}, '${loan.next_emi_id || ''}')" 
+                    ${loan.remaining_emis === 0 || loan.emi_status === 'paid' ? 'disabled' : ''}>
                     <i class="ph ph-credit-card"></i> ${loan.remaining_emis === 0 ? 'Loan Completed' : (loan.emi_status === 'paid' ? 'Paid for Cycle' : (loan.emi_status === 'overdue' ? 'Overdue - Pay Now' : 'Pay EMI'))}
                   </button>
                 </div>
@@ -116,10 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Shared with dashboard.js
-window.startEmiFlow = function(loanId) {
+window.startEmiFlow = function(loanId, amount, emiId) {
   if (!loanId) return;
-  sessionStorage.setItem('payEmiLoanId', loanId);
-  window.location.href = "../borrower/emi-payment.html";
+  initiateRazorpayPayment(loanId, amount, emiId);
 };
 
 function initEmiTimers() {

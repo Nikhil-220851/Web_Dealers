@@ -388,7 +388,9 @@ function buildActiveLoanCard(loan) {
                   style="width:auto; min-width:140px;" 
                   data-emi-pay-btn 
                   data-loan-id="${loan.id}"
-                  onclick="startEmiFlow('${loan.id}')"
+                  data-amount="${loan.emi_amount || 0}"
+                  data-emi-id="${loan.next_emi_id || ''}"
+                  onclick="initiateRazorpayPayment('${loan.id}', ${loan.emi_amount || 0}, '${loan.next_emi_id || ''}')"
                   ${loan.remaining_emis === 0 || loan.emi_status === 'paid' ? 'disabled' : ''}>
                     ${loan.remaining_emis === 0 ? 'Loan Completed' : (loan.emi_status === 'paid' ? 'Paid for Cycle' : (loan.emi_status === 'overdue' ? 'Overdue - Pay Now' : 'Pay EMI'))}
                 </button>
@@ -399,10 +401,9 @@ function buildActiveLoanCard(loan) {
 let currentLoanId = null;
 let currentEmiAmount = null;
 
-window.startEmiFlow = function (loanId) {
+window.startEmiFlow = function (loanId, amount, emiId) {
     if (!loanId) return;
-    sessionStorage.setItem('payEmiLoanId', loanId);
-    window.location.href = "../borrower/emi-payment.html";
+    initiateRazorpayPayment(loanId, amount, emiId);
 };
 
 // Timers removed in favor of strict status checking

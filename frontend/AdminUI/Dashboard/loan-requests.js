@@ -26,12 +26,22 @@ async function fetchLoanRequests() {
 
     try {
         const res = await fetch(`${API_BASE}/admin-get-loan-requests.php`);
+        
+        // Debug logging
+        if (!res.ok) {
+            console.error('Fetch failed:', res.status, res.statusText);
+            const text = await res.text();
+            console.error('Response body:', text);
+            throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
         const result = await res.json();
 
         if (result.status === 'success') {
             allLoans = result.data;
             renderLoanRequests(allLoans);
         } else {
+            console.error('API returned error:', result.message);
             tbody.innerHTML = `<tr><td colspan="9"
                 style="text-align:center;color:#ef4444;padding:24px;">
                 Error: ${result.message}
@@ -41,7 +51,7 @@ async function fetchLoanRequests() {
         console.error('fetchLoanRequests error:', err);
         tbody.innerHTML = `<tr><td colspan="9"
             style="text-align:center;color:#ef4444;padding:24px;">
-            Network error. Please refresh.
+            Network error. Please check console for details.
         </td></tr>`;
     }
 }
@@ -168,6 +178,8 @@ function renderLoanRequests(loans) {
         const verDateStr = verDate && !isNaN(verDate.valueOf())
             ? ` (${verDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })})`
             : '';
+
+        const dateStr = loan.application_date || '—';
 
         const tr = document.createElement('tr');
         tr.id = `row-${loan.id}`;

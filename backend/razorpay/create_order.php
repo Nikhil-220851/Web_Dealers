@@ -6,14 +6,15 @@ header('Content-Type: application/json');
 
 try {
 
+    require __DIR__ . '/../config/razorpay_config.php';
     require __DIR__ . '/../vendor/autoload.php';
 
     if (!class_exists('Razorpay\Api\Api')) {
         throw new Exception("Razorpay SDK not installed properly");
     }
 
-    $keyId = "rzp_test_SV5ZCgjwvjwrzG";
-    $keySecret = "H6SbERqgqTivpbFWA7z5AGeH";
+    $keyId = RAZORPAY_KEY_ID;
+    $keySecret = RAZORPAY_KEY_SECRET;
 
     if (!isset($_GET['amount'])) {
         throw new Exception("Amount missing");
@@ -31,7 +32,10 @@ try {
 
     echo json_encode([
         "success" => true,
-        "order_id" => $order['id']
+        "order_id" => $order['id'],
+        "key_id" => $keyId,
+        "amount" => $amount,
+        "currency" => "INR"
     ]);
 
 } catch (Throwable $e) {

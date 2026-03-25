@@ -105,6 +105,18 @@ try {
         $emiFallback = $tenure > 0 ? $amount / $tenure : 0;
         $totalPaid = (int)($app['total_emis_paid'] ?? 0);
 
+        // Fetch next unpaid EMI ID
+        $nextEmiId = '';
+        if ($isSuccess) {
+            $nextEmi = $database->emi_payments->findOne(
+                ['loan_id' => (string)$app['_id'], 'status' => 'unpaid'],
+                ['sort' => ['due_date' => 1], 'projection' => ['_id' => 1]]
+            );
+            if ($nextEmi) {
+                $nextEmiId = (string)$nextEmi['_id'];
+            }
+        }
+
         $nextDueRaw = $app['next_due_date'] ?? null;
         $nextDueStr = null;
         $nextDueDt = null;
@@ -148,6 +160,7 @@ try {
             'loan_start_date'   => isset($app['loan_start_date']) ? (string)$app['loan_start_date'] : null,
             'total_emis_paid'   => $totalPaid,
             'next_due_date'     => $nextDueStr,
+            'next_emi_id'       => $nextEmiId,
             'emi_status'        => $emiStatus,
             'is_overdue'        => $isOverdue
         ];

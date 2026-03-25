@@ -1,13 +1,15 @@
 {
     "require": {
-        "mongodb/mongodb": "^1.13",
-        "razorpay/razorpay": "^2.8"
+        "mongodb/mongodb": "2.2.0",
+        "razorpay/razorpay": "^2.9",
+        "phpmailer/phpmailer": "^7.0"
     },
     "config": {
         "platform": {
-            "php": "8.1.0"
+            "php": "8.2.12"
+        },
+        "allow-plugins": {
+            "mongodb/mongodb": true
         }
-        "mongodb/mongodb": "^2.2",
-        "phpmailer/phpmailer": "^7.0"
     }
 }

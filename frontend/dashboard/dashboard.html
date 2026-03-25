@@ -349,9 +349,11 @@
     </div>
   </div>
 
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="../assets/js/razorpay-checkout.js"></script>
   <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
-  <script src="../assets/js/dashboard.js?v=2.1"></script>
+  <script src="../assets/js/dashboard.js?v=2.2"></script>
   <div id="google_translate_element"></div>
 
   
@@ -422,9 +424,9 @@
       return;
     }
 
-    // Reuse the same navigation flow as the carousel "Pay EMI" button.
-    sessionStorage.setItem('payEmiLoanId', loanId);
-    window.location.href = '../borrower/emi-payment.html';
+    // Direct Razorpay Integration
+    closeEmiModal();
+    initiateRazorpayPayment(loanId, 0, ''); 
   }
 
   window.closeEmiModal = closeEmiModal;

@@ -33,33 +33,7 @@
 
 <body>
 
-  <!-- ── Payment verification overlay — covers screen instantly after payment ── -->
-  <div id="pay-loading" style="
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    z-index: 9999;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    font-family: 'DM Sans', sans-serif;
-  ">
-    <div style="
-      width: 52px; height: 52px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #2563eb;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    "></div>
-    <div style="font-size: 15px; font-weight: 600; color: #374151;">
-      Verifying your payment…
-    </div>
-    <div style="font-size: 12px; color: #9ca3af;">
-      Please do not close or refresh this page
-    </div>
-  </div>
+
 
   <div class="shell">
 
@@ -151,16 +125,7 @@
 
       <!-- PAYMENT HISTORY CONTENT -->
       <div id="page-payments" class="page-body active">
-        <div class="card active-loan-banner">
-          <div>
-            <div class="font-bold" style="font-size:15px">SBI Home Loan — LN-2024-001</div>
-            <div class="text-sm text-muted mt-8">Next due: April 5, 2024 · EMI: ₹8,200</div>
-          </div>
-          <div class="flex items-center gap-10">
-            <span class="badge badge-yellow">Due in 28 days</span>
-            <button class="btn btn-primary" id="rzp-button1">Pay Now ₹8,200</button>
-          </div>
-        </div>
+        <div class="active-loan-banner" style="display:none;"></div>
 
         <div class="card">
           <div class="card-title">Payment History</div>
@@ -187,6 +152,7 @@
     </main>
   </div><!-- end .shell -->
 
+  <script src="../assets/js/razorpay-checkout.js"></script>
   <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
   <script src="../assets/js/notifications-shared.js"></script>
@@ -205,110 +171,6 @@
         window.location.href = '../auth/login.html';
       }
     });
-  </script>
-  <!-- ── Razorpay Script ── -->
-  <script>
-    document.getElementById('rzp-button1').onclick = function(e) {
-      e.preventDefault();
-
-      if (typeof Razorpay === 'undefined') {
-        alert('Payment system not loaded. Please refresh the page.');
-        return;
-      }
-
-      const userName    = localStorage.getItem('userName')    || 'User';
-      const userEmail   = localStorage.getItem('userEmail')   || '';
-      const userContact = localStorage.getItem('userContact') || '';
-      const loanId      = 'LN-2024-001';
-      const emiAmount   = 820000; // paise = ₹8,200
-
-      // ── Create a fresh order every click ──
-      fetch('../../backend/razorpay/create_order.php?amount=' + emiAmount)
-        .then(res => res.json())
-        .then(data => {
-
-          if (!data.success) {
-            alert('Could not create payment order: ' + (data.error || 'Unknown error'));
-            return;
-          }
-
-          var rzp = new Razorpay({
-            key:         'rzp_test_SV5ZCgjwvjwrzG',
-            amount:      emiAmount,
-            currency:    'INR',
-            name:        'LoanPro',
-            description: 'EMI Payment - ' + loanId,
-            order_id:    data.order_id,
-
-            handler: function(response) {
-
-              // ── Cover screen immediately — no dashboard flash ──
-              document.getElementById('pay-loading').style.display = 'flex';
-
-              // ── Verify payment on backend ──
-              fetch('../../backend/razorpay/payment_success.php', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'razorpay_payment_id=' + encodeURIComponent(response.razorpay_payment_id) +
-                      '&razorpay_order_id='  + encodeURIComponent(response.razorpay_order_id)  +
-                      '&razorpay_signature=' + encodeURIComponent(response.razorpay_signature)
-              })
-              .then(res => res.json())
-              .then(result => {
-
-                if (result.status === 'success') {
-                  // ── Payment genuine → success page ──
-                  window.location.href = 'payment-success.html'
-                    + '?status=success'
-                    + '&txn_id='  + encodeURIComponent(response.razorpay_payment_id)
-                    + '&loan_id=' + encodeURIComponent(loanId)
-                    + '&amount='  + (emiAmount / 100)
-                    + '&method=Razorpay'
-                    + '&date='    + encodeURIComponent(
-                                      new Date().toLocaleDateString('en-IN', {
-                                        day: '2-digit', month: 'short', year: 'numeric'
-                                      })
-                                    );
-                } else {
-                  // ── Verification failed → failed page ──
-                  window.location.href = 'payment-success.html'
-                    + '?status=failed'
-                    + '&amount=' + (emiAmount / 100)
-                    + '&msg='    + encodeURIComponent(result.message || 'Payment verification failed.');
-                }
-
-              })
-              .catch(function() {
-                window.location.href = 'payment-success.html'
-                  + '?status=failed'
-                  + '&msg=' + encodeURIComponent('Network error during verification. Please contact support.');
-              });
-
-            }, // end handler
-
-            // ── User closes popup without paying ──
-            modal: {
-              ondismiss: function() {
-                document.getElementById('pay-loading').style.display = 'none';
-              }
-            },
-
-            prefill: {
-              name:    userName,
-              email:   userEmail,
-              contact: userContact
-            },
-            theme: { color: '#1a237e' }
-          });
-
-          rzp.open();
-
-        })
-        .catch(function() {
-          alert('Failed to connect to payment server. Please try again.');
-        });
-
-    }; // end onclick
   </script>
 
 </body>

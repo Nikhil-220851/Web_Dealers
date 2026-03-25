@@ -38,9 +38,20 @@ try {
         ['$match' => $query],
         ['$sort' => ['created_at' => -1]],
         [
+            '$addFields' => [
+                'user_id_obj' => [
+                    '$cond' => [
+                        'if' => ['$eq' => [['$type' => '$user_id'], 'string']],
+                        'then' => ['$toObjectId' => '$user_id'],
+                        'else' => '$user_id'
+                    ]
+                ]
+            ]
+        ],
+        [
             '$lookup' => [
                 'from' => 'users',
-                'localField' => 'borrower_id',
+                'localField' => 'user_id_obj',
                 'foreignField' => '_id',
                 'as' => 'borrower'
             ]
@@ -54,7 +65,18 @@ try {
         [
             '$addFields' => [
                 'borrower_name_unified' => [
-                    '$ifNull' => ['$borrower.name', '$borrower.firstname', '$borrower_name', 'N/A']
+                    '$ifNull' => [
+                        '$borrower.name',
+                        [
+                            '$concat' => [
+                                ['$ifNull' => ['$borrower.firstname', '']],
+                                ' ',
+                                ['$ifNull' => ['$borrower.lastname', '']]
+                            ]
+                        ],
+                        '$borrower_name',
+                        'N/A'
+                    ]
                 ]
             ]
         ],

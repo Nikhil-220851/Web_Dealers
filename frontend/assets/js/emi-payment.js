@@ -165,77 +165,90 @@ async function confirmPayment() {
   overlay.classList.add('active');
 
   const userId = localStorage.getItem('userId') || '';
+  const loanId = loanSummary.loan_id;
+  const amountPaise = Math.round(loanSummary.emi_amount * 100);
+
   try {
-    const res = await fetch(`../../backend/api/process-emi-payment.php`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        loan_id: loanSummary.loan_id,
-        user_id: userId,
-        payment_method: selectedMethod
-      })
-    });
-    const json = await res.json();
+    // 1. Create Razorpay Order
+    const orderRes = await fetch(`../../backend/razorpay/create_order.php?amount=${amountPaise}`);
+    const orderData = await orderRes.json();
 
-    if (json.status !== 'success') {
-      overlay.classList.remove('active');
-      if (confirmBtn) {
-        confirmBtn.classList.remove('loading');
-        confirmBtn.disabled = false;
+    if (!orderData.success) {
+      throw new Exception(orderData.error || 'Failed to create payment order');
+    }
+
+    // 2. Open Razorpay Checkout
+    const options = {
+      key: 'rzp_test_SV5ZCgjwvjwrzG', // Should ideally come from config via API, but following current pattern
+      amount: amountPaise,
+      currency: 'INR',
+      name: 'LoanPro',
+      description: `EMI Payment - ${loanId}`,
+      order_id: orderData.order_id,
+      prefill: {
+        name: localStorage.getItem('userName') || 'User',
+        email: localStorage.getItem('userEmail') || '',
+        contact: localStorage.getItem('userContact') || ''
+      },
+      theme: { color: '#1a237e' },
+      handler: async function (response) {
+        // 3. Verify and Process on success
+        try {
+          const verifyRes = await fetch(`../../backend/api/verify-and-process.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              loan_id: loanId,
+              user_id: userId
+            })
+          });
+          const json = await verifyRes.json();
+
+          if (json.status !== 'success') {
+            throw new Error(json.message || 'Payment verification failed');
+          }
+
+          // 4. Update UI for Success
+          document.getElementById('rc-txn').textContent = json.data.transaction_id || '—';
+          document.getElementById('rc-loan').textContent = loanId;
+          document.getElementById('rc-amount').textContent = inr(json.data.amount || loanSummary.emi_amount);
+          document.getElementById('rc-date').textContent = json.data.payment_date || new Date().toLocaleDateString('en-IN');
+          document.getElementById('rc-method').textContent = 'Razorpay';
+
+          // Update local status for dashboard consistency
+          let newScore = json.data.new_credit_score;
+          localStorage.setItem('credit_score', newScore);
+
+          sessionStorage.removeItem('payEmiLoanId');
+          overlay.classList.remove('active');
+          goToStep(4);
+
+        } catch (err) {
+          overlay.classList.remove('active');
+          if (confirmBtn) {
+            confirmBtn.classList.remove('loading');
+            confirmBtn.disabled = false;
+          }
+          setError(3, err.message || 'Verification error. Contact support.');
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          overlay.classList.remove('active');
+          if (confirmBtn) {
+            confirmBtn.classList.remove('loading');
+            confirmBtn.disabled = false;
+          }
+        }
       }
-      setError(3, json.message || 'Payment failed.');
-      return;
-    }
+    };
 
-    // Receipt
-    document.getElementById('rc-txn').textContent = json.data.transaction_id || '—';
-    document.getElementById('rc-loan').textContent = loanSummary.loan_id;
-    document.getElementById('rc-amount').textContent = inr(json.data.amount || loanSummary.emi_amount);
-    document.getElementById('rc-date').textContent = json.data.payment_date || new Date().toLocaleDateString('en-IN');
-    document.getElementById('rc-method').textContent = json.data.payment_method || selectedMethod;
+    const rzp = new Razorpay(options);
+    rzp.open();
 
-    // ----- CREDIT SCORE LOGIC INTEGRATION -----
-    // 1. Fetch updated automatic score from backend if provided, otherwise boost fallback up to 900
-    let newScore = json.data.new_credit_score;
-    if (!newScore) {
-      let currentScore = parseInt(localStorage.getItem('credit_score')) || 726;
-      newScore = Math.min(900, currentScore + 15);
-    }
-    fetch(`../../backend/api/get-emi-summary.php?loan_id=${encodeURIComponent(loanSummary.loan_id)}&user_id=${encodeURIComponent(userId)}`);
-    //localStorage.setItem('credit_score', newScore);
-
-    // 2. Append to history for line chart
-    let histJSON = localStorage.getItem('credit_score_history') || '[]';
-    let cHistory = [];
-    try { cHistory = JSON.parse(histJSON); } catch(e){}
-    cHistory.push(newScore);
-    if(cHistory.length > 12) cHistory.shift();
-    localStorage.setItem('credit_score_history', JSON.stringify(cHistory));
-
-    // 3. Append to payment status log
-    let payLogJSON = localStorage.getItem('payment_history') || '[]';
-    let payLog = [];
-    try { payLog = JSON.parse(payLogJSON); } catch(e){}
-    const paymentAmt = json.data.amount || loanSummary.emi_amount;
-    payLog.unshift({
-       date: new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}),
-       status: 'Paid',
-       amount: paymentAmt,
-       loan_id: loanSummary.loan_id
-    });
-    if(payLog.length > 20) payLog.pop();
-    localStorage.setItem('payment_history', JSON.stringify(payLog));
-    // ------------------------------------------
-
-    // Helpful for next pages
-    sessionStorage.removeItem('payEmiLoanId');
-
-    overlay.classList.remove('active');
-    if (confirmBtn) {
-      confirmBtn.classList.remove('loading');
-      confirmBtn.disabled = false;
-    }
-    goToStep(4);
   } catch (e) {
     console.error(e);
     overlay.classList.remove('active');
@@ -243,7 +256,7 @@ async function confirmPayment() {
       confirmBtn.classList.remove('loading');
       confirmBtn.disabled = false;
     }
-    setError(3, 'System error processing payment.');
+    setError(3, e.message || 'System error initiating payment.');
   }
 }
 
