@@ -30,9 +30,20 @@ try {
         exit();
     }
 
+    $creditScore = $user['credit_score'] ?? null;
+    if (!$creditScore) {
+        // Generate a sensible default credit score if not present
+        $creditScore = rand(650, 850);
+        $database->users->updateOne(
+            ['_id' => $objectId],
+            ['$set' => ['credit_score' => $creditScore]]
+        );
+    }
+
     $userData = [
-        'firstname' => $user['firstname'] ?? 'User',
-        'lastname'  => $user['lastname']  ?? '',
+        'firstname'    => $user['firstname'] ?? 'User',
+        'lastname'     => $user['lastname']  ?? '',
+        'credit_score' => $creditScore
     ];
 
     // 2. Fetch all loan applications for calculations

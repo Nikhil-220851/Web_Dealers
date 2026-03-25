@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LoanPro â€” Agent Apply Loan</title>
+  <title>LoanPro — Agent Apply Loan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
@@ -19,8 +19,8 @@
     <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <span class="material-icons-round">account_balance</span>
-      <span>Bank Employee</span>
+      <div class="logo-mark">L</div>
+      <span class="logo-text">Loan<span>Pro</span></span>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Main</div>
@@ -40,15 +40,16 @@
       <button class="hamburger" onclick="toggleSidebar()">
         <span></span><span></span><span></span>
       </button>
-      <a class="brand-name" href="#">
-        <span class="t1">Loan</span><span class="t2">Pro</span>
+      <a class="brand-name" href="dashboard.html">
+        <div class="logo-mark">L</div>
+        <div class="t-wrap"><span class="t1">Loan</span><span class="t2">Pro</span></div>
       </a>
     </div>
     <div class="navbar-right">
       <div class="agent-badge">
         <div class="agent-avatar" id="agentAvatar">A</div>
         <div class="agent-info">
-          <span class="agent-name" id="agentName">Loadingâ€¦</span>
+          <span class="agent-name" id="agentName">Loading…</span>
           <span class="agent-role" id="agentRole"></span>
         </div>
       </div>
@@ -72,7 +73,7 @@
 
     <div class="page-heading">
       <h1>Submit New Loan Application</h1>
-      <p>Initiate a loan application on behalf of a borrower â€” fill each section carefully.</p>
+      <p>Initiate a loan application on behalf of a borrower — fill each section carefully.</p>
     </div>
 
     <!-- Step Indicator -->
@@ -113,7 +114,7 @@
     <div class="form-container">
       <form id="applyLoanForm" novalidate onsubmit="submitLoanForm(event)">
 
-        <!-- â”€â”€ CARD 1: Borrower Details â”€â”€ -->
+        <!-- —— CARD 1: Borrower Details —— -->
         <div class="form-card">
           <div class="card-header-strip">
             <div class="card-icon-wrap">
@@ -161,7 +162,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ CARD 2: KYC Details â”€â”€ -->
+        <!-- —— CARD 2: KYC Details —— -->
         <div class="form-card">
           <div class="card-header-strip">
             <div class="card-icon-wrap">
@@ -194,7 +195,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ CARD 3: Employment & Income â”€â”€ -->
+        <!-- —— CARD 3: Employment & Income —— -->
         <div class="form-card">
           <div class="card-header-strip">
             <div class="card-icon-wrap">
@@ -211,7 +212,7 @@
                 <div class="field-group">
                   <label>Employment Type <span class="text-danger">*</span></label>
                   <select class="form-select" name="emp_type" required>
-                    <option value="">Select typeâ€¦</option>
+                    <option value="">Select type…</option>
                     <option value="Salaried">Salaried</option>
                     <option value="Self-employed">Self-Employed</option>
                     <option value="Business">Business Owner</option>
@@ -221,7 +222,7 @@
               </div>
               <div class="col-md-4">
                 <div class="field-group">
-                  <label>Monthly Income (â‚¹) <span class="text-danger">*</span></label>
+                  <label>Monthly Income (₹) <span class="text-danger">*</span></label>
                   <input type="number" class="form-control" name="emp_income"
                          min="1" placeholder="e.g. 50000" required>
                   <div class="invalid-feedback">Must be greater than 0.</div>
@@ -238,7 +239,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ CARD 4: Loan Request â”€â”€ -->
+        <!-- —— CARD 4: Loan Request —— -->
         <div class="form-card">
           <div class="card-header-strip">
             <div class="card-icon-wrap">
@@ -246,7 +247,7 @@
             </div>
             <div>
               <h3 class="card-header-title">Loan Request</h3>
-              <p class="card-header-sub">Select a scheme and enter loan details â€” EMI is calculated automatically</p>
+              <p class="card-header-sub">Select a scheme and enter loan details — EMI is calculated automatically</p>
             </div>
           </div>
           <div class="card-body-inner">
@@ -258,13 +259,13 @@
                 <label>Loan Scheme <span class="text-danger">*</span></label>
                 <select class="form-select" name="loan_scheme_id" id="loanSchemeSelect"
                         required onchange="onSchemeSelect()">
-                  <option value="">Loading schemesâ€¦</option>
+                  <option value="">Loading schemes…</option>
                 </select>
                 <div class="invalid-feedback">Please select a loan scheme.</div>
               </div>
               <!-- Loan Amount -->
               <div class="field-group">
-                <label>Loan Amount (â‚¹) <span class="text-danger">*</span></label>
+                <label>Loan Amount (₹) <span class="text-danger">*</span></label>
                 <input type="number" class="form-control loan-amount-input"
                        name="loan_amount" id="loanAmountInput"
                        oninput="calculateEMI()" placeholder="Enter amount" required>
@@ -282,15 +283,15 @@
 
             <!-- Scheme info strip (shown on selection) -->
             <div class="scheme-info-strip" id="schemeInfoStrip">
-              <span class="scheme-badge"><i class="fas fa-percent"></i> <span id="schemeRate">â€”</span> p.a.</span>
-              <span class="scheme-badge"><i class="fas fa-rupee-sign"></i> Range: <span id="schemeRange">â€”</span></span>
-              <span class="scheme-badge"><i class="fas fa-calendar-alt"></i> Tenure: <span id="schemeTenure">â€”</span> months</span>
+              <span class="scheme-badge"><i class="fas fa-percent"></i> <span id="schemeRate">—</span> p.a.</span>
+              <span class="scheme-badge"><i class="fas fa-rupee-sign"></i> Range: <span id="schemeRange">—</span></span>
+              <span class="scheme-badge"><i class="fas fa-calendar-alt"></i> Tenure: <span id="schemeTenure">—</span> months</span>
             </div>
 
             <!-- EMI Card -->
             <div class="emi-card mt-4">
               <div class="emi-label"><i class="fas fa-calculator me-1"></i> Estimated Monthly EMI</div>
-              <h2 class="emi-amount" id="emiPreview">â‚¹0</h2>
+              <h2 class="emi-amount" id="emiPreview">₹0</h2>
               <div class="emi-sub">Based on reducing-balance interest calculation</div>
             </div>
 
@@ -298,7 +299,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ CARD 5: Bank Details â”€â”€ -->
+        <!-- —— CARD 5: Bank Details —— -->
         <div class="form-card">
           <div class="card-header-strip">
             <div class="card-icon-wrap">
@@ -339,7 +340,7 @@
           </div>
         </div>
 
-        <!-- â”€â”€ Action Buttons â”€â”€ -->
+        <!-- —— Action Buttons —— -->
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-2 mb-4">
           <button type="button" class="btn-reset-form"
                   onclick="resetForm()">
@@ -354,6 +355,7 @@
     </div><!-- /form-container -->
   </main>
 
+  <script src="../../assets/js/navbar.js"></script>
   <script src="emp-common.js"></script>
   <script src="apply-loan.js"></script>
   <script>
@@ -361,4 +363,3 @@
   </script>
 </body>
 </html>
-

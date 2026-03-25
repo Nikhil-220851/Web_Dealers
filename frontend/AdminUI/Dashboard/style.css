@@ -14,6 +14,12 @@
   --border:  #99f6e4;
   --tint:    #ccfbf1;
   --card-bg: #f0fdfa;
+
+  /* Brand Logo Tokens */
+  --brand-pr:     var(--pr);
+  --brand-acc:    var(--pr-lt);
+  --brand-pr-rgb: 13, 124, 110;
+  --brand-text:   var(--navy);
 }
 
 /* ─── Reset & Base ─── */
@@ -45,11 +51,26 @@ body {
 .navbar-right { display: flex; align-items: center; gap: 8px; }
 
 .brand-name {
-  font-size: 26px;
-  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
   letter-spacing: -0.3px;
 }
+
+.brand-name .logo-mark {
+  width: 32px;
+  height: 32px;
+  font-size: 15px;
+  border-radius: 8px;
+}
+
+.brand-name .t-wrap {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
 .brand-name .t1 { color: var(--pr); }
 .brand-name .t2 { color: var(--navy); }
 
@@ -117,14 +138,47 @@ body {
 .sidebar.open { left: 0; }
 
 .sidebar-logo {
-  background: linear-gradient(135deg, var(--pr-dk), var(--pr));
-  padding: 20px 22px;
+  padding: 24px 22px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 13px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
 }
-.sidebar-logo .material-icons-round { font-size: 26px; color: var(--tint); }
-.sidebar-logo span { font-size: 18px; font-weight: 800; color: #fff; }
+
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--brand-pr), var(--brand-acc));
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  color: #fff;
+  font-size: 19px;
+  box-shadow: 0 4px 14px rgba(var(--brand-pr-rgb), 0.3);
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  white-space: nowrap;
+  color: var(--brand-text);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.logo-text span {
+  color: var(--brand-pr);
+}
+
+/* Sidebar Collapsed - for future use or if class added */
+.sidebar.collapsed .logo-text { display: none; }
+.sidebar.collapsed .sidebar-logo { justify-content: center; padding: 22px 10px; }
 
 .sidebar-nav { flex: 1; padding: 10px 0; overflow-y: auto; }
 
@@ -650,7 +704,7 @@ body {
 .modal-content {
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 12px 60px rgba(13,124,110,0.18);
+  box-shadow: 0 12px 60px rgba(13, 124, 110, 0.18);
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -1351,4 +1405,4 @@ body {
   background: #fee2e2;
   color: #991b1b;
   border-color: #fecaca;
-}
+}

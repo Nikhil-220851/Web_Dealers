@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Status — LoanPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../assets/css/payment-success.css"/>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <!-- ── LEFT BRAND PANEL ── -->
+    <aside class="brand-panel">
+      <div class="panel-inner">
+        <div class="panel-icon">🏦</div>
+        <div class="panel-brand">LoanPro</div>
+        <div class="panel-tagline">DIGITAL LENDING PLATFORM</div>
+
+        <div class="panel-divider"></div>
+
+        <div class="panel-info-block">
+          <div class="info-item">
+            <span class="info-icon">🔒</span>
+            <div>
+              <strong>256-bit Encrypted</strong>
+              <p>All transactions are secured end-to-end</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">⚖️</span>
+            <div>
+              <strong>RBI Compliant</strong>
+              <p>Regulated under Digital Lending Guidelines</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🧾</span>
+            <div>
+              <strong>Instant Receipt</strong>
+              <p>Confirmation sent to your registered email</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <p>Need help? <a href="mailto:support@loanpro.com">support@loanpro.com</a></p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── RIGHT CARD (filled by JS) ── -->
+    <main class="card" id="card-content">
+      <!-- rendered by JS -->
+    </main>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');   // 'success' | 'failed'
+    const txnId  = params.get('txn_id');
+    const amount = params.get('amount');   // e.g. "8500"
+    const loan   = params.get('loan_id');  // e.g. "LN-20240312"
+    const date   = params.get('date') || new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const method = params.get('method') || 'UPI';
+    const msg    = params.get('msg');
+
+    const card = document.getElementById('card-content');
+
+    /* ── format amount ── */
+    function fmt(val) {
+      if (!val) return '—';
+      return '₹' + Number(val).toLocaleString('en-IN');
+    }
+
+    if (status === 'success') {
+
+      let secs = 6;
+      setTimeout(() => { window.location.href = 'payment-history.html'; }, 6000);
+
+      card.innerHTML = `
+        <div class="result-icon success" id="resultIcon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 12.5L9 17.5L20 7" stroke="white" stroke-width="2.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <h1 class="card-title">Payment <span class="highlight">Successful!</span></h1>
+        <p class="card-sub">
+          Your EMI repayment has been processed. A confirmation has been sent to your registered email.
+        </p>
+
+        <div class="receipt-card">
+
+          <div class="receipt-row">
+            <span class="receipt-label">Transaction ID</span>
+            <span class="receipt-value mono">${txnId ?? '—'}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">Loan ID</span>
+            <span class="receipt-value mono">${loan ?? '—'}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">Amount Paid</span>
+            <span class="receipt-value amount-val">${fmt(amount)}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">Payment Date</span>
+            <span class="receipt-value">${date}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">Payment Method</span>
+            <span class="receipt-value">${method}</span>
+          </div>
+
+          <div class="receipt-row last">
+            <span class="receipt-label">Status</span>
+            <span class="status-badge success-badge">✓ Verified</span>
+          </div>
+
+        </div>
+
+        <p class="redirect-note">
+          Redirecting to <strong>Payment History</strong> in
+          <span id="countdown">6</span>s…
+        </p>
+
+        <a href="payment-history.html" class="btn-primary">View Payment History →</a>
+        <a href="dashboard.html"       class="btn-secondary">Back to Dashboard</a>
+      `;
+
+      const countEl = document.getElementById('countdown');
+      const iv = setInterval(() => {
+        secs--;
+        if (countEl) countEl.textContent = secs;
+        if (secs <= 0) clearInterval(iv);
+      }, 1000);
+
+    } else {
+
+      const errorMsg = msg
+        ? decodeURIComponent(msg)
+        : 'Something went wrong during payment processing. No amount has been deducted.';
+
+      card.innerHTML = `
+        <div class="result-icon failed" id="resultIcon">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M6 6L18 18M6 18L18 6" stroke="white" stroke-width="2.6"
+                  stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h1 class="card-title">Payment <span class="highlight-error">Failed</span></h1>
+        <p class="card-sub">
+          We couldn't process your payment. <strong>No amount has been deducted</strong> from your account.
+        </p>
+
+        <div class="error-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12" y2="16.5"/>
+          </svg>
+          <span>${errorMsg}</span>
+        </div>
+        <div class="receipt-card minimal">
+          <div class="receipt-row">
+            <span class="receipt-label">Attempted Amount</span>
+            <span class="receipt-value amount-val">${fmt(amount)}</span>
+          </div>
+          <div class="receipt-row last">
+            <span class="receipt-label">Status</span>
+            <span class="status-badge failed-badge">✗ Failed</span>
+          </div>
+        </div>
+
+        <a href="javascript:history.back()" class="btn-primary">Try Again →</a>
+        <a href="frontend/dashboard/payment-history.html"      class="btn-secondary">View Payment History</a>
+      `;
+    }
+  </script>
+
+</body>
+</html>

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initDashboard() {
     // Attempt to get userId from localStorage
     let userId = localStorage.getItem('userId');
-    
+
     // Fallback search if userId not found (sometimes it might be stored differently)
     if (!userId) {
         const userEmail = localStorage.getItem('userEmail');
@@ -32,18 +32,21 @@ async function initDashboard() {
     try {
         const response = await fetch(`../../backend/api/get-dashboard-data.php?userId=${userId}`);
         const result = await response.json();
-        
+
         console.log('Dashboard API Result:', result);
 
         if (result.status === 'success') {
             const data = result.data;
             updateWelcomeHeader(data.user);
             updateSummaryCards(data.summary);
+            if (data.user.credit_score) {
+                updateCreditScore(data.user.credit_score);
+            }
             renderActiveLoansCarousel(data.activeLoans);
             renderRecentApplications(data.recentApplications);
             renderRecommendations(data.recommendations);
             updateEMIWidget(data.summary);
-            initDashChart(data.activeLoans);
+            await initDashChart(data.activeLoans);
         } else {
             console.error('Failed to fetch dashboard data:', result.message);
         }
@@ -69,10 +72,112 @@ function updateWelcomeHeader(user) {
 }
 
 function updateSummaryCards(summary) {
-    if(document.getElementById('stat-total-loans')) document.getElementById('stat-total-loans').textContent = summary.totalLoans;
-    if(document.getElementById('stat-active-loans')) document.getElementById('stat-active-loans').textContent = summary.activeLoans;
-    if(document.getElementById('stat-pending-loans')) document.getElementById('stat-pending-loans').textContent = summary.pendingLoans;
-    if(document.getElementById('stat-total-borrowed')) document.getElementById('stat-total-borrowed').textContent = `₹${Math.round(summary.totalAmount).toLocaleString('en-IN')}`;
+    if (document.getElementById('stat-total-loans')) document.getElementById('stat-total-loans').textContent = summary.totalLoans;
+    if (document.getElementById('stat-active-loans')) document.getElementById('stat-active-loans').textContent = summary.activeLoans;
+    if (document.getElementById('stat-pending-loans')) document.getElementById('stat-pending-loans').textContent = summary.pendingLoans;
+    if (document.getElementById('stat-total-borrowed')) document.getElementById('stat-total-borrowed').textContent = `₹${Math.round(summary.totalAmount).toLocaleString('en-IN')}`;
+}
+
+function updateCreditScore(score) {
+    localStorage.setItem('credit_score', score);
+    const scoreVal = document.getElementById('credit-score-value');
+    const scoreLbl = document.getElementById('credit-score-label');
+    const scoreBadge = document.getElementById('credit-score-badge');
+
+    const parsedScore = parseInt(score) || 726;
+
+    if (scoreVal) {
+        animateValue(scoreVal, 300, parsedScore, 1000);
+    }
+    
+    let label = 'Poor Score';
+    let badgeText = 'High Risk';
+    let badgeClass = 'badge-red'; 
+    let chartColor = '#EF4444'; // Red
+    
+    if (parsedScore >= 750) {
+        label = 'Excellent Score';
+        badgeText = 'Good Standing';
+        badgeClass = 'badge-green';
+        chartColor = '#22C55E'; // Green
+    } else if (parsedScore >= 650) {
+        label = 'Good Score';
+        badgeText = 'Fair Standing';
+        badgeClass = 'badge-blue';
+        chartColor = '#3B82F6'; // Blue
+    } else if (parsedScore >= 550) {
+        label = 'Average Score';
+        badgeText = 'Needs Improvement';
+        badgeClass = 'badge-yellow';
+        chartColor = '#F97316'; // Orange
+    }
+
+    if (scoreLbl) scoreLbl.innerText = label;
+    if (scoreBadge) {
+        scoreBadge.innerText = badgeText;
+        scoreBadge.className = 'badge ' + badgeClass;
+    }
+
+    // Mini Chart Initialization
+    const ctx = document.getElementById('miniCreditChart');
+    if (ctx) {
+        // Destroy existing chart if it exists to prevent overlap
+        let chartStatus = Chart.getChart(ctx);
+        if (chartStatus != undefined) {
+            chartStatus.destroy();
+        }
+
+        const minScore = 300;
+        const maxScore = 900;
+        const filledData = Math.max(0, parsedScore - minScore);
+        const emptyData = Math.max(0, maxScore - parsedScore);
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [filledData, emptyData],
+                    backgroundColor: [chartColor, '#E4E0F5'],
+                    borderWidth: 0,
+                    borderRadius: 10,
+                    cutout: '80%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                rotation: 270,
+                circumference: 180,
+                animation: {
+                    animateRotate: true,
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    tooltip: { enabled: false },
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+
+// Helper to animate numbers smoothly
+function animateValue(obj, start, end, duration) {
+    if (start === end) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const currentScore = Math.floor(progress * (end - start) + start);
+        obj.innerHTML = currentScore;
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        } else {
+            obj.innerHTML = end;
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 /* ═══════════════════════════════════════════════
@@ -87,10 +192,10 @@ let _currentLoanIndex = 0;
  * Builds the carousel or the "no loan" placeholder as appropriate.
  */
 function renderActiveLoansCarousel(activeLoans) {
-    const wrapper  = document.getElementById('loan-cards-wrapper');
-    const dotsRow  = document.getElementById('carousel-dots');
-    const prevBtn  = document.getElementById('carousel-prev');
-    const nextBtn  = document.getElementById('carousel-next');
+    const wrapper = document.getElementById('loan-cards-wrapper');
+    const dotsRow = document.getElementById('carousel-dots');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
 
     if (!wrapper) return;
 
@@ -114,7 +219,7 @@ function renderActiveLoansCarousel(activeLoans) {
             </div>`;
         if (prevBtn) prevBtn.classList.add('hidden');
         if (nextBtn) nextBtn.classList.add('hidden');
-        if (dotsRow)  dotsRow.classList.add('hidden');
+        if (dotsRow) dotsRow.classList.add('hidden');
         return;
     }
 
@@ -127,14 +232,14 @@ function renderActiveLoansCarousel(activeLoans) {
         wrapper.appendChild(track);
         if (prevBtn) prevBtn.classList.add('hidden');
         if (nextBtn) nextBtn.classList.add('hidden');
-        if (dotsRow)  dotsRow.classList.add('hidden');
+        if (dotsRow) dotsRow.classList.add('hidden');
         return;
     }
 
     /* ── 2+ active loans — full carousel ── */
     if (prevBtn) prevBtn.classList.remove('hidden');
     if (nextBtn) nextBtn.classList.remove('hidden');
-    if (dotsRow)  dotsRow.classList.remove('hidden');
+    if (dotsRow) dotsRow.classList.remove('hidden');
 
     // Build the sliding track
     const track = document.createElement('div');
@@ -168,7 +273,7 @@ function renderActiveLoansCarousel(activeLoans) {
         `<span class="carousel-dot${i === 0 ? ' active-dot' : ''}" 
                data-i="${i}" 
                onclick="_currentLoanIndex=${i}; updateCarousel();"
-               title="Loan ${i+1}"></span>`
+               title="Loan ${i + 1}"></span>`
     ).join('');
 
     // Touch / swipe support
@@ -182,7 +287,7 @@ function renderActiveLoansCarousel(activeLoans) {
  * @param {boolean} [animate=true]  pass false for first paint
  */
 function updateCarousel(animate = true) {
-    const track  = document.getElementById('carousel-track');
+    const track = document.getElementById('carousel-track');
     const dotsRow = document.getElementById('carousel-dots');
     const n = _carouselLoans.length;
     if (!track || n < 2) return;
@@ -190,7 +295,7 @@ function updateCarousel(animate = true) {
     // Slide the track
     const offset = -(_currentLoanIndex * 100);
     track.style.transition = animate ? 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
-    track.style.transform  = `translateX(${offset}%)`;
+    track.style.transform = `translateX(${offset}%)`;
 
     // Update slide classes & rebuild card content for active → full card
     const slides = track.querySelectorAll('.loan-card-slide');
@@ -233,7 +338,7 @@ function carouselPrev() {
 function _initCarouselSwipe(el) {
     let startX = 0;
     el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    el.addEventListener('touchend',   e => {
+    el.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - startX;
         if (Math.abs(dx) > 40) {
             dx < 0 ? carouselNext() : carouselPrev();
@@ -294,7 +399,7 @@ function buildActiveLoanCard(loan) {
 let currentLoanId = null;
 let currentEmiAmount = null;
 
-window.startEmiFlow = function(loanId) {
+window.startEmiFlow = function (loanId) {
     if (!loanId) return;
     sessionStorage.setItem('payEmiLoanId', loanId);
     window.location.href = "../borrower/emi-payment.html";
@@ -307,7 +412,7 @@ function initEmiTimers() {
 
 // Re-init timers after carousel render
 const _origUpdateCarousel = updateCarousel;
-updateCarousel = function(animate = true) {
+updateCarousel = function (animate = true) {
     _origUpdateCarousel(animate);
 };
 
@@ -343,7 +448,7 @@ function buildPlaceholderCard(loan, idx) {
 function renderRecentApplications(apps) {
     const list = document.getElementById('recent-apps-list');
     if (!list) return;
-    
+
     if (!apps || apps.length === 0) {
         list.innerHTML = '<div class="text-center py-20 text-muted text-sm">No recent applications found.</div>';
         return;
@@ -368,6 +473,36 @@ function renderRecentApplications(apps) {
     `).join('');
 }
 
+function getEligibilityForLoan(type) {
+    const t = (type || '').toLowerCase();
+    if (t.includes('home')) {
+        return { salary: '₹40,000+', score: '750+', employment: 'Salaried / Self-employed' };
+    } else if (t.includes('personal') || t.includes('festival')) {
+        return { salary: '₹20,000+', score: '650+', employment: 'Salaried' };
+    } else if (t.includes('auto') || t.includes('car')) {
+        return { salary: '₹25,000+', score: '700+', employment: 'Salaried / Self-employed' };
+    } else if (t.includes('education') || t.includes('student')) {
+        return { salary: 'Co-applicant min ₹30,000', score: '650+', employment: 'Salaried Co-applicant' };
+    } else if (t.includes('business')) {
+        return { salary: '₹50,000+ (Business Income)', score: '700+', employment: 'Self-employed / Business Owner' };
+    }
+    return { salary: '₹25,000+', score: '700+', employment: 'Salaried / Self-employed' };
+}
+
+window.toggleLoanDetails = function(event, id) {
+    event.stopPropagation(); // prevent clicking the card from navigating
+    const detailsDiv = document.getElementById('loan-details-' + id);
+    if (detailsDiv) {
+        if (detailsDiv.style.display === 'none') {
+            detailsDiv.style.display = 'block';
+            event.target.innerText = 'See Less';
+        } else {
+            detailsDiv.style.display = 'none';
+            event.target.innerText = 'See More';
+        }
+    }
+}
+
 function renderRecommendations(recs) {
     const container = document.getElementById('recommendations-container');
     if (!container) return;
@@ -377,16 +512,70 @@ function renderRecommendations(recs) {
         return;
     }
 
-    container.innerHTML = recs.map(rec => `
-        <div class="rec-card" onclick="window.location.href='apply-loan.html'">
-            <div class="rec-icon" style="background:rgba(108,71,255,0.1); color:var(--primary);"><i class="ph ph-sparkle"></i></div>
-            <div style="flex:1">
-                <div class="font-semi text-sm">${rec.loan_type}</div>
-                <div class="text-xs text-muted">${rec.bank_name}</div>
+    let globalIndex = 0;
+    container.innerHTML = recs.map(rec => {
+        globalIndex++;
+        const elg = getEligibilityForLoan(rec.loan_type);
+        const cardId = `rec-${rec.id || globalIndex}`;
+
+        return `
+        <div class="rec-card-wrapper" style="border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: var(--surface); transition: all 0.3s ease;">
+            <div class="rec-card" style="border: none; margin-bottom: 0; box-shadow: none; cursor: default;">
+                <div class="rec-icon" style="background:rgba(108,71,255,0.1); color:var(--primary);"><i class="ph ph-sparkle"></i></div>
+                <div style="flex:1">
+                    <div class="font-semi text-sm">${rec.loan_type}</div>
+                    <div class="text-xs text-muted">${rec.bank_name}</div>
+                </div>
+                <div class="rec-rate" style="margin-right: 15px;">${rec.interest_rate}%</div>
+                <button class="btn btn-outline" style="padding: 4px 12px; font-size: 11px; height: 28px;" onclick="toggleLoanDetails(event, '${cardId}')">See More</button>
             </div>
-            <div class="rec-rate">${rec.interest_rate}%</div>
+            
+            <div id="loan-details-${cardId}" style="display: none; padding: 18px; border-top: 1px solid var(--border); background: rgba(248,250,252,0.8);">
+                <h4 style="font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Eligibility Criteria</h4>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px; background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(59,130,246,0.1); display:flex; align-items:center; justify-content:center; color:var(--primary);">
+                            <i class="ph ph-wallet" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Min. Monthly Salary</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.salary}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(34,197,94,0.1); display:flex; align-items:center; justify-content:center; color:var(--green);">
+                            <i class="ph ph-chart-line-up" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Required Credit Score</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.score}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width:28px; height:28px; border-radius:6px; background:rgba(249,115,22,0.1); display:flex; align-items:center; justify-content:center; color:var(--orange);">
+                            <i class="ph ph-briefcase" style="font-size: 16px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Employment Type</div>
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text);">${elg.employment}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 style="font-size: 12px; font-weight: 700; color: var(--text); margin-top: 18px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Key Features</h4>
+                <ul style="font-size: 13px; color: var(--text-secondary); padding-left: 20px; line-height: 1.6; margin: 0;">
+                    <li>Quick approval process with minimal documentation.</li>
+                    <li>Flexible repayment tenure options available.</li>
+                    <li>Zero hidden charges on foreclosure.</li>
+                </ul>
+                
+                <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary btn-sm" onclick="window.location.href='apply-loan.html'">Apply Now <i class="ph ph-arrow-right" style="margin-left:5px"></i></button>
+                </div>
+            </div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function updateEMIWidget(summary) {
@@ -405,7 +594,6 @@ function updateEMIWidget(summary) {
             badge.textContent = `${formattedEMI}/mo`;
             badge.classList.add('num-font');
         }
-        
         let nextDueDate = 'N/A';
         // Check if there's any active loan to calculate the next date 
         // We'll rely on the global `_carouselLoans` that has standard structure
@@ -415,15 +603,15 @@ function updateEMIWidget(summary) {
             let totalMonths = primaryLoan.tenure * 12;
             let remaining = primaryLoan.remaining_emis !== undefined ? primaryLoan.remaining_emis : totalMonths;
             let paid = totalMonths - remaining;
-            
+
             // Due date is next month after paid EMIs (mocking to 5th)
             startDate.setMonth(startDate.getMonth() + paid + 1);
             startDate.setDate(5);
-            
+
             if (remaining > 0) {
-               nextDueDate = startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                nextDueDate = startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
             } else {
-               nextDueDate = 'Completed';
+                nextDueDate = 'Completed';
             }
         } else {
             // Fallback
@@ -432,35 +620,135 @@ function updateEMIWidget(summary) {
             nextMonth.setDate(5);
             nextDueDate = nextMonth.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
         }
-        
-        if(dateDisplay) dateDisplay.textContent = nextDueDate;
+
+        if (dateDisplay) dateDisplay.textContent = nextDueDate;
     }
 }
 
-function initDashChart(activeLoans) {
+async function initDashChart(activeLoans) {
     const ctx = document.getElementById('emiChart');
     if (!ctx) return;
 
-    // Default data if no active loans
-    let labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-    if (activeLoans && activeLoans.length > 0) {
-        // Simple projection: same EMI for next 12 months
-        const monthlyEMI = activeLoans.reduce((sum, loan) => {
-            const P = loan.amount;
-            const r = (loan.interest_rate / 100) / 12;
-            const n = loan.tenure * 12;
-            if (r > 0 && n > 0) {
-                return sum + ((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
-            }
-            return sum;
-        }, 0);
-        
-        values = values.map(() => Math.round(monthlyEMI));
+    if (window._emiChartInstance) {
+        window._emiChartInstance.destroy();
     }
 
-    new Chart(ctx, {
+    let userId = localStorage.getItem('userId');
+    let paymentData = [];
+    if (userId) {
+        try {
+            const response = await fetch(`../../backend/api/get-emi-payments.php?userId=${userId}`);
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+                paymentData = result.data;
+            }
+        } catch (error) {
+            console.error('Error fetching EMI payments:', error);
+        }
+    }
+
+    let minDate = new Date();
+    minDate.setMonth(minDate.getMonth() - 11);
+    let maxDate = new Date();
+    let hasDataBounds = false;
+
+    if (activeLoans && activeLoans.length > 0) {
+        let activeOnly = activeLoans.filter(l => l.status === 'active' || l.status === 'approved');
+        if (activeOnly.length > 0) {
+            activeOnly.sort((a, b) => new Date(a.loan_start_date || a.applied_date) - new Date(b.loan_start_date || b.applied_date));
+            let startDateStr = activeOnly[0].loan_start_date || activeOnly[0].applied_date;
+            if (startDateStr) {
+                let sDate = new Date(startDateStr);
+                if (!isNaN(sDate.getTime())) {
+                    minDate = new Date(sDate);
+                    maxDate = new Date(sDate);
+                    hasDataBounds = true;
+
+                    activeOnly.forEach(l => {
+                        let lsDate = new Date(l.loan_start_date || l.applied_date);
+                        if (!isNaN(lsDate.getTime())) {
+                            let eDate = new Date(lsDate.getFullYear(), lsDate.getMonth() + (l.tenure * 12), 1);
+                            if (eDate > maxDate) maxDate = new Date(eDate);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    let processedPayments = [];
+    if (paymentData.length > 0) {
+        paymentData.forEach(payment => {
+            let pMonth, pYear, pDateObj;
+            if (payment.payment_month && payment.payment_year) {
+                let pMonthVal = payment.payment_month;
+                if (typeof pMonthVal === 'string' && isNaN(parseInt(pMonthVal))) {
+                    const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+                    pMonth = monthNames.indexOf(pMonthVal.toLowerCase().trim());
+                    if (pMonth === -1 && payment.created_at) {
+                        pDateObj = new Date(payment.created_at);
+                        pMonth = pDateObj.getMonth();
+                        pYear = pDateObj.getFullYear();
+                    } else {
+                        pYear = parseInt(payment.payment_year);
+                        pDateObj = new Date(pYear, pMonth, 1);
+                    }
+                } else {
+                    pMonth = parseInt(pMonthVal) - 1; // 1-12 to 0-11
+                    pYear = parseInt(payment.payment_year);
+                    pDateObj = new Date(pYear, pMonth, 1);
+                }
+            } else if (payment.created_at) {
+                pDateObj = new Date(payment.created_at);
+                pMonth = pDateObj.getMonth();
+                pYear = pDateObj.getFullYear();
+            } else {
+                return;
+            }
+
+            if (pDateObj && !isNaN(pDateObj.getTime())) {
+                processedPayments.push({
+                    payment: payment,
+                    pMonth: pMonth,
+                    pYear: pYear,
+                    dateObj: pDateObj
+                });
+
+                if (!hasDataBounds) {
+                    minDate = new Date(pDateObj);
+                    maxDate = new Date(pDateObj);
+                    hasDataBounds = true;
+                } else {
+                    if (pDateObj < minDate) minDate = new Date(pDateObj);
+                    if (pDateObj > maxDate) maxDate = new Date(pDateObj);
+                }
+            }
+        });
+    }
+
+    let startMonth = minDate.getMonth();
+    let startYear = minDate.getFullYear();
+    let numMonths = (maxDate.getFullYear() - startYear) * 12 + (maxDate.getMonth() - startMonth) + 1;
+    if (numMonths <= 0 || isNaN(numMonths)) numMonths = 12;
+
+    let labels = [];
+    let values = new Array(numMonths).fill(0);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    for (let i = 0; i < numMonths; i++) {
+        let d = new Date(startYear, startMonth + i, 1);
+        labels.push(`${months[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`);
+    }
+
+    processedPayments.forEach(item => {
+        const diffMonths = (item.pYear - startYear) * 12 + (item.pMonth - startMonth);
+        if (diffMonths >= 0 && diffMonths < numMonths) {
+            const amount = parseFloat(item.payment.amount_paid || item.payment.amount || item.payment.emi_amount || 0);
+            values[diffMonths] += amount;
+        }
+    });
+
+    window._emiChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -477,25 +765,44 @@ function initDashChart(activeLoans) {
                     g.addColorStop(1, 'rgba(108,71,255,0.01)');
                     return g;
                 },
-                tension: 0.4
+                tension: 0.5
             }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
             plugins: {
-                legend: { display: false }, 
+                legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#fff', titleColor: '#1A1433', bodyColor: '#6C47FF',
-                    borderColor: '#E4E0F5', borderWidth: 1, padding: 10,
-                    callbacks: { label: ctx3 => '  ₹' + ctx3.raw.toLocaleString('en-IN') }
+                    backgroundColor: '#1A1433', titleColor: '#fff', bodyColor: '#fff',
+                    titleFont: { size: 13, weight: 'bold' }, bodyFont: { size: 14 },
+                    padding: 12, cornerRadius: 8, displayColors: false,
+                    callbacks: { label: ctx3 => 'Paid: ₹' + ctx3.raw.toLocaleString('en-IN') }
                 }
             },
             scales: {
-                x: { grid: { display: false }, ticks: { color: '#9B94B8', font: { size: 10 } } },
-                y: { 
-                    grid: { color: '#E4E0F5', borderDash: [5, 5] }, 
-                    ticks: { color: '#9B94B8', font: { size: 10 }, callback: v => '₹' + (v / 1000).toFixed(1) + 'K' } 
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: {
+                        color: '#9B94B8',
+                        font: { size: 11, family: "'Inter', sans-serif" },
+                        padding: 10,
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 0
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(228, 224, 245, 0.5)', drawBorder: false, borderDash: [5, 5] },
+                    ticks: {
+                        color: '#9B94B8', font: { size: 11, family: "'Inter', sans-serif" },
+                        padding: 10,
+                        callback: v => v >= 1000 ? '₹' + (v / 1000).toFixed(1) + 'K' : '₹' + v
+                    }
                 }
+            },
+            animation: {
+                y: { duration: 1500, easing: 'easeOutElastic' }
             }
         }
     });
@@ -548,7 +855,7 @@ async function fetchNotifications(userId) {
 function renderNotifications(notifications, unreadCount) {
     const notifDrop = document.getElementById('notif-drop');
     const notifDot = document.querySelector('.notif-dot');
-    
+
     if (notifDot) {
         if (unreadCount > 0) {
             notifDot.style.display = 'block';
@@ -556,27 +863,27 @@ function renderNotifications(notifications, unreadCount) {
             notifDot.style.display = 'none';
         }
     }
-    
+
     if (!notifDrop) return;
-    
+
     const listContainer = notifDrop.querySelector('div[style*="max-height"]');
     if (!listContainer) return;
-    
+
     if (!notifications || notifications.length === 0) {
         listContainer.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-muted); font-size:12px;">No new notifications.</div>';
         return;
     }
-    
+
     listContainer.innerHTML = notifications.slice(0, 5).map(notif => {
         let icon = 'ph-bell';
         let bg = 'var(--surface)';
         let color = 'var(--text)';
-        
+
         if (notif.type === 'approval') { icon = 'ph-check-circle'; bg = 'rgba(34, 197, 94, 0.1)'; color = '#22C55E'; }
         else if (notif.type === 'rejection') { icon = 'ph-x-circle'; bg = 'rgba(239, 68, 68, 0.1)'; color = '#EF4444'; }
         else if (notif.type === 'loan_applied') { icon = 'ph-file-text'; bg = 'rgba(59, 130, 246, 0.1)'; color = '#3B82F6'; }
         else if (notif.type.includes('emi')) { icon = 'ph-calendar-blank'; bg = 'rgba(108, 71, 255, 0.1)'; color = '#6C47FF'; }
-        
+
         return `
         <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item" onclick="markNotificationRead('${notif.id}')">
             <div style="width:36px; height:36px; border-radius:50%; background:${bg}; color:${color}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
@@ -607,7 +914,7 @@ function renderNotificationsPage(notifications) {
         let icon = 'ph-bell';
         let bg = 'var(--surface)';
         let color = 'var(--text)';
-        
+
         if (notif.type === 'approval') { icon = 'ph-check-circle'; bg = 'rgba(34, 197, 94, 0.1)'; color = '#22C55E'; }
         else if (notif.type === 'rejection') { icon = 'ph-x-circle'; bg = 'rgba(239, 68, 68, 0.1)'; color = '#EF4444'; }
         else if (notif.type === 'loan_applied') { icon = 'ph-file-text'; bg = 'rgba(59, 130, 246, 0.1)'; color = '#3B82F6'; }
@@ -641,14 +948,14 @@ async function markNotificationRead(notifId) {
     try {
         const response = await fetch('../../backend/api/mark-notification-read.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({notification_id: notifId, user_id: userId})
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notification_id: notifId, user_id: userId })
         });
         const result = await response.json();
         if (result.status === 'success') {
             fetchNotifications(userId); // Refresh the lists
         }
-    } catch(err) {
+    } catch (err) {
         console.error('Error marking notification read:', err);
     }
 }

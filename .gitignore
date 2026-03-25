@@ -1,2 +1,10 @@
 backend/vendor/
 .env
+<?php
+define('RAZORPAY_KEY_ID',     'rzp_test_SRoviPmNFocwG2'); // paste your Key ID
+define('RAZORPAY_KEY_SECRET', 'qtuxdQ4946ONx1jyJGaFCiew');  //
+$DB_HOST = 'localhost';
+$DB_USER = 'root';
+$DB_PASS = '';          // XAMPP default is empty password
+$DB_NAME = 'lms_db'; // paste your Database name
+?>

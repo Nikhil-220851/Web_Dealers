@@ -28,8 +28,7 @@ $data      = json_decode(file_get_contents("php://input"), true);
 $loanId    = trim($data['loan_id'] ?? '');
 $newStatus = trim($data['status']  ?? '');
 $remarks   = trim($data['remarks'] ?? '') ?: ($newStatus === 'approved' ? 'Approved from dashboard' : 'Rejected from dashboard');
-
-$allowedStatuses = ['approved', 'rejected', 'pending'];
+$allowedStatuses = ['approved', 'rejected', 'pending', 'closed'];
 
 if (empty($loanId) || empty($newStatus)) {
     http_response_code(400);
