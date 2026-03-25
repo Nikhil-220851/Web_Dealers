@@ -194,7 +194,6 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* Left text */
-.hero-text {}
 
 .hero-eyebrow {
   display: inline-flex;
@@ -336,7 +335,6 @@ a { text-decoration: none; color: inherit; }
 }
 .hcard-icon .material-icons-round { font-size: 1.5rem; color: #fff; }
 
-.hcard-body {}
 .hcard-val {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.3rem;
@@ -416,6 +414,9 @@ section { padding: 100px 0; }
   transition: opacity 0.55s ease, transform 0.55s ease;
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Fail-safe if JS is disabled */
+.no-js .reveal { opacity: 1; transform: none; }
 
 /* ════════════════════════════════════════════
    FEATURES — white glass cards on teal-tinted bg

@@ -79,7 +79,8 @@ async function handleSignUp() {
 
   try {
     const response = await fetch('../../backend/api/signup.php', {
-      method: 'POST',
+      method: 'POST'
+  ,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         firstname: firstName,
@@ -123,3 +124,54 @@ function markError(id) {
   el.classList.remove('valid');
   el.closest('.field').classList.add('has-error');
 }
+
+
+function signinwithgoogle() {
+
+   if (!firebaseReady) {
+    alert("Please wait a moment and try again.");
+    return;
+  }
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  firebase.auth().signInWithPopup(provider)
+  .then(async (result) => {
+    const user = result.user;
+
+    const userData = {
+      name:  user.displayName,
+      email: user.email,
+      photo: user.photoURL
+    };
+
+    // Send to backend — now receives userId back
+    const response = await fetch("../../backend/api/google-login.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    });
+
+    const json = await response.json();
+
+    if (json.status === 'success') {
+      // Save everything including userId — profile.js needs this
+      localStorage.setItem("isLoggedIn",  "true");
+      localStorage.setItem("userId",      json.userId);       // ← KEY FIX
+      localStorage.setItem("userEmail",   json.email);
+      localStorage.setItem("userName",    user.displayName);
+      localStorage.setItem("firstname",   json.firstname);
+      localStorage.setItem("lastname",    json.lastname);
+      localStorage.setItem("userPhoto",   json.photo || user.photoURL);
+
+      window.location.href = "../dashboard/dashboard.html";
+    } else {
+      alert("Login failed: " + (json.message || "Unknown error"));
+    }
+  })
+  .catch((error) => {
+    console.error("Google sign-in error:", error);
+    alert("Google sign-in failed. Please try again.");
+  });
+}
+
+  

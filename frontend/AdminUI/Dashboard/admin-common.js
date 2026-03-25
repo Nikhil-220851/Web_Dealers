@@ -3,7 +3,12 @@
    Shared functions for Sidebar, Auth, and Header
 ═══════════════════════════════════════ */
 
-const API_BASE = '/LMS_Web/Web_Dealers/backend/api';
+// Auto-detect API base: works for XAMPP (LMS_Web) and any deployment
+const API_BASE = (() => {
+  const p = window.location.pathname;
+  const m = p.match(/^(.*?\/Web_Dealers)\//);
+  return m ? `${m[1]}/backend/api` : '../../../backend/api';
+})();
 
 /* ─── Auth Guard ─── */
 async function checkAuth() {

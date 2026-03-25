@@ -95,8 +95,31 @@ function validateStep2() {
   }
 }
 
-// Adding click handlers to upi apps for demo purposes
+// Initialization
 document.addEventListener('DOMContentLoaded', () => {
+  const loanId = sessionStorage.getItem('payEmiLoanId');
+  const emiAmount = sessionStorage.getItem('payEmiAmount');
+
+  if (loanId && emiAmount) {
+    // Update summary UI if elements exist
+    const elements = document.querySelectorAll('.font-semi.text-text');
+    if (elements.length >= 2) {
+      elements[0].innerText = loanId;
+      elements[1].innerText = `₹${Math.round(emiAmount).toLocaleString('en-IN')}`;
+    }
+    
+    const payBtn = document.getElementById('btnPay');
+    if (payBtn) {
+      payBtn.innerHTML = `<i class="ph-fill ph-lock-key"></i> Pay ₹${Math.round(emiAmount).toLocaleString('en-IN')} Securely`;
+    }
+
+    const totalDisplays = document.querySelectorAll('.d-family.text-blue');
+    totalDisplays.forEach(el => {
+      el.innerText = `₹${Math.round(emiAmount).toLocaleString('en-IN')}`;
+    });
+  }
+
+  // Adding click handlers to upi apps for demo purposes
   document.querySelectorAll('.upi-app').forEach(app => {
     app.addEventListener('click', function() {
       document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('selected'));
@@ -107,41 +130,52 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Step 3 Logic
-function setupReview(method) {
-  const iconMap = {
-    'card': { icon: 'ph-credit-card', title: 'Credit / Debit Card' },
-    'upi': { icon: 'ph-device-mobile', title: 'UPI' },
-    'netbanking': { icon: 'ph-bank', title: 'Net Banking' },
-    'wallet': { icon: 'ph-wallet', title: 'LoanPro Wallet' }
-  };
-
-  const reviewIcon = document.getElementById('reviewIcon');
-  const reviewMethod = document.getElementById('reviewMethod');
-  const reviewDetail = document.getElementById('reviewDetail');
-  const receiptMethod = document.getElementById('receiptMethod');
-
-  reviewIcon.innerHTML = `<i class="ph ${iconMap[method].icon}"></i>`;
-  reviewMethod.innerText = iconMap[method].title;
-  receiptMethod.innerText = iconMap[method].title;
-
-  // Simple detail display based on inputs
-  if (method === 'card') reviewDetail.innerText = 'Card ending in xxxx'; // simulated
-  else if (method === 'upi') {
-    const upiVal = document.getElementById('upiId').value;
-    reviewDetail.innerText = upiVal || 'UPI App Payment';
-  }
-  else if (method === 'netbanking') reviewDetail.innerText = 'Direct Bank Transfer';
-  else if (method === 'wallet') reviewDetail.innerText = 'Deducted from balance';
-}
-
 // Processing
-function processPayment() {
+async function processPayment() {
   const overlay = document.getElementById('loadingOverlay');
   overlay.classList.add('active');
 
-  setTimeout(() => {
+  const userId = localStorage.getItem('userId');
+  const loanId = sessionStorage.getItem('payEmiLoanId');
+  const emiAmount = sessionStorage.getItem('payEmiAmount');
+  
+  if (!userId || !loanId) {
+    alert("Missing user or loan information. Please return to the dashboard.");
     overlay.classList.remove('active');
-    goToStep(4);
-  }, 2500);
+    return;
+  }
+
+  try {
+    const response = await fetch('../../backend/api/process-emi-payment.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        loan_id: loanId,
+        payment_method: document.getElementById('reviewMethod').innerText
+      })
+    });
+
+    const result = await response.json();
+    
+    if (result.status === 'success') {
+      overlay.classList.remove('active');
+      
+      // Update receipt UI
+      const rcRows = document.querySelectorAll('.rc-row span:last-child');
+      if (rcRows.length >= 2) {
+        rcRows[0].innerText = `₹${Math.round(result.data.amount || emiAmount).toLocaleString('en-IN')}`;
+        rcRows[1].innerText = result.data.transaction_id;
+      }
+      
+      goToStep(4);
+    } else {
+      overlay.classList.remove('active');
+      alert(`Payment failed: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    overlay.classList.remove('active');
+    alert("An error occurred during payment processing. Please try again.");
+  }
 }

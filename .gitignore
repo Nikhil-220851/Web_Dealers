@@ -1,4 +1,4 @@
-backend/vendor
+backend/vendor/
 .env
 <?php
 define('RAZORPAY_KEY_ID',     'rzp_test_SRoviPmNFocwG2'); // paste your Key ID

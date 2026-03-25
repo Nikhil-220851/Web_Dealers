@@ -3,7 +3,12 @@
    Connected to backend admin-signup.php
 ═══════════════════════════════════════ */
 
-const API_BASE = '/LMS_Web/Web_Dealers/backend/api';
+// Auto-detect API base from current path
+const API_BASE = (() => {
+  const p = window.location.pathname;
+  const m = p.match(/^(.*?\/Web_Dealers)\//);
+  return m ? `${m[1]}/backend/api` : '../../../backend/api';
+})();
 
 /* ─── Toggle password visibility ─── */
 function togglePass(inputId, iconId) {
@@ -153,7 +158,7 @@ async function handleSignUp() {
       }, 1500);
     } else {
       setLoading(false);
-      showError(result.message || 'Registration failed. Please try again.');
+      showError(result.message ||'Registration failed. Please try again.');
     }
   } catch (err) {
     setLoading(false);

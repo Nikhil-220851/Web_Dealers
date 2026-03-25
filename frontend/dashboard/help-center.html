@@ -6,30 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Help Center — LoanPro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-  
-  
-  
-
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -68,7 +44,6 @@
           <span class="nav-icon"><i class="ph ph-user"></i></span> <span class="nav-label">Profile</span>
         </a>
 
-        
         <a href="notifications.html" class="nav-item">
           <span class="nav-icon"><i class="ph ph-bell"></i></span> <span class="nav-label">Notifications</span>
         </a>
@@ -80,19 +55,18 @@
         <a href="contact.html" class="nav-item">
           <span class="nav-icon"><i class="ph ph-phone"></i></span> <span class="nav-label">Contact Us</span>
         </a>
-      
+
         <div class="nav-section" style="margin-top:10px">Account</div>
         <a href="#" class="nav-item" onclick="logout()">
           <span class="nav-icon"><i class="ph ph-sign-out"></i></span> <span class="nav-label">Logout</span>
         </a>
       </nav>
 
-
       <div class="sidebar-footer">
         <a href="profile.html" class="user-chip">
           <div class="u-avatar" id="sidebar-avatar-letter">?</div>
           <div class="u-details">
-            <div class="u-name" id="sidebar-user-name">Loading�</div>
+            <div class="u-name" id="sidebar-user-name">Loading…</div>
             <div class="u-role">Borrower</div>
           </div>
           <span class="u-settings-icon"><i class="ph ph-gear"></i></span>
@@ -110,37 +84,28 @@
           </div>
         </div>
         <div class="topbar-right">
-          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
+          <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span
+              class="notif-dot"></span></div>
           <a href="apply-loan.html" class="btn btn-primary btn-sm">+ New Application</a>
         </div>
 
-        <!-- Notifications Dropdown -->
         <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
-          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <div class="font-bold">Notifications</div>
-            <div class="text-xs text-primary" style="cursor:pointer">Mark all read</div>
-          </div>
-          <div style="max-height:300px; overflow-y:auto;">
-            <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; gap:12px; cursor:pointer;" class="notif-item">
-              <div style="width:36px; height:36px; border-radius:50%; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
-              <div>
-                <div class="text-sm font-semi">Payment Received</div>
-                <div class="text-xs text-muted" style="margin-top:4px">Your EMI of ₹8,200 for LN-2024-001 was processed successfully.</div>
-                <div class="text-xs text-muted" style="margin-top:6px">2 hours ago</div>
-              </div>
-            </div>
-          </div>
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border);"><div class="font-bold">Notifications</div></div>
+          <div style="max-height:300px; overflow-y:auto;"><div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;">Loading…</div></div>
         </div>
       </header>
 
       <!-- HELP CONTENT -->
       <div id="page-help" class="page-body active">
-        <div class="card" style="background:var(--primary); color:#fff; border:none; text-align:center; padding:40px 20px;">
+        <div class="card"
+          style="background:var(--primary); color:#fff; border:none; text-align:center; padding:40px 20px;">
           <div class="d-family font-bold" style="font-size:24px; margin-bottom:12px">Knowledge Base</div>
           <div style="max-width:500px; margin:0 auto">
             <div style="position:relative">
-              <input class="input-field" placeholder="Search for help..." style="padding-left:44px; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); color:#fff;" />
-              <i class="ph ph-magnifying-glass" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); opacity:.6"></i>
+              <input class="input-field" placeholder="Search for help..."
+                style="padding-left:44px; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); color:#fff;" />
+              <i class="ph ph-magnifying-glass"
+                style="position:absolute; left:16px; top:50%; transform:translateY(-50%); opacity:.6"></i>
             </div>
           </div>
         </div>
@@ -152,19 +117,23 @@
                 <div class="card-title">Frequently Asked Questions</div>
                 <div class="faq-row" onclick="this.classList.toggle('active')">
                   <div class="faq-q">How do I apply for a new loan? <i class="ph ph-caret-down"></i></div>
-                  <div class="faq-a">Go to the 'Apply for Loans' section, select your preferred bank and product, and follow the simple 4-step process.</div>
+                  <div class="faq-a">Go to the 'Apply for Loans' section, select your preferred bank and product, and
+                    follow the simple 4-step process.</div>
                 </div>
                 <div class="faq-row" onclick="this.classList.toggle('active')">
                   <div class="faq-q">What documents are required for KYC? <i class="ph ph-caret-down"></i></div>
-                  <div class="faq-a">Commonly required documents include PAN card, Aadhaar card, and recent bank statements.</div>
+                  <div class="faq-a">Commonly required documents include PAN card, Aadhaar card, and recent bank
+                    statements.</div>
                 </div>
                 <div class="faq-row" onclick="this.classList.toggle('active')">
                   <div class="faq-q">How long does it take for loan approval? <i class="ph ph-caret-down"></i></div>
-                  <div class="faq-a">Most personal and car loans are approved within 24-48 business hours after document verification.</div>
+                  <div class="faq-a">Most personal and car loans are approved within 24-48 business hours after document
+                    verification.</div>
                 </div>
                 <div class="faq-row" onclick="this.classList.toggle('active')">
                   <div class="faq-q">Can I prepay my loan? <i class="ph ph-caret-down"></i></div>
-                  <div class="faq-a">Yes, technical terms vary by bank, but most allow prepayment after a lock-in period of 6 months.</div>
+                  <div class="faq-a">Yes, technical terms vary by bank, but most allow prepayment after a lock-in period
+                    of 6 months.</div>
                 </div>
               </div>
             </div>
@@ -172,14 +141,16 @@
               <div class="card">
                 <div class="card-title">Quick Guides</div>
                 <div style="display:flex; flex-direction:column; gap:12px">
-                  <div class="btn btn-outline w-full" style="justify-content:flex-start; height:auto; padding:12px">
+                  <div class="btn btn-outline w-full" style="justify-content:flex-start; height:auto; padding:12px"
+                    onclick="goToManual()">
                     <i class="ph ph-file-pdf" style="font-size:20px; color:var(--red)"></i>
                     <div style="text-align:left; margin-left:10px">
                       <div class="text-sm font-bold">User Manual</div>
                       <div class="text-xs text-muted">Complete platform guide</div>
                     </div>
                   </div>
-                  <div class="btn btn-outline w-full" style="justify-content:flex-start; height:auto; padding:12px">
+                  <div class="btn btn-outline w-full" style="justify-content:flex-start; height:auto; padding:12px"
+                    onclick="openDocumentViewer('privacy')">
                     <i class="ph ph-shield-check" style="font-size:20px; color:var(--green)"></i>
                     <div style="text-align:left; margin-left:10px">
                       <div class="text-sm font-bold">Privacy Policy</div>
@@ -195,38 +166,49 @@
     </main>
   </div>
 
-  
+  <!-- Document Viewer Modal Container -->
+  <div id="document-modal" class="document-modal hidden">
+    <div class="document-overlay" onclick="closeDocumentViewer()"></div>
+    <div class="document-container">
+      <div class="document-header">
+        <h2 id="document-title"></h2>
+        <div class="document-actions">
+          <button id="download-doc-btn" class="btn btn-primary btn-sm">Download</button>
+          <button onclick="closeDocumentViewer()" class="btn btn-outline btn-sm">Close</button>
+        </div>
+      </div>
+      <div class="document-content" id="document-content">
+        <!-- Content injected by JS -->
+      </div>
+    </div>
+  </div>
 
-  
-  
-
-  
-  
-
-  
-  
-
+  <script src="../assets/js/borrower-auth.js"></script>
   <script src="../assets/js/base.js"></script>
+  <script src="../assets/js/notifications-shared.js"></script>
   <script src="../assets/js/help-center.js"></script>
 
   <script>
     // Logout function
     function logout() {
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
-        alert('You have been logged out.');
-        window.location.href = '../landing/index.html';
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      alert('You have been logged out.');
+      window.location.href = '../landing/index.html';
     }
 
     // Check session
     window.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = '../auth/login.html';
-        }
+      if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '../auth/login.html';
+      }
     });
   </script>
+  <script src="../assets/js/translate.js"></script>
+
+
+
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 
-
 </html>
-

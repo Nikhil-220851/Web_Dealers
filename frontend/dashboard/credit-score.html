@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Score Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --red: #ef4444;
+            --orange: #f97316;
+            --yellow: #eab308;
+            --green: #22c55e;
+            --dark-green: #10b981;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            padding: 30px 20px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .header-bar h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary { background: var(--primary); box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        .btn-danger { background: var(--red); box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-success { background: var(--green); box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3); }
+        .btn-success:hover { background: #16a34a; transform: translateY(-2px); }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+
+        .grid-layout-top {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 25px;
+        }
+
+        .grid-layout-bottom {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        /* Score Visualization */
+        .score-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            height: 175px;
+            margin: 0 auto;
+        }
+
+        .chart-overlay {
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .score-value {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1;
+            margin: 0;
+            color: var(--text-main);
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .score-label {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 5px;
+            letter-spacing: 1px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            background: #f1f5f9;
+            text-transform: uppercase;
+        }
+
+        .spectrum-container { width: 100%; margin-top: 30px; }
+        .spectrum-bar {
+            display: flex;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #f1f5f9;
+            margin-bottom: 10px;
+        }
+        .s-segment { height: 100%; width: 25%; transition: opacity 0.3s; }
+        .s-segment:hover { opacity: 0.8; }
+        .s-segment:nth-child(1) { background: var(--red); }
+        .s-segment:nth-child(2) { background: var(--orange); }
+        .s-segment:nth-child(3) { background: var(--primary); }
+        .s-segment:nth-child(4) { background: var(--green); }
+
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* History Chart */
+        .history-chart-container {
+            width: 100%;
+            height: 250px;
+        }
+
+        /* Payment List */
+        .payment-list { display: flex; flex-direction: column; gap: 12px; }
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid transparent;
+        }
+        .payment-row.paid { border-left-color: var(--green); }
+        .payment-row.missed { border-left-color: var(--red); }
+        
+        .p-details { display: flex; flex-direction: column; gap: 4px; }
+        .p-title { font-weight: 600; font-size: 14px; }
+        .p-date { font-size: 12px; color: var(--text-muted); }
+        
+        .p-status {
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .text-paid { color: var(--green); }
+        .text-missed { color: var(--red); }
+
+        /* Suggestions Engine */
+        .suggestions-list { display: flex; flex-direction: column; gap: 15px; }
+        .suggestion-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 14px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+        .sug-icon { font-size: 18px; margin-top: 2px; }
+        .sug-text { font-size: 14px; line-height: 1.5; color: var(--text-main); font-weight: 500; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media(max-width: 900px) {
+            .grid-layout-top, .grid-layout-bottom { grid-template-columns: 1fr; }
+            .header-bar { flex-direction: column; gap: 15px; }
+            .header-actions { flex-direction: column; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar">
+        <h2>Credit Score Analytics</h2>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="goBack()">← Dashboard</button>
+        </div>
+    </div>
+
+    <div class="grid-layout-top">
+        <!-- Main Score Gauge -->
+        <div class="card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <h3>📈 Current Bureau Score</h3>
+            <div class="score-container" style="width: 100%;">
+                <div class="chart-wrapper">
+                    <canvas id="scoreGauge"></canvas>
+                    <div class="chart-overlay">
+                        <div class="score-value" id="displayScore">0</div>
+                        <div class="score-label" id="scoreStatus">Evaluating</div>
+                    </div>
+                </div>
+
+                <div class="spectrum-container">
+                    <div class="spectrum-bar">
+                        <div class="s-segment" title="Poor (300-549)"></div>
+                        <div class="s-segment" title="Average (550-649)"></div>
+                        <div class="s-segment" title="Good (650-749)"></div>
+                        <div class="s-segment" title="Excellent (750-900)"></div>
+                    </div>
+                    <div class="spectrum-labels" style="margin-top: 5px;">
+                        <span>300</span>
+                        <span>Poor</span>
+                        <span>Average</span>
+                        <span>Good</span>
+                        <span>Excellent</span>
+                        <span>900</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Chart -->
+        <div class="card">
+            <h3>📊 Score History (Trailing 6 Months)</h3>
+            <div class="history-chart-container">
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-layout-bottom">
+
+
+        <!-- Suggestions Engine -->
+        <div class="card">
+            <h3>💡 Smart Suggestions</h3>
+            <div class="suggestions-list" id="suggestionsList">
+                <!-- Dynamically injected based on score/history -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="../assets/js/credit-score.js"></script>
+
+</body>
+</html>

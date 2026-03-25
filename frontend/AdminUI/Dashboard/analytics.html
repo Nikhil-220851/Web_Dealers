@@ -61,78 +61,145 @@
   <main class="dashboard">
 
     <div class="page-heading">
-      <h1>Analytics & Reports</h1>
-      <p>Visual insights regarding loan performance and system statistics.</p>
+      <h1>Analytics &amp; Reports</h1>
+      <p>Real-time visual insights on loans, repayments, and risk.</p>
     </div>
 
-    <div class="row g-4 mb-4">
-      <div class="col-12 col-lg-6">
-        <div class="panel h-100" style="--delay:0.05s">
-          <div class="panel-header">
-            <div class="panel-title">
-              <div class="panel-icon-wrap"><span class="material-icons-round">pie_chart</span></div>
-              Loans by Type
+    <!-- ── Summary Cards ── -->
+    <div class="row g-3 mb-4" id="summaryCards">
+      <div class="col-12 col-md-4">
+        <div class="panel" style="--delay:0s; padding:20px 24px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div class="panel-icon-wrap" style="background:#ede9fe; color:#6366f1;"><span class="material-icons-round">receipt_long</span></div>
+            <div>
+              <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Total Loans</div>
+              <div id="stat-total" style="font-size:26px; font-weight:800; color:#1e293b;">—</div>
             </div>
-          </div>
-          <div style="position: relative; height:300px; width:100%">
-            <canvas id="loansByTypeChart"></canvas>
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-6">
-        <div class="panel h-100" style="--delay:0.1s">
-          <div class="panel-header">
-            <div class="panel-title">
-              <div class="panel-icon-wrap"><span class="material-icons-round">donut_large</span></div>
-              Loans by Status
+      <div class="col-12 col-md-4">
+        <div class="panel" style="--delay:0.05s; padding:20px 24px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div class="panel-icon-wrap" style="background:#d1fae5; color:#10b981;"><span class="material-icons-round">check_circle</span></div>
+            <div>
+              <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Approved Loans</div>
+              <div id="stat-approved" style="font-size:26px; font-weight:800; color:#1e293b;">—</div>
             </div>
           </div>
-          <div style="position: relative; height:300px; width:100%">
-            <canvas id="loansByStatusChart"></canvas>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="panel" style="--delay:0.1s; padding:20px 24px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div class="panel-icon-wrap" style="background:#dbeafe; color:#3b82f6;"><span class="material-icons-round">currency_rupee</span></div>
+            <div>
+              <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Total Disbursed</div>
+              <div id="stat-amount" style="font-size:26px; font-weight:800; color:#1e293b;">—</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="panel mt-4" style="--delay:0.15s">
+    <!-- ── Graph 1: Loan Application Trends (full width) ── -->
+    <div class="panel mb-4" style="--delay:0.1s">
       <div class="panel-header">
         <div class="panel-title">
           <div class="panel-icon-wrap"><span class="material-icons-round">show_chart</span></div>
-          Monthly Loan Applications
+          Loan Application Trends
         </div>
-        <div class="panel-tag">Current Year</div>
+        <div class="panel-tag">Last 30 Data Points</div>
       </div>
-      <div style="position: relative; height:350px; width:100%">
-        <canvas id="monthlyLoansChart"></canvas>
+      <div style="position:relative; height:300px; width:100%">
+        <canvas id="loanTrendsChart"></canvas>
       </div>
     </div>
 
-    <!-- Defaulters Report -->
-    <div class="panel mt-4" style="--delay:0.2s">
-      <div class="panel-header" style="justify-content: space-between;">
+    <!-- ── Graphs 2 & 3: Status Distribution + Loan Types ── -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-5">
+        <div class="panel h-100" style="--delay:0.15s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">donut_large</span></div>
+              Status Distribution
+            </div>
+          </div>
+          <div style="position:relative; height:280px; width:100%">
+            <canvas id="statusDistChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-7">
+        <div class="panel h-100" style="--delay:0.2s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap"><span class="material-icons-round">bar_chart</span></div>
+              Loan Type Distribution
+            </div>
+          </div>
+          <div style="position:relative; height:280px; width:100%">
+            <canvas id="loanTypesChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Graphs 4 & 5: Monthly Disbursed + EMI Trend ── -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-lg-6">
+        <div class="panel h-100" style="--delay:0.25s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap" style="background:#d1fae5; color:#10b981;"><span class="material-icons-round">account_balance_wallet</span></div>
+              Monthly Amount Disbursed
+            </div>
+          </div>
+          <div style="position:relative; height:280px; width:100%">
+            <canvas id="monthlyDisbursedChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="panel h-100" style="--delay:0.3s">
+          <div class="panel-header">
+            <div class="panel-title">
+              <div class="panel-icon-wrap" style="background:#fef3c7; color:#f59e0b;"><span class="material-icons-round">payments</span></div>
+              EMI Payment Trend
+            </div>
+          </div>
+          <div style="position:relative; height:280px; width:100%">
+            <canvas id="emiTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Defaulters List ── -->
+    <div class="panel mt-2" style="--delay:0.35s">
+      <div class="panel-header" style="justify-content:space-between;">
         <div class="panel-title">
           <div class="panel-icon-wrap" style="background:#fef2f2; color:#ef4444;"><span class="material-icons-round">warning</span></div>
-          Defaulters & Overdue Report
+          Defaulters &amp; Overdue Report
         </div>
-        <button class="btn btn-sm btn-primary" onclick="downloadDefaultersCSV()" style="font-weight:600; font-size:13px; display:flex; gap:6px; align-items:center;">
-          <span class="material-icons-round" style="font-size:16px;">download</span> Export CSV
+        <button class="btn btn-sm btn-primary" onclick="downloadDefaultersPDF()" style="font-weight:600; font-size:13px; display:flex; gap:6px; align-items:center;">
+          <span class="material-icons-round" style="font-size:16px;">picture_as_pdf</span> Download PDF
         </button>
       </div>
       <div class="xtable-wrap">
         <table class="xtable">
           <thead>
             <tr>
-              <th>Borrower Name</th>
+              <th>User Name</th>
               <th>Loan ID</th>
-              <th>Loan Amount</th>
               <th>EMI Amount</th>
               <th>Due Date</th>
-              <th>Missed Payments</th>
-              <th>Status</th>
+              <th>Days Overdue</th>
             </tr>
           </thead>
           <tbody id="defaultersTableBody">
-            <tr><td colspan="7" style="text-align: center;">Loading report...</td></tr>
+            <tr><td colspan="5" style="text-align:center;">Loading report...</td></tr>
           </tbody>
         </table>
       </div>
@@ -140,7 +207,12 @@
 
   </main>
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- jsPDF AutoTable plugin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <script src="admin-common.js"></script>
   <script src="analytics.js"></script>
 </body>

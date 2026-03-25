@@ -7,5 +7,7 @@
         "platform": {
             "php": "8.1.0"
         }
+        "mongodb/mongodb": "^2.2",
+        "phpmailer/phpmailer": "^7.0"
     }
 }

@@ -389,10 +389,6 @@ function selectLang(el) {
   el.classList.add('active');
 }
 
-function selectTheme(el) {
-  el.closest('.theme-grid').querySelectorAll('.theme-opt').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-}
 
 /* ════════════════════════════════════════════════
    INIT

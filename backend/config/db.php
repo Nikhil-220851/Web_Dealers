@@ -16,6 +16,11 @@ $mongoUri = $_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27017';
 try {
     $client   = new MongoDB\Client($mongoUri);
     $database = $client->Loan_Management_System;
+    $client = new MongoDB\Client($mongoUri);
+
+    $dbName   = $_ENV['MONGO_DB'] ?? 'Loan_Management_System';
+    $database = $client->selectDatabase($dbName);
+
 } catch (Exception $e) {
     die(json_encode([
         "status"  => "error",

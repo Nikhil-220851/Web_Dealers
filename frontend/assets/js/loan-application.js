@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function goToStep(step) {
   // Hide all steps
   document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
-  
+
   // Show target step
   const target = document.getElementById(`step-${step}`);
   if (target) target.classList.add('active');
@@ -53,7 +53,7 @@ function goToStep(step) {
   for (let i = 1; i <= 4; i++) {
     const circ = document.getElementById(`ind-${i}`);
     const line = document.getElementById(`line-${i}`);
-    
+
     if (circ) {
       circ.className = 'step-circ'; // reset
       if (i < step) {
@@ -66,7 +66,7 @@ function goToStep(step) {
         circ.textContent = i;
       }
     }
-    
+
     if (line) {
       if (i < step) line.classList.add('done');
       else line.classList.remove('done');
@@ -92,9 +92,9 @@ async function fetchLoanProduct() {
         document.getElementById('ctx-bank').textContent = match.bank_name;
         document.getElementById('ctx-rate').textContent = (match.interest_rate || 0) + '%';
         document.getElementById('ctx-logo-wrap').innerHTML = `
-          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.style.display='none';this.parentElement.textContent='${initials}'">
+          <img src="${getBankLogo(match.bank_name)}" alt="${match.bank_name}" class="bank-logo-img" style="width:100%;height:100%;object-fit:contain;display:block" onerror="this.src='../assets/images/banks/default.png'">
         `;
-        
+
         // Auto-set max loan amount allowed (demo cap)
         const amtField = document.getElementById('f_loan_amount');
         if (amtField && match.max_amount) {
@@ -117,10 +117,23 @@ async function fetchUserProfile() {
       const bank = json.bankDetails || {};
       const kyc = json.kycDetails || {};
 
+      // const safeSet = (id, val) => {
+      //   const el = document.getElementById(id);
+      //   if (el && val) el.value = val;
       const safeSet = (id, val) => {
         const el = document.getElementById(id);
-        if (el && val) el.value = val;
+        if (el && val) {
+          el.value = val;
+          // Lock the field if it represents personal info or KYC
+          if (!['f_bankname', 'f_acc', 'f_ifsc', 'f_loan_amount', 'f_tenure', 'f_employment'].includes(id)) {
+            el.setAttribute('readonly', 'true');
+            el.style.backgroundColor = 'var(--bg)';
+            el.style.cursor = 'not-allowed';
+          }
+        }
       };
+
+      // };
 
       // Populate Form
       safeSet('f_name', (u.firstname || '') + ' ' + (u.lastname || ''));
@@ -146,7 +159,7 @@ function validateStep2() {
 
   const fields = [
     'f_name', 'f_email', 'f_phone', 'f_dob', 'f_address',
-    'f_pan', 'f_aadhaar', 'f_bankname', 'f_acc', 'f_ifsc', 
+    'f_pan', 'f_aadhaar', 'f_bankname', 'f_acc', 'f_ifsc',
     'f_income', 'f_loan_amount', 'f_tenure', 'f_employment'
   ];
 
@@ -177,7 +190,7 @@ function validateStep2() {
 function populateReview() {
   const reviewEl = document.getElementById('review-content');
   const details = AppState.applicantDetails;
-  
+
   const amtFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(details.f_loan_amount);
 
   const rows = [
@@ -195,7 +208,7 @@ function populateReview() {
   ];
 
   reviewEl.innerHTML = rows.map((r, i) => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;${i !== rows.length-1 ? 'border-bottom:1px solid var(--border)' : ''}">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;${i !== rows.length - 1 ? 'border-bottom:1px solid var(--border)' : ''}">
       <span style="color:var(--text2);font-size:13px">${r.label}</span>
       <span style="font-weight:600;color:var(--text1);font-size:14px;text-align:right">${r.value}</span>
     </div>
@@ -222,7 +235,7 @@ async function submitApplication() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
+
     const json = await res.json();
 
     if (res.ok && json.status === 'success') {
@@ -239,12 +252,15 @@ async function submitApplication() {
 
 function getBankLogo(bankName) {
   const map = {
-    'HDFC Bank':           'HDFC',
+    'HDFC Bank': 'HDFC',
     'State Bank of India': 'SBI',
-    'ICICI Bank':          'ICICI',
-    'Axis Bank':           'AXIS',
+    'ICICI Bank': 'ICICI',
+    'Axis Bank': 'AXIS',
     'Kotak Mahindra Bank': 'KOTAK',
-    'Canara Bank':         'CANARA',
+    'Canara Bank': 'CANARA',
+    'IndusInd Bank': 'INDUSLAND',
+    'Punjab National Bank': 'PUNJABNATIONALBANK',
+    'Bank of Baroda': 'BANKOFBARODA',
   };
   const key = map[bankName] || bankName.split(' ')[0].toUpperCase();
   return `../assets/images/banks/${key}.png`;
