@@ -57,6 +57,7 @@ function markError(id) {
   el.classList.remove('valid');
   el.closest('.field').classList.add('has-error');
 }
+}
 
 
 function signinwithgoogle() {
