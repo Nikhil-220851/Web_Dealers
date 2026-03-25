@@ -1,5 +1,7 @@
 <?php
-
+require_once '../config/db.php';
+/** @var MongoDB\Database $database */
+global $database;
 // Allow cross-origin requests
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -14,8 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Start session handling
 session_start();
-
-require_once '../config/db.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

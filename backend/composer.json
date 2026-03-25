@@ -1,5 +1,11 @@
 {
     "require": {
-        "mongodb/mongodb": "^2.2"
+        "mongodb/mongodb": "^1.13",
+        "razorpay/razorpay": "^2.8"
+    },
+    "config": {
+        "platform": {
+            "php": "8.1.0"
+        }
     }
 }

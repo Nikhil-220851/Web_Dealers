@@ -11,15 +11,15 @@ if (file_exists($envFile)) {
     }
 }
 
-$mongoUri = $_ENV['MONGODB_URI'] ?? 'mongodb+srv://localhost:27017/test';
+$mongoUri = $_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27017';
 
 try {
-    $client = new MongoDB\Client($mongoUri);
-
+    $client   = new MongoDB\Client($mongoUri);
     $database = $client->Loan_Management_System;
-
 } catch (Exception $e) {
-    die("Database connection failed: " . $e->getMessage());
+    die(json_encode([
+        "status"  => "error",
+        "message" => "Database connection failed: " . $e->getMessage()
+    ]));
 }
-
 ?>
