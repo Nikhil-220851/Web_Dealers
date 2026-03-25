@@ -101,7 +101,7 @@ try {
         'updated_at'  => new MongoDB\BSON\UTCDateTime()
     ];
 
-    // If approving, initialize EMI data (from stashed)
+    // If approving, initialize EMI data
     if ($newStatus === 'approved' && $loanApp) {
         $amount = (float)($loanApp['loan_amount'] ?? $loanApp['amount'] ?? 0);
         $tenure = (int)($loanApp['loan_tenure'] ?? $loanApp['tenure'] ?? 0);
@@ -111,11 +111,47 @@ try {
             $emiAmount = $amount / $tenure;
         }
 
-        $updateData['emi_amount'] = $emiAmount;
-        $updateData['remaining_emis'] = $tenure;
-        $updateData['remaining_balance'] = $amount;
-        $updateData['loan_start_date'] = new MongoDB\BSON\UTCDateTime();
-        $updateData['loan_status'] = 'active';
+        $approvalDate = new DateTime();
+
+        $updateData['emi_amount']       = $emiAmount;
+        $updateData['remaining_emis']   = $tenure;
+        $updateData['remaining_balance']= $amount;
+        $updateData['loan_start_date']  = new MongoDB\BSON\UTCDateTime($approvalDate->getTimestamp() * 1000);
+        $updateData['loan_status']      = 'active';
+        $updateData['total_emis_paid']  = 0;
+
+        // ── Generate EMI Schedule in emi_payments (idempotent) ──
+        if ($tenure > 0) {
+            $existingCount = $database->emi_payments->countDocuments(['loan_id' => $loanId]);
+            if ($existingCount === 0) {
+                // Ensure compound index exists for performance
+                try {
+                    $database->emi_payments->createIndex(
+                        ['loan_id' => 1, 'due_date' => 1, 'status' => 1],
+                        ['background' => true]
+                    );
+                } catch (Exception $ignored) {}
+
+                $schedule = [];
+                for ($i = 1; $i <= $tenure; $i++) {
+                    // Same day-of-month as approval date (real banking rule)
+                    $dueDate = (clone $approvalDate)->add(new DateInterval("P{$i}M"));
+                    $schedule[] = [
+                        'loan_id'            => $loanId,
+                        'user_id'            => (string)($loanApp['user_id'] ?? ''),
+                        'emi_number'         => $i,
+                        'due_date'           => new MongoDB\BSON\UTCDateTime($dueDate->getTimestamp() * 1000),
+                        'amount'             => round($emiAmount, 2),
+                        'amount_paid'        => 0.0,
+                        'status'             => 'unpaid',
+                        'paid_at'            => null,
+                        'payment_history_id' => null,
+                        'created_at'         => new MongoDB\BSON\UTCDateTime()
+                    ];
+                }
+                $database->emi_payments->insertMany($schedule);
+            }
+        }
     }
 
     $result = $database->loan_applications->updateOne(
@@ -131,14 +167,15 @@ try {
             $formattedAmount = number_format((float)$amount);
             
             $message = $newStatus === 'approved' 
-                ? "Your loan application for ₹{$formattedAmount} has been approved."
-                : "Your loan application has been rejected.";
+                ? "Your loan application for ₹{$formattedAmount} has been approved.\nRemarks: " . ($remarks ?: 'None')
+                : "Your loan application has been rejected.\nRemarks: " . ($remarks ?: 'None');
             
             $notification = [
                 'user_id' => (string)$loanApp['user_id'],
                 'loan_id' => $loanId,
                 'type' => $newStatus === 'approved' ? 'approval' : 'rejection',
                 'message' => $message,
+                'remarks' => $remarks ?: 'None',
                 'is_read' => false,
                 'created_at' => new MongoDB\BSON\UTCDateTime()
             ];

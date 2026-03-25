@@ -38,10 +38,10 @@ async function loadPaymentHistory() {
 
         return `
           <tr class="txn-row">
-            <td><span class="loan-id">${payment.transaction_id || '-'}</span></td>
-            <td><span class="loan-id">${(payment.loan_id || '').toString().slice(-8)}</span></td>
-            <td>${typeof dateVal === 'string' && dateVal !== '-' ? new Date(dateVal).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) : dateVal}</td>
-            <td class="amount-col">₹${Math.round(amt).toLocaleString('en-IN')}</td>
+            <td><span class="loan-id num-font">${payment.transaction_id || '-'}</span></td>
+            <td><span class="loan-id num-font">${(payment.loan_id || '').toString().slice(-8)}</span></td>
+            <td class="num-font">${typeof dateVal === 'string' && dateVal !== '-' ? new Date(dateVal).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) : dateVal}</td>
+            <td class="amount-col num-font">₹${Math.round(amt).toLocaleString('en-IN')}</td>
             <td>${payment.method || payment.payment_method || '—'}</td>
             <td><span class="badge ${badgeClass}">${label}</span></td>
           </tr>
@@ -81,9 +81,9 @@ async function loadActiveLoanBanner() {
               <div class="card" style="margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
                   <div>
-                    <div class="font-bold" style="font-size:15px">Loan ${loan.id}</div>
-                    <div class="text-sm text-muted mt-8">EMI: ₹${Math.round(emiAmount).toLocaleString('en-IN')}</div>
-                    <div class="text-xs text-muted mt-4">EMIs Paid: ${paid} / ${total}</div>
+                    <div class="font-bold" style="font-size:15px">Loan <span class="num-font">${loan.id}</span></div>
+                    <div class="text-sm text-muted mt-8">EMI: <span class="num-font">₹${Math.round(emiAmount).toLocaleString('en-IN')}</span></div>
+                    <div class="text-xs text-muted mt-4">EMIs Paid: <span class="num-font">${paid} / ${total}</span></div>
                   </div>
                   <div style="text-align:right; font-size:11px; color:var(--text3);">
                     <div style="text-transform: uppercase;">Loan Status</div>

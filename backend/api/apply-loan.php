@@ -49,6 +49,11 @@ try {
         "loan_start_date"   => $now,
         "updated_at"        => $now,
         "next_due_date"     => new MongoDB\BSON\UTCDateTime($dueDate->getTimestamp() * 1000),
+        "employee_verification" => "pending",
+        "verified_by"       => null,
+        "verified_at"       => null,
+        "verification_notes"=> "",
+        "assigned_employee_id" => null,
     ];
 
     $result = $database->loan_applications->insertOne($doc);

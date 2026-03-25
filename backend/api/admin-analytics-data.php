@@ -280,39 +280,110 @@ try {
     }
 
     // ─────────────────────────────────────────────
-    // 6. DEFAULTERS LIST
+    // 6. DEFAULTERS LIST (New EMI-based Logic)
     // ─────────────────────────────────────────────
     $defaulters = [];
-    $overdueCursor = $database->loan_applications->find([
-        'status'        => ['$in' => $successStatuses],
-        'next_due_date' => ['$lt' => $nowBson]
-    ]);
+    
+    // Part A: Real logic (from emi_payments)
+    $overduePipeline = [
+        ['$match' => ['status' => 'unpaid', 'due_date' => ['$lt' => $nowBson]]],
+        ['$group' => [
+            '_id'              => '$loan_id',
+            'missed_emis'      => ['$sum' => 1],
+            'overdue_amount'   => ['$sum' => '$amount'],
+            'next_unpaid_date' => ['$min' => '$due_date']
+        ]]
+    ];
+    $overdueCursor = $database->emi_payments->aggregate($overduePipeline)->toArray();
+    foreach ($overdueCursor as $overdue) {
+        $loanIdStr = (string)$overdue['_id'];
+        $loan = $database->loan_applications->findOne(['_id' => new MongoDB\BSON\ObjectId($loanIdStr)]);
+        if (!$loan) continue;
 
-    foreach ($overdueCursor as $loan) {
-        $userFirstName = 'User';
-        $userId = $loan['user_id'] ?? '';
-        if (!empty($userId)) {
-            try {
-                $oidClass = 'MongoDB\\BSON\\ObjectId';
-                $userDoc = $database->users->findOne([
-                    '_id' => class_exists($oidClass) ? new $oidClass((string)$userId) : (string)$userId
-                ]);
-                $userFirstName = $userDoc['firstname'] ?? $userDoc['first_name'] ?? 'User';
-            } catch (Exception $e) { $userFirstName = 'Error Loading Name'; }
+        $missedCount = (int)$overdue['missed_emis'];
+        $uId = (string)($loan['user_id'] ?? '');
+        $fName = 'User';
+        if ($uId) {
+            $uDoc = $database->users->findOne(['_id' => new MongoDB\BSON\ObjectId($uId)]);
+            if ($uDoc) {
+                $fn = $uDoc['firstname'] ?? $uDoc['first_name'] ?? '';
+                $ln = $uDoc['lastname'] ?? $uDoc['last_name'] ?? '';
+                $fName = trim($fn . ' ' . $ln) ?: ($uDoc['email'] ?? 'User');
+            }
         }
-        $dueDate = (is_object($loan['next_due_date']) && method_exists($loan['next_due_date'], 'toDateTime'))
-          ? $loan['next_due_date']->toDateTime()
-          : null;
-        $daysOverdue = $dueDate ? max(0, (int)$now->diff($dueDate)->days) : 0;
-        
+
         $defaulters[] = [
-            'id'            => (string)$loan['_id'],
-            'borrower_name' => $userFirstName,
-            'emi_amount'    => round((float)($loan['emi_amount'] ?? 0), 2),
-            'amount'        => round((float)($loan['loan_amount'] ?? 0), 2),
-            'due_date'      => $dueDate ? $dueDate->format('d M Y') : 'N/A',
-            'days_overdue'  => $daysOverdue
+            'id'               => $loanIdStr,
+            'user_id'          => $uId,
+            'borrower_name'    => $fName,
+            'amount'           => round((float)($loan['loan_amount'] ?? 0), 2),
+            'missed_emis'      => $missedCount,
+            'overdue_amount'   => round((float)$overdue['overdue_amount'], 2),
+            'next_unpaid_date' => $overdue['next_unpaid_date']->toDateTime()->format('d M Y'),
+            'status_label'     => ($missedCount >= 3) ? 'Defaulter' : 'Overdue',
+            'data_source'      => 'real'
         ];
+    }
+
+    // Part B: Legacy fallback
+    $legacyLoans = $database->loan_applications->find([
+        'status' => ['$in' => ['approved', 'defaulted', 'active']]
+    ]);
+    foreach ($legacyLoans as $app) {
+        $loanIdStr = (string)$app['_id'];
+        
+        // Skip if already found via emi_payments
+        $exists = false;
+        foreach ($defaulters as $d) { if ($d['id'] === $loanIdStr) { $exists = true; break; } }
+        if ($exists) continue;
+
+        // Skip if it has a schedule (means it's a modern loan, just not overdue)
+        $hasSchedule = $database->emi_payments->countDocuments(['loan_id' => $loanIdStr]);
+        if ($hasSchedule > 0) continue;
+
+        // Legacy age-based logic
+        $isDefaulter = false;
+        $missedPayments = 0;
+        $appDateRaw = $app['applied_date'] ?? $app['application_date'] ?? null;
+        $appDate = (class_exists($utcClass) && $appDateRaw instanceof $utcClass) 
+                   ? $appDateRaw->toDateTime() 
+                   : (is_string($appDateRaw) ? new DateTime($appDateRaw) : null);
+
+        if ($appDate) {
+            $diff = $now->diff($appDate)->days;
+            if ($diff > 30) { $isDefaulter = true; $missedPayments = floor($diff / 30); }
+        } elseif (($app['status'] ?? '') === 'defaulted') {
+            $isDefaulter = true; $missedPayments = 3;
+        }
+
+        if ($isDefaulter) {
+            $amt = (float)($app['loan_amount'] ?? 0);
+            $ten = (int)($app['loan_tenure'] ?? 12);
+            $estEmi = $ten > 0 ? ($amt / $ten) * 1.05 : 0;
+            
+            $uIdLegacy = (string)($app['user_id'] ?? '');
+            $fNameLegacy = 'User';
+            if ($uIdLegacy) {
+                $uDocLegacy = $database->users->findOne(['_id' => new MongoDB\BSON\ObjectId($uIdLegacy)]);
+                if ($uDocLegacy) {
+                    $fnL = $uDocLegacy['firstname'] ?? $uDocLegacy['first_name'] ?? '';
+                    $lnL = $uDocLegacy['lastname'] ?? $uDocLegacy['last_name'] ?? '';
+                    $fNameLegacy = trim($fnL . ' ' . $lnL) ?: ($uDocLegacy['email'] ?? 'User');
+                }
+            }
+
+            $defaulters[] = [
+                'id'               => $loanIdStr,
+                'user_id'          => $uIdLegacy,
+                'borrower_name'    => $fNameLegacy,
+                'amount'           => $amt,
+                'missed_emis'      => (int)$missedPayments,
+                'overdue_amount'   => round($missedPayments * $estEmi, 2),
+                'next_unpaid_date' => date('d M Y') . ' (Est.)',
+                'status_label'     => 'Legacy',
+                'data_source'      => 'legacy'
+            ];
+        }
     }
 
     echo json_encode([

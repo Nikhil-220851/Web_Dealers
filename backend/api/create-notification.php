@@ -26,6 +26,7 @@ $userId = trim($data['user_id'] ?? '');
 $loanId = trim($data['loan_id'] ?? '');
 $type = trim($data['type'] ?? '');
 $message = trim($data['message'] ?? '');
+$remarks = trim($data['remarks'] ?? 'None');
 
 $allowedTypes = ['approval', 'rejection', 'emi_due', 'overdue', 'warning'];
 
@@ -48,6 +49,7 @@ try {
         'loan_id' => $loanId,
         'type' => $type,
         'message' => $message,
+        'remarks' => $remarks,
         'is_read' => false,
         'created_at' => new MongoDB\BSON\UTCDateTime()
     ];

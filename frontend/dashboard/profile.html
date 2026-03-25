@@ -36,6 +36,15 @@
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/profile.css">
   <link rel="stylesheet" href="../assets/css/style.css">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (savedTheme === "auto" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -129,51 +138,60 @@
       <!-- PROFILE CONTENT -->
       <div id="page-profile" class="page-body active">
         <div class="profile-layout">
-
-          <!-- ═══════ COMPLETION BANNER (full width) ═══════ -->
-          <div class="completion-banner">
-            <div class="completion-banner-left">
-              <div class="completion-avatar-ring">
-                <i class="ph ph-user-circle"></i>
-              </div>
-              <div>
-                <div class="completion-title">Profile Completion</div>
-                <div class="completion-sub">Complete your profile to unlock all features</div>
-              </div>
-            </div>
-            <div class="completion-banner-right">
-              <div class="completion-meta">
-                <span class="completion-fields-text"><span id="completion-filled">0</span> of <span id="completion-total">10</span> fields filled</span>
-                <span class="completion-pct-text"><span id="completion-pct">0</span>%</span>
-              </div>
-              <div class="completion-track">
-                <div id="completion-bar" class="completion-fill"></div>
-              </div>
-              <div class="completion-hint">💡 Add Bank KYC details to reach 100%</div>
-            </div>
-          </div>
-
-          <!-- ═══════ TWO-COLUMN LAYOUT ═══════ -->
           <div class="profile-cols">
 
-            <!-- LEFT COLUMN: Profile Settings + KYC -->
-            <div class="profile-left">
+            <!-- SIDEBAR: Identity, Progress, Danger Zone -->
+            <div class="profile-sidebar">
+              
+              <!-- User Identity Card -->
+              <div class="card user-info-card">
+                <div class="big-avatar" id="profile-avatar-letter">?<div class="avatar-edit"><i class="ph ph-pencil-simple"></i></div></div>
+                <div id="profile-display-name" class="user-display-name">Loading…</div>
+                <div id="profile-display-email" class="user-display-email"></div>
+                <div id="profile-member-since" style="font-size:12px;color:var(--text3);margin-bottom:12px;"></div>
+                <div style="margin-top:8px;"><span class="badge badge-green"><i class="ph ph-seal-check"></i> Verified</span></div>
+              </div>
+
+              <!-- Profile Completion Card -->
+              <div class="card progress-card">
+                <div class="prog-item">
+                  <div class="prog-head">
+                    <span>Profile Completion</span>
+                    <span><span id="completion-pct">0</span>%</span>
+                  </div>
+                  <div class="prog-track">
+                    <div id="completion-bar" class="prog-fill"></div>
+                  </div>
+                </div>
+                <div class="prog-hint">
+                  💡 <span id="completion-filled">0</span> of <span id="completion-total">10</span> fields filled. Complete your profile to unlock all features.
+                </div>
+              </div>
+
+              <!-- Danger Zone Card -->
+              <div class="card danger-zone-card">
+                <div class="profile-card-title">
+                  <h3><i class="ph ph-warning"></i> Danger Zone</h3>
+                </div>
+                <p style="font-size:12px;color:var(--text3);margin-bottom:16px;">Irreversible actions. Be certain before proceeding.</p>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <button class="btn btn-outline w-full" style="justify-content:center; border-color:rgba(239,68,68,.2); color:var(--red); font-size:13px;" onclick="alert('Change password feature coming soon.')">
+                    <i class="ph ph-lock-key"></i> Change Password
+                  </button>
+                  <button class="btn-danger w-full" onclick="confirmDeleteAccount()">
+                    <i class="ph ph-trash"></i> Delete Account
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- MAIN CONTENT: Settings and KYC -->
+            <div class="profile-main">
 
               <!-- Profile Settings Card -->
               <div class="card">
                 <div class="profile-card-title">
                   <h3><i class="ph ph-user-gear"></i> Profile Settings</h3>
-                </div>
-
-                <!-- Avatar + user info -->
-                <div class="profile-header-row">
-                  <div class="big-avatar" id="profile-avatar-letter">?<div class="avatar-edit"><i class="ph ph-pencil-simple"></i></div></div>
-                  <div>
-                    <div id="profile-display-name" style="font-family:var(--font-d);font-weight:700;font-size:19px;color:var(--text);">Loading…</div>
-                    <div id="profile-display-email" style="font-size:12.5px;color:var(--text2);margin-top:4px;"></div>
-                    <div id="profile-member-since" style="font-size:12px;color:var(--text3);margin-top:2px;"></div>
-                    <div style="margin-top:8px;"><span class="badge badge-green"><i class="ph ph-seal-check"></i> Verified</span></div>
-                  </div>
                 </div>
 
                 <!-- Form fields -->
@@ -185,7 +203,7 @@
                   <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="prof-address" placeholder="Full residential address" oninput="updateKycFromProfile()" /></div>
                 </div>
 
-                <div style="margin-top:20px;display:flex;justify-content:flex-end;">
+                <div style="margin-top:24px;display:flex;justify-content:flex-end;">
                   <button class="btn-save-profile" onclick="saveProfileSettings(event)">
                     <i class="ph ph-floppy-disk"></i> Save Changes
                   </button>
@@ -203,75 +221,20 @@
 
                 <!-- KYC View Mode -->
                 <div id="kyc-view-mode">
-
-                  <!-- Basic Identity (always shown from signup data) -->
                   <div class="kyc-grid">
-                    <div class="kyc-cell">
-                      <div class="kyc-label">Full Name</div>
-                      <div class="kyc-value" id="kyc-view-fullname">—</div>
-                    </div>
-                    <div class="kyc-cell">
-                      <div class="kyc-label">Phone Number</div>
-                      <div class="kyc-value" id="kyc-view-phone">—</div>
-                    </div>
-                    <div class="kyc-cell">
-                      <div class="kyc-label">Email Address</div>
-                      <div class="kyc-value" id="kyc-view-email">—</div>
-                    </div>
+                    <div class="kyc-cell"><div class="kyc-label">Full Name</div><div class="kyc-value" id="kyc-view-fullname">—</div></div>
+                    <div class="kyc-cell"><div class="kyc-label">Phone</div><div class="kyc-value" id="kyc-view-phone">—</div></div>
+                    <div class="kyc-cell"><div class="kyc-label">Email</div><div class="kyc-value" id="kyc-view-email">—</div></div>
+                    <div class="kyc-cell"><div class="kyc-label">Bank Name</div><div class="kyc-value" id="kyc-view-bank">—</div></div>
+                    <div class="kyc-cell"><div class="kyc-label">Account No.</div><div class="kyc-value" id="kyc-view-account">—</div></div>
+                    <div class="kyc-cell"><div class="kyc-label">IFSC Code</div><div class="kyc-value" id="kyc-view-ifsc">—</div></div>
+                    <div class="kyc-cell full"><div class="kyc-label">Address</div><div class="kyc-value" id="kyc-view-address">—</div></div>
                   </div>
-
-                  <!-- Bank Details sub-section -->
-                  <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
-                    <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;"><i class="ph ph-bank"></i> Bank Details</div>
-                    <div id="no-bank-msg" style="font-size:13px; color:var(--text3); padding:10px 0;">🏦 Bank details not added yet</div>
-                    <div class="kyc-grid" id="bank-view-grid" style="display:none;">
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Account Holder</div>
-                        <div class="kyc-value" id="kyc-view-account-holder">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Bank Name</div>
-                        <div class="kyc-value" id="kyc-view-bank">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Account Number</div>
-                        <div class="kyc-value" id="kyc-view-account">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">IFSC Code</div>
-                        <div class="kyc-value" id="kyc-view-ifsc">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Branch Name</div>
-                        <div class="kyc-value" id="kyc-view-branch">—</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- KYC Details sub-section -->
-                  <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
-                    <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;"><i class="ph ph-identification-card"></i> KYC Information</div>
-                    <div id="no-kyc-msg" style="font-size:13px; color:var(--text3); padding:10px 0;">📋 KYC not completed</div>
-                    <div class="kyc-grid" id="kyc-view-grid" style="display:none;">
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Date of Birth</div>
-                        <div class="kyc-value" id="kyc-view-dob">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">PAN Number</div>
-                        <div class="kyc-value" id="kyc-view-pan">—</div>
-                      </div>
-                      <div class="kyc-cell">
-                        <div class="kyc-label">Aadhaar Number</div>
-                        <div class="kyc-value" id="kyc-view-aadhaar">—</div>
-                      </div>
-                      <div class="kyc-cell full">
-                        <div class="kyc-label">Address</div>
-                        <div class="kyc-value" id="kyc-view-address">—</div>
-                      </div>
-                    </div>
-                  </div>
-
+                  <!-- Hidden placeholders for JS sync -->
+                  <div id="no-bank-msg" style="display:none;"></div>
+                  <div id="bank-view-grid" style="display:none;"></div>
+                  <div id="no-kyc-msg" style="display:none;"></div>
+                  <div id="kyc-view-grid" style="display:none;"></div>
                 </div>
 
                 <!-- Success flash message -->
@@ -281,91 +244,35 @@
 
                 <!-- KYC Edit Mode -->
                 <div id="kyc-edit-mode" style="display:none;">
-                  <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;"><i class="ph ph-bank"></i> Bank Details</div>
+                  <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;"><i class="ph ph-bank"></i> Bank Details</div>
                   <div class="input-grid">
-                    <div class="input-wrap"><label class="input-lbl">Account Holder Name</label><input class="input-field" id="kyc-account-holder" placeholder="As on bank records" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Bank Name</label><input class="input-field" id="kyc-bankname" placeholder="e.g. State Bank of India" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Account Number</label><input class="input-field" id="kyc-account" placeholder="9–18 digit account number" /></div>
-                    <div class="input-wrap"><label class="input-lbl">IFSC Code</label><input class="input-field" id="kyc-ifsc" placeholder="SBIN0001234" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Branch Name <span style="color:var(--text3);">(optional)</span></label><input class="input-field" id="kyc-branch" placeholder="e.g. MG Road" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Account Holder</label><input class="input-field" id="kyc-account-holder" placeholder="Name on bank records" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Bank Name</label><input class="input-field" id="kyc-bankname" placeholder="e.g. SBI" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Account Number</label><input class="input-field" id="kyc-account" /></div>
+                    <div class="input-wrap"><label class="input-lbl">IFSC Code</label><input class="input-field" id="kyc-ifsc" /></div>
                   </div>
 
-                  <div style="font-size:11.5px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin:18px 0 12px;"><i class="ph ph-identification-card"></i> KYC Information</div>
+                  <div style="font-size:11px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin:20px 0 12px;"><i class="ph ph-identification-card"></i> KYC Info</div>
                   <div class="input-grid">
-                    <div class="input-wrap"><label class="input-lbl">Full Name</label><input class="input-field" id="kyc-fullname" readonly style="background:var(--bg2);" /></div>
                     <div class="input-wrap"><label class="input-lbl">Date of Birth</label><input class="input-field" id="kyc-dob" type="date" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Phone Number</label><input class="input-field" id="kyc-phone" readonly style="background:var(--bg2);" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Email Address</label><input class="input-field" id="kyc-email" readonly style="background:var(--bg2);" /></div>
-                    <div class="input-wrap"><label class="input-lbl">PAN Number</label><input class="input-field" id="kyc-pan" placeholder="ABCDE1234F" /></div>
-                    <div class="input-wrap"><label class="input-lbl">Aadhaar Number</label><input class="input-field" id="kyc-aadhaar" placeholder="XXXX XXXX XXXX" /></div>
-                    <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="kyc-address" placeholder="Full residential address" /></div>
+                    <div class="input-wrap"><label class="input-lbl">PAN Number</label><input class="input-field" id="kyc-pan" /></div>
+                    <div class="input-wrap"><label class="input-lbl">Aadhaar Number</label><input class="input-field" id="kyc-aadhaar" /></div>
+                    <div class="input-wrap full"><label class="input-lbl">Address</label><input class="input-field" id="kyc-address" /></div>
+                    <!-- Hidden for JS compatibility -->
+                    <input type="hidden" id="kyc-fullname"><input type="hidden" id="kyc-phone"><input type="hidden" id="kyc-email"><input type="hidden" id="kyc-branch">
                   </div>
 
-                  <div style="margin-top:18px;display:flex;justify-content:flex-end;gap:10px;">
+                  <div style="margin-top:24px;display:flex;justify-content:flex-end;gap:10px;">
                     <button class="btn btn-ghost" onclick="cancelKycEdit()">Cancel</button>
-                    <button class="btn btn-primary" onclick="saveKycDetails()"><i class="ph ph-floppy-disk"></i> Save KYC Details</button>
+                    <button class="btn btn-primary" onclick="saveKycDetails()"><i class="ph ph-floppy-disk"></i> Save KYC</button>
                   </div>
                 </div>
               </div>
 
-            </div><!-- end .profile-left -->
-
-            <!-- RIGHT COLUMN: Settings Panels -->
-            <div class="profile-right">
-
-              <!-- Language Card -->
-              <div class="card">
-                <div class="profile-card-title">
-                  <h3><i class="ph ph-translate"></i> Language</h3>
-                </div>
-                <div class="lang-grid">
-                
-                  <button class="lang-chip" onclick="changeLang('en')">English</button>
-                  <button class="lang-chip" onclick="changeLang('hi')">Hindi</button>
-                  <button class="lang-chip" onclick="changeLang('te')">Telugu</button>
-                  <button class="lang-chip" onclick="changeLang('ta')">Tamil</button>
-                  <button class="lang-chip" onclick="changeLang('kn')">Kannada</button>
-                  <button class="lang-chip" onclick="changeLang('mr')">Marathi</button>
-                </div>
-              </div>
-
-              <!-- Appearance Card -->
-              <div class="card">
-                <div class="profile-card-title">
-                  <h3><i class="ph ph-palette"></i> Appearance</h3>
-                </div>
-                <div class="theme-grid">
-                  <button class="theme-opt active" onclick="selectTheme(this, 'light')">
-                    <i class="ph ph-sun"></i> Light
-                  </button>
-                  <button class="theme-opt" onclick="selectTheme(this, 'dark')">
-                    <i class="ph ph-moon"></i> Dark
-                  </button>
-                  <button class="theme-opt" onclick="selectTheme(this, 'auto')">
-                    <i class="ph ph-circle-half"></i> Auto
-                  </button>
-                </div>
-              </div>
-
-              <!-- Danger Zone Card -->
-              <div class="card danger-zone-card">
-                <div class="profile-card-title">
-                  <h3 style="color:#EF4444;"><i class="ph ph-warning" style="color:#EF4444;"></i> Danger Zone</h3>
-                </div>
-                <p style="font-size:12.5px;color:var(--text3);margin-bottom:16px;">These actions are irreversible. Please be absolutely certain before proceeding.</p>
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                  <button class="btn btn-outline w-full" style="justify-content:center;border-color:rgba(239,68,68,.3);color:#EF4444;" onclick="alert('Change password feature coming soon. Contact support for assistance.')">
-                    <i class="ph ph-lock-key"></i> Change Password
-                  </button>
-                  <button class="btn-danger w-full" style="justify-content:center;" onclick="confirmDeleteAccount()">
-                    <i class="ph ph-trash"></i> Delete Account
-                  </button>
-                </div>
-              </div>
-
-            </div><!-- end .profile-right -->
+            </div><!-- end .profile-main -->
 
           </div><!-- end .profile-cols -->
+        </div><!-- end .profile-layout -->
 
         </div><!-- end .profile-layout -->
       </div>

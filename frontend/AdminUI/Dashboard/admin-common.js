@@ -25,6 +25,12 @@ async function checkAuth() {
 
     // Sync localStorage with fresh session data
     localStorage.setItem('admin', JSON.stringify(data.admin));
+
+    if (data.admin.role === 'LOAN_AGENT') {
+        window.location.href = '../../LoanAgentUI/Dashboard/dashboard.html';
+        return null;
+    }
+
     return data.admin;
   } catch (err) {
     // If server unreachable, fall back to localStorage check

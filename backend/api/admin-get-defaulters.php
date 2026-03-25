@@ -22,55 +22,105 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 try {
-    // We assume any loan marked as 'rejected' or 'defaulted' or overdue might appear here. 
-    // Since we don't have a rigid payment schedule system yet, let's treat "rejected" 
-    // or those with explicit missed payments flags (if they existed) as our defaulters base 
-    // for this demonstration update, or default to a specific simulated query.
-    // For realism, let's find loans where `status = defaulted` if present, 
-    // or simulate an overdue logic based on approved dates.
+    $now = new MongoDB\BSON\UTCDateTime();
     
-    // As per instructions: The system should identify borrowers who have failed payments or have overdue loans.
-    // We will query applications that are "approved" and calculate a generic overdue date for demo purposes, 
-    // or query specifically for "defaulted" status.
-    
-    $cursor = $database->loan_applications->find([
-        '$or' => [
-            ['status' => 'defaulted'],
-            // Simulate overdue: Approved loans older than 30 days (for the sake of populated data if "defaulted" is not used yet)
+    // 1. Aggregation to find loans with overdue EMIs
+    $pipeline = [
+        [
+            '$match' => [
+                'status'   => 'unpaid',
+                'due_date' => ['$lt' => $now]
+            ]
+        ],
+        [
+            '$group' => [
+                '_id'              => '$loan_id',
+                'missed_emis'      => ['$sum' => 1],
+                'overdue_amount'   => ['$sum' => '$amount'],
+                'next_unpaid_date' => ['$min' => '$due_date']
+            ]
         ]
-    ]);
-    
-    // Because `$or` might just return empty if `defaulted` doesn't exist, let's just fetch all `approved` and `defaulted` 
-    // and process them in PHP to simulate the "Defaulters" logic based on age, if status isn't explicitly 'defaulted'.
-    
-    $allActive = $database->loan_applications->find([
+    ];
+
+    $overdueCursor = $database->emi_payments->aggregate($pipeline);
+    $defaulters = [];
+
+    foreach ($overdueCursor as $overdue) {
+        $loanId = (string)$overdue['_id'];
+        try {
+            $loanObjectId = new MongoDB\BSON\ObjectId($loanId);
+        } catch (Exception $e) { continue; }
+
+        $loan = $database->loan_applications->findOne(['_id' => $loanObjectId]);
+        if (!$loan) continue;
+
+        $missedCount = $overdue['missed_emis'];
+        $statusLabel = ($missedCount >= 3) ? 'Defaulter' : 'Overdue';
+
+        $userId = (string)($loan['user_id'] ?? '');
+        $fullName = 'Unknown User';
+        if ($userId) {
+            $userDoc = $database->users->findOne(['_id' => new MongoDB\BSON\ObjectId($userId)]);
+            if ($userDoc) {
+                $fname = $userDoc['firstname'] ?? $userDoc['first_name'] ?? '';
+                $lname = $userDoc['lastname'] ?? $userDoc['last_name'] ?? '';
+                $fullName = trim($fname . ' ' . $lname) ?: ($userDoc['email'] ?? 'User');
+            }
+        }
+
+        $defaulters[] = [
+            'id'               => $loanId,
+            'user_id'          => $userId,
+            'borrower_name'    => $fullName,
+            'amount'           => (float)($loan['loan_amount'] ?? 0),
+            'missed_emis'      => $missedCount,
+            'overdue_amount'   => round($overdue['overdue_amount'], 2),
+            'next_unpaid_date' => $overdue['next_unpaid_date']->toDateTime()->format('Y-m-d'),
+            'status_label'     => $statusLabel,
+            'data_source'      => 'real'
+        ];
+    }
+
+    // 2. Backward Compatibility: Fallback for Legacy Loans (approved but no EMI schedule)
+    $activeLoans = $database->loan_applications->find([
         'status' => ['$in' => ['approved', 'defaulted']]
     ]);
 
-    $defaulters = [];
-    $today = new DateTime();
-
-    foreach ($allActive as $app) {
-        $status = $app['status'] ?? '';
+    foreach ($activeLoans as $app) {
+        $loanIdStr = (string)$app['_id'];
         
-        $isDefaulter = false;
-        $missedPayments = $app['missed_payments'] ?? 0;
-        $dueDateStr = '';
+        // Skip if already processed in real logic
+        $alreadyInList = false;
+        foreach ($defaulters as $d) {
+            if ($d['id'] === $loanIdStr) {
+                $alreadyInList = true;
+                break;
+            }
+        }
+        if ($alreadyInList) continue;
 
-        if ($status === 'defaulted') {
+        // Check if emi_payments exists for this loan
+        $hasSchedule = $database->emi_payments->countDocuments(['loan_id' => $loanIdStr]);
+        if ($hasSchedule > 0) continue; // No overdue EMIs for this modern loan
+
+        // Legacy age-based logic fallback
+        $today = new DateTime();
+        $isDefaulter = false;
+        $missedPayments = 0;
+        
+        if (($app['status'] ?? '') === 'defaulted') {
             $isDefaulter = true;
-            $missedPayments = $missedPayments > 0 ? $missedPayments : 3; // Simulated
-        } else if ($status === 'approved') {
-            // Check if applied/approved date is older than 30 days
-            if (isset($app['applied_date']) && $app['applied_date'] instanceof MongoDB\BSON\UTCDateTime) {
-                $appDate = $app['applied_date']->toDateTime();
-                $diff = $today->diff($appDate)->days;
-                if ($diff > 30) {
-                    $isDefaulter = true;
-                    $missedPayments = floor($diff / 30);
-                }
-            } else if (isset($app['application_date'])) {
-                $appDate = new DateTime($app['application_date']);
+            $missedPayments = ($app['missed_payments'] ?? 0) > 0 ? $app['missed_payments'] : 3;
+        } else {
+            $appDateRaw = $app['applied_date'] ?? $app['application_date'] ?? null;
+            $appDate = null;
+            if ($appDateRaw instanceof MongoDB\BSON\UTCDateTime) {
+                $appDate = $appDateRaw->toDateTime();
+            } elseif (is_string($appDateRaw)) {
+                $appDate = new DateTime($appDateRaw);
+            }
+
+            if ($appDate) {
                 $diff = $today->diff($appDate)->days;
                 if ($diff > 30) {
                     $isDefaulter = true;
@@ -78,25 +128,33 @@ try {
                 }
             }
         }
-        
+
         if ($isDefaulter) {
-            // Calculate a generic EMI
             $amount = floatval($app['loan_amount'] ?? ($app['amount'] ?? 0));
             $tenure = intval($app['loan_tenure'] ?? ($app['tenure'] ?? 12));
-            $emi = $tenure > 0 ? ($amount / $tenure) * 1.05 : 0; // rough 5% interest padded EMI
-            
-            // Generic Due Date (e.g. 5th of current month)
-            $dueDateStr = date('Y-m') . '-05';
+            $emiValue = $tenure > 0 ? ($amount / $tenure) * 1.05 : 0;
+
+            $uId = (string)($app['user_id'] ?? '');
+            $fName = 'Unknown User';
+            if ($uId) {
+                $uDoc = $database->users->findOne(['_id' => new MongoDB\BSON\ObjectId($uId)]);
+                if ($uDoc) {
+                    $fn = $uDoc['firstname'] ?? $uDoc['first_name'] ?? '';
+                    $ln = $uDoc['lastname'] ?? $uDoc['last_name'] ?? '';
+                    $fName = trim($fn . ' ' . $ln) ?: ($uDoc['email'] ?? 'User');
+                }
+            }
 
             $defaulters[] = [
-                'id' => (string) $app['_id'],
-                'borrower_id' => $app['user_id'] ?? '',
-                'borrower_name' => $app['borrower_name'] ?? 'Unknown User',
-                'amount' => $amount,
-                'emi_amount' => round($emi, 2),
-                'due_date' => $dueDateStr,
-                'missed_payments' => $missedPayments,
-                'status' => $status === 'defaulted' ? 'Defaulted' : 'Overdue Active'
+                'id'               => $loanIdStr,
+                'user_id'          => $uId,
+                'borrower_name'    => $fName,
+                'amount'           => $amount,
+                'missed_emis'      => (int)$missedPayments,
+                'overdue_amount'   => round($missedPayments * $emiValue, 2),
+                'next_unpaid_date' => date('Y-m') . '-05 (Est.)',
+                'status_label'     => 'Legacy',
+                'data_source'      => 'legacy'
             ];
         }
     }
@@ -106,6 +164,6 @@ try {
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
+    echo json_encode(["status" => "error", "message" => "Server error: " . $e->getMessage()]);
 }
 ?>

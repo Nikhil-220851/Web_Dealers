@@ -43,6 +43,9 @@ async function fetchDashboardData() {
 
             // 3. Render Activity Feed
             renderActivities(data.recentActivities);
+
+            // 4. Fetch Accurate Defaulters (New Logic)
+            fetchDefaulters();
         }
     } catch (err) {
         console.error('Failed to load dashboard data:', err);
@@ -150,6 +153,18 @@ function escapeHtml(s) {
     return div.innerHTML;
 }
 
+async function fetchDefaulters() {
+    try {
+        const res = await fetch(`${API_BASE}/admin-get-defaulters.php`);
+        const result = await res.json();
+        if (result.status === 'success') {
+            renderDefaulters(result.data);
+        }
+    } catch (err) {
+        console.error('Failed to load defaulters:', err);
+    }
+}
+
 function renderDefaulters(list) {
     const container = document.getElementById('defaultersList');
     if (!container) return;
@@ -167,23 +182,27 @@ function renderDefaulters(list) {
         <div class="defaulters-table-wrap">
             <table class="defaulters-table">
                 <thead><tr>
-                    <th>Borrower</th><th>Overdue</th><th>Missed EMIs</th><th>Last Paid</th><th>Due Amount</th><th>Action</th>
+                    <th>Borrower</th><th>Status</th><th>Missed</th><th>Overdue Amt</th><th>Next Due</th><th>Action</th>
                 </tr></thead>
                 <tbody>
-                    ${list.map(item => `
+                    ${list.map(item => {
+                        const badgeClass = (item.status_label === 'Defaulter') ? 'badge-soft-danger' : 
+                                         (item.status_label === 'Overdue') ? 'badge-soft-warning' : 'badge-soft-secondary';
+                        return `
                         <tr class="defaulter-row">
                             <td><strong>${escapeHtml(item.borrower_name)}</strong></td>
-                            <td><span class="overdue-badge">${item.days_overdue || 0} days</span></td>
-                            <td>${item.missed_emis || 0}</td>
-                            <td>${item.last_paid_date ? escapeHtml(item.last_paid_date) : '—'}</td>
-                            <td class="amount-cell">₹${Number(item.total_due || item.amount || 0).toLocaleString('en-IN')}</td>
+                            <td><span class="badge ${badgeClass}" style="font-size:11px;">${item.status_label}</span></td>
+                            <td style="text-align:center;">${item.missed_emis || 0}</td>
+                            <td class="amount-cell">₹${Number(item.overdue_amount || 0).toLocaleString('en-IN')}</td>
+                            <td style="font-size:12px; color:#64748b;">${escapeHtml(item.next_unpaid_date)}</td>
                             <td>
-                                <a href="loan-requests.html" class="btn-view-defaulter" title="View Details">
-                                    <span class="material-icons-round">visibility</span>
+                                <a href="analytics.html" class="btn-view-defaulter" title="View Details" style="width:30px; height:30px;">
+                                    <span class="material-icons-round" style="font-size:18px;">visibility</span>
                                 </a>
                             </td>
                         </tr>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </tbody>
             </table>
         </div>`;

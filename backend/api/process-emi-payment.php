@@ -158,6 +158,36 @@ try {
     ];
     
     $database->{'payment-history'}->insertOne($paymentRecord);
+    // Capture inserted payment record ID for two-way linking
+    $paymentHistoryId = $database->{'payment-history'}->findOne(
+        ['transaction_id' => $transactionId],
+        ['projection' => ['_id' => 1]]
+    )['_id'] ?? null;
+
+    // ── Link payment to oldest unpaid EMI (due_date ASC = real-world rule) ──
+    $emiDoc = $database->emi_payments->findOne(
+        ['loan_id' => $loanId, 'status' => 'unpaid'],
+        ['sort' => ['due_date' => 1]]
+    );
+    if ($emiDoc) {
+        $database->emi_payments->updateOne(
+            ['_id' => $emiDoc['_id']],
+            ['$set' => [
+                'status'             => 'paid',
+                'paid_at'            => new MongoDB\BSON\UTCDateTime($now->getTimestamp() * 1000),
+                'amount_paid'        => $emiAmount,
+                'payment_history_id' => $paymentHistoryId
+            ]]
+        );
+    }
+
+    // Back-link emi_id into payment-history record
+    if ($emiDoc && $paymentHistoryId) {
+        $database->{'payment-history'}->updateOne(
+            ['transaction_id' => $transactionId],
+            ['$set' => ['emi_id' => $emiDoc['_id']]]
+        );
+    }
     
     // Update Loan Progress
     $newRemainingEmis = $remainingEmis > 0 ? $remainingEmis - 1 : max(0, $tenure - $emiNumber);

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (function(){var t=localStorage.getItem('theme');if(t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-theme');}})();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Loan Application - LoanPro</title>
@@ -23,6 +26,15 @@
     @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px var(--green-bg); } }
     .bank-logo-img { width: 100%; height: 100%; object-fit: contain; display: block; }
   </style>
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (savedTheme === "auto" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
 </head>
 
 <body>

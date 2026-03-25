@@ -31,14 +31,14 @@ $firstname = trim($data['firstname'] ?? '');
 $lastname  = trim($data['lastname']  ?? '');
 $email     = trim($data['email']     ?? '');
 $phone     = trim($data['phone']     ?? '');
-$role      =       $data['role']     ?? '';
+$role      = 'LOAN_MANAGER'; // Hardcoded as per requirements
 $password  =       $data['password'] ?? '';
 
 // ── VALIDATION ──────────────────────────────────────────────
 
-if (empty($firstname) || empty($email) || empty($password) || empty($role)) {
+if (empty($firstname) || empty($email) || empty($password)) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "First name, email, role, and password are required"]);
+    echo json_encode(["status" => "error", "message" => "First name, email, and password are required"]);
     exit();
 }
 
@@ -60,12 +60,7 @@ if (strlen($password) < 8) {
     exit();
 }
 
-$allowedRoles = ['super', 'loan', 'support', 'finance'];
-if (!in_array($role, $allowedRoles)) {
-    http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Invalid admin role selected"]);
-    exit();
-}
+
 
 // ── DATABASE OPERATIONS ─────────────────────────────────────
 

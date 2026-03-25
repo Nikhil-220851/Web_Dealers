@@ -314,13 +314,20 @@ function initEmiTrendChart(raw) {
   });
 }
 
+function getStatusClass(status) {
+  if (status === 'Defaulter') return 'badge-soft-danger';
+  if (status === 'Overdue') return 'badge-soft-warning';
+  if (status === 'Legacy') return 'badge-soft-secondary';
+  return '';
+}
+
 function renderDefaulters(list) {
   const tbody = document.getElementById('defaultersTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
 
   if (!list || list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:32px;">
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#64748b; padding:32px;">
       <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
         <span class="material-icons-round" style="font-size:40px; color:#10b981;">check_circle</span>
         <span style="font-weight:600;">Excellent! No defaulters found.</span>
@@ -331,19 +338,114 @@ function renderDefaulters(list) {
 
   list.forEach(d => {
     const shortId = d.id ? d.id.substring(d.id.length - 6).toUpperCase() : 'N/A';
-    const overdueStyle = d.days_overdue > 60 ? 'color:#dc2626; font-weight:800;' : 
-                       d.days_overdue > 30 ? 'color:#f59e0b; font-weight:700;' : 'color:#ef4444; font-weight:600;';
+    const badgeClass = getStatusClass(d.status_label);
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><div style="font-weight:600; color:#1e293b;">${d.borrower_name || 'Individual User'}</div></td>
       <td><span class="lid" title="${d.id}">${shortId}</span></td>
-      <td>₹${formatIndian(d.emi_amount || 0)}</td>
-      <td>${d.due_date || 'Unknown'}</td>
-      <td><span style="${overdueStyle}">${d.days_overdue || 0} days</span></td>
+      <td>₹${formatIndian(d.amount || 0)}</td>
+      <td><span style="color:#ef4444; font-weight:700;">${d.missed_emis || 0}</span></td>
+      <td style="font-weight:600; color:#dc2626;">₹${formatIndian(d.overdue_amount || 0)}</td>
+      <td>${d.next_unpaid_date || 'N/A'}</td>
+      <td><span class="badge ${badgeClass}">${d.status_label || 'Overdue'}</span></td>
+      <td style="text-align:center;">
+        <button class="btn btn-sm btn-outline-primary" style="padding:4px 8px;" onclick="viewProfile('${d.user_id}')" title="View Profile">
+          <span class="material-icons-round" style="font-size:18px; vertical-align:middle;">person_search</span>
+        </button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+// Profile Modal Logic (Reused from borrowers.js)
+async function viewProfile(userId) {
+    const modal = document.getElementById('profileModal');
+    const body = document.getElementById('profileModalBody');
+    if (!modal || !body) return;
+
+    modal.classList.add('show');
+    body.innerHTML = '<div style="text-align:center; padding: 40px;"><span class="material-icons-round" style="animation:spin 1s linear infinite; font-size:32px; color:#0f4c5c;">sync</span><p style="margin-top:10px;">Loading profile...</p></div>';
+
+    try {
+        const res = await fetch(`${API_BASE}/admin-get-borrower-profile.php?user_id=${userId}`);
+        const result = await res.json();
+
+        if (result.status === 'success') {
+            renderProfileModal(result.data);
+        } else {
+            body.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Error: ${result.message}</div>`;
+        }
+    } catch (err) {
+        console.error('Error fetching profile:', err);
+        body.innerHTML = `<div style="color:red; text-align:center; padding:20px;">Network error occurred while fetching profile.</div>`;
+    }
+}
+
+function renderProfileModal(data) {
+    const body = document.getElementById('profileModalBody');
+    const p = data.personal;
+    const k = data.kyc || {};
+    const b = data.bank || {};
+    const l = data.loans || [];
+
+    let loansHtml = '';
+    if (l.length === 0) {
+        loansHtml = '<div style="color:#64748b; font-size:14px;">No loans applied yet.</div>';
+    } else {
+        loansHtml = `<table class="xtable" style="margin-top:10px; font-size:13px;">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Applied On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${l.map(loan => `
+                                <tr>
+                                    <td>₹${loan.amount.toLocaleString('en-IN')}</td>
+                                    <td><span style="font-weight:600; text-transform:capitalize; color: ${loan.status==='approved'?'green':(loan.status==='rejected'?'red':'orange')}">${loan.status}</span></td>
+                                    <td>${loan.applied_date}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+    }
+
+    body.innerHTML = `
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+            <h4 style="font-size:16px; font-weight:700; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:#0f4c5c;">Personal Information</h4>
+            <div style="margin-bottom:8px;"><strong>Name:</strong> ${p.name || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>Email:</strong> ${p.email || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>Phone:</strong> ${p.phone || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>Joined:</strong> ${p.joined || 'N/A'}</div>
+
+            <h4 style="font-size:16px; font-weight:700; margin-top:24px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:#0f4c5c;">KYC Details</h4>
+            <div style="margin-bottom:8px;"><strong>PAN:</strong> ${k.pan_number || 'Not provided'}</div>
+            <div style="margin-bottom:8px;"><strong>Aadhaar:</strong> ${k.aadhaar_number || 'Not provided'}</div>
+            <div style="margin-bottom:8px;"><strong>DOB:</strong> ${k.dob || 'Not provided'}</div>
+            <div style="margin-bottom:8px;"><strong>Address:</strong> ${k.address || 'Not provided'}</div>
+        </div>
+        <div>
+            <h4 style="font-size:16px; font-weight:700; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:#0f4c5c;">Bank Details</h4>
+            <div style="margin-bottom:8px;"><strong>Account Name:</strong> ${b.account_holder_name || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>Bank Name:</strong> ${b.bank_name || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>A/c Number:</strong> ${b.account_number || 'N/A'}</div>
+            <div style="margin-bottom:8px;"><strong>IFSC Code:</strong> ${b.ifsc_code || 'N/A'}</div>
+
+            <h4 style="font-size:16px; font-weight:700; margin-top:24px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:#0f4c5c;">Loan History (${l.length})</h4>
+            ${loansHtml}
+        </div>
+      </div>
+    `;
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.classList.remove('show');
 }
 
 function downloadDefaultersPDF() {
@@ -360,18 +462,20 @@ function downloadDefaultersPDF() {
   const rows = defaultersData.map(d => [
     d.borrower_name || 'User',
     d.id.substring(d.id.length - 6).toUpperCase(),
-    '₹' + formatIndian(d.emi_amount || 0),
-    d.due_date || 'N/A',
-    (d.days_overdue || 0) + ' days'
+    '₹' + formatIndian(d.amount || 0),
+    String(d.missed_emis || 0),
+    '₹' + formatIndian(d.overdue_amount || 0),
+    d.next_unpaid_date || 'N/A',
+    d.status_label || 'Overdue'
   ]);
 
   doc.autoTable({
     startY: 32,
-    head: [['Borrower', 'Loan ID', 'EMI Amount', 'Due Date', 'Overdue By']],
+    head: [['Borrower', 'Loan ID', 'Loan Amount', 'Missed', 'Overdue Amt', 'Next Due', 'Status']],
     body: rows,
     headStyles: { fillColor: [13, 124, 110], textColor: 255 },
     alternateRowStyles: { fillColor: [240, 253, 250] },
-    styles: { fontSize: 10, cellPadding: 5 }
+    styles: { fontSize: 9, cellPadding: 3 }
   });
   doc.save(`defaulters_report_${new Date().toISOString().slice(0,10)}.pdf`);
 }

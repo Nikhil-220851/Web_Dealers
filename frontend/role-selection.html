@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanPro - Select Your Role</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --agent-color: #8B0000;
+      --emp-color: #4C1D95;
+      --font: 'Plus Jakarta Sans', sans-serif;
+      --font-d: 'Syne', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background: linear-gradient(135deg, #1a0010, #2a0020);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      transition: 0.4s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .fade-out {
+      opacity: 0;
+      transition: 0.3s ease;
+    }
+
+    .role-selection-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    h2 {
+      font-family: var(--font-d);
+      font-size: 36px;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    .subtitle {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 17px;
+      margin-bottom: 50px;
+    }
+
+    .role-cards {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .role-card {
+      flex: 1;
+      width: 100%;
+      min-width: 250px;
+      max-width: 340px;
+      padding: 40px 30px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .role-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .role-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .role-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .role-card:hover {
+      transform: translateY(-12px) scale(1.05);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .agent-card {
+      background: linear-gradient(135deg, #8B0000, #DC143C);
+    }
+
+    .employee-card {
+      background: linear-gradient(135deg, #4C1D95, #7C3AED);
+    }
+
+    .icon-wrapper {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .role-card h3 {
+      font-family: var(--font-d);
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .role-card p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .role-cards {
+        flex-direction: column;
+        align-items: center;
+      }
+      .role-card {
+        max-width: 100%;
+        width: 100%;
+      }
+      h2 { font-size: 28px; }
+      .subtitle { font-size: 15px; margin-bottom: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-overlay"></div>
+  <div class="role-selection-container">
+    <h2>Select Your Role</h2>
+    <p class="subtitle">Choose how you want to interact with LoanPro</p>
+
+    <div class="role-cards">
+      <!-- Loan Agent -->
+      <div class="role-card agent-card" onmouseover="hoverAgent()" onmouseout="resetHover()" onclick="goToAgent()">
+        <div class="icon-wrapper">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <h3>Loan Agent</h3>
+        <p>Manage customers, apply for loans on their behalf, and earn commission.</p>
+      </div>
+
+      <!-- Bank Employee -->
+      <div class="role-card employee-card" onmouseover="hoverEmp()" onmouseout="resetHover()" onclick="goToEmployee()">
+        <div class="icon-wrapper">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
+        <h3>Bank Employee</h3>
+        <p>Verify loan eligibility, review documents, and process applications internally.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get the intent (login or signup) from the URL parameter, default to login
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action') || 'login';
+
+    const overlay = document.querySelector(".bg-overlay");
+
+    function hoverAgent() {
+      overlay.style.background = "rgba(139,0,0,0.15)";
+    }
+
+    function hoverEmp() {
+      overlay.style.background = "rgba(76,29,149,0.15)";
+    }
+
+    function resetHover() {
+      overlay.style.background = "transparent";
+    }
+
+    function goToAgent() {
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        if (action === 'signup') {
+          window.location.href = "LoanAgentUI/Signup/index.html";
+        } else {
+          window.location.href = "LoanAgentUI/Login/index.html";
+        }
+      }, 300);
+    }
+
+    function goToEmployee() {
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        if (action === 'signup') {
+          window.location.href = "EmployeeUI/Signup/index.html";
+        } else {
+          window.location.href = "EmployeeUI/Login/index.html";
+        }
+      }, 300);
+    }
+  </script>
+</body>
+</html>

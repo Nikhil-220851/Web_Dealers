@@ -82,54 +82,70 @@ try {
     }
 
     $loanAmount = (float)($loan['loan_amount'] ?? 0);
-    
-    // Fallback for emi_amount if missing from DB
-    $emiFallback = $tenure > 0 ? $loanAmount / $tenure : 0;
-    $emiAmount = !empty($loan['emi_amount']) ? (float)$loan['emi_amount'] : $emiFallback;
+    $totalPaid = (int)($loan['total_emis_paid'] ?? 0);
+    $tenure    = (int)($loan['loan_tenure'] ?? ($loan['tenure'] ?? 0));
     $remainingBalance = (float)($loan['remaining_balance'] ?? 0);
 
-    // Use next_due_date stored on the loan for consistency with repayment logic
-    $nextDueRaw = $loan['next_due_date'] ?? null;
-    $due = null;
-    if ($nextDueRaw instanceof MongoDB\BSON\UTCDateTime) {
-        $due = $nextDueRaw->toDateTime();
-    } elseif (is_string($nextDueRaw) && trim($nextDueRaw) !== '') {
-        $due = new DateTime($nextDueRaw);
-    } else {
-        // Fallback: allow immediate payment and set due as now for display
-        $due = new DateTime('now');
-    }
+    // 1. Try to fetch next unpaid EMI from schedule (Real logic)
+    $nextEmi = $database->emi_payments->findOne(
+        ['loan_id' => $loanId, 'status' => 'unpaid'],
+        ['sort' => ['due_date' => 1]]
+    );
 
-    $now = new DateTime('now');
-    $nowDate = new DateTime($now->format('Y-m-d'));
-    $nextDueDateOnly = new DateTime($due->format('Y-m-d'));
-    
-    $emiStatus = "pending";
-    if ($totalPaid === 0) {
-        $emiStatus = "pending";
-    } elseif ($nowDate < $nextDueDateOnly) {
-        $emiStatus = "paid";
-    } elseif ($nowDate == $nextDueDateOnly) {
-        $emiStatus = "pending";
-    } else {
-        $emiStatus = "overdue";
-    }
-
-    echo json_encode([
-        "status" => "success",
-        "data" => [
-            "loan_id" => $loanId,
-            "loan_amount" => $loanAmount,
-            "emi_amount" => $emiAmount,
-            "remaining_emis" => $remainingEmis,
+    if ($nextEmi) {
+        $emiAmount    = (float)$nextEmi['amount'];
+        $due          = $nextEmi['due_date']->toDateTime();
+        $remainingEmis= $database->emi_payments->countDocuments(['loan_id' => $loanId, 'status' => 'unpaid']);
+        $emiStatus    = (new DateTime() > $due) ? 'overdue' : 'pending';
+        
+        $data = [
+            "loan_id"           => $loanId,
+            "loan_amount"       => $loanAmount,
+            "emi_amount"        => $emiAmount,
+            "remaining_emis"    => $remainingEmis,
             "remaining_balance" => $remainingBalance,
-            "next_emi_month" => $due->format('F'),
-            "next_emi_year" => (int)$due->format('Y'),
-            "loan_completed" => false,
-            "total_emis_paid" => $totalPaid,
-            "emi_status" => $emiStatus
-        ]
-    ]);
+            "next_emi_month"    => $due->format('F'),
+            "next_emi_year"     => (int)$due->format('Y'),
+            "loan_completed"    => false,
+            "total_emis_paid"   => $totalPaid,
+            "emi_status"        => $emiStatus,
+            "data_source"       => "real"
+        ];
+    } else {
+        // 2. Fallback: Legacy logic for loans without schedule
+        $nextDueRaw = $loan['next_due_date'] ?? null;
+        $due = null;
+        if ($nextDueRaw instanceof MongoDB\BSON\UTCDateTime) {
+            $due = $nextDueRaw->toDateTime();
+        } elseif (is_string($nextDueRaw) && trim($nextDueRaw) !== '') {
+            $due = new DateTime($nextDueRaw);
+        } else {
+            $due = new DateTime('now');
+        }
+
+        $emiFallback = $tenure > 0 ? $loanAmount / $tenure : 0;
+        $emiAmount   = !empty($loan['emi_amount']) ? (float)$loan['emi_amount'] : $emiFallback;
+        $remainingEmis = $tenure > 0 ? max(0, $tenure - $totalPaid) : (int)($loan['remaining_emis'] ?? 0);
+
+        $now = new DateTime('now');
+        $emiStatus = ($now > $due) ? "overdue" : "pending";
+
+        $data = [
+            "loan_id"           => $loanId,
+            "loan_amount"       => $loanAmount,
+            "emi_amount"        => $emiAmount,
+            "remaining_emis"    => $remainingEmis,
+            "remaining_balance" => $remainingBalance,
+            "next_emi_month"    => $due->format('F'),
+            "next_emi_year"     => (int)$due->format('Y'),
+            "loan_completed"    => false,
+            "total_emis_paid"   => $totalPaid,
+            "emi_status"        => $emiStatus,
+            "data_source"       => "legacy"
+        ];
+    }
+
+    echo json_encode(["status" => "success", "data" => $data]);
 
 } catch (Exception $e) {
     http_response_code(500);

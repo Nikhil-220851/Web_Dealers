@@ -39,6 +39,7 @@ try {
             'loan_id' => $doc['loan_id'],
             'type' => $doc['type'],
             'message' => $doc['message'],
+            'remarks' => $doc['remarks'] ?? 'None',
             'is_read' => $doc['is_read'],
             'created_at' => $doc['created_at']->toDateTime()->format('Y-m-d H:i:s')
         ];

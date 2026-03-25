@@ -49,7 +49,7 @@
       --font-d: 'Syne', sans-serif;
     }
 
-    body.dark-theme {
+    html.dark-theme, body.dark-theme {
       --bg: #0f172a;
       --surface: #1e293b;
       --surface2: #334155;

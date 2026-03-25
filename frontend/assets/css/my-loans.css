@@ -88,9 +88,10 @@
     }
 
     .loan-id {
-      font-family: var(--font-d);
+      font-family: var(--font-num);
       font-weight: 700;
       color: var(--primary);
+      font-variant-numeric: tabular-nums;
     }
 
     .empty-state {

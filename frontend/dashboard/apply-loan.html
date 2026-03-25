@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+  <script>
+    (function(){var t=localStorage.getItem('theme');if(t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-theme');}})();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Apply for Loan — LoanPro</title>
@@ -117,6 +120,8 @@
       font-size: 15px;
       font-weight: 700;
       color: var(--text1);
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
     }
 
     .loan-card-btn {
@@ -131,6 +136,15 @@
     .loan-card-btn i { font-size: 16px; transition: transform .2s; }
     .loan-card-btn:hover i { transform: translateX(4px); }
   </style>
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (savedTheme === "auto" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -206,6 +220,16 @@
         <div class="topbar-right">
           <div class="icon-btn" onclick="toggleNotifications()"><i class="ph ph-bell"></i><span class="notif-dot"></span></div>
         </div>
+
+        <!-- Notifications Dropdown (populated by notifications-shared.js) -->
+        <div id="notif-drop" style="display:none; position:absolute; top:65px; right:28px; width:320px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div class="font-bold">Notifications</div>
+          </div>
+          <div style="max-height:300px; overflow-y:auto;">
+            <div style="padding:20px; text-align:center; color:var(--text3); font-size:12px;">Loading…</div>
+          </div>
+        </div>
       </header>
 
       <!-- PAGE CONTENT -->
@@ -237,7 +261,7 @@
               </select>
             </div>
             <div>
-              <label class="input-lbl">Min Amount: <span id="filter-amt-display" style="color:var(--primary);font-weight:700">&#8377;50,000</span></label>
+              <label class="input-lbl">Min Amount: <span id="filter-amt-display" class="num-font" style="color:var(--primary); font-weight:700;">&#8377;50,000</span></label>
               <input type="range" class="w-full" id="filter-amount" min="50000" max="5000000" step="50000" value="50000" />
             </div>
             <div>

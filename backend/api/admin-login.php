@@ -46,7 +46,14 @@ try {
             $_SESSION['admin_id']    = (string) $admin['_id'];
             $_SESSION['admin_email'] = $admin['email'];
             $_SESSION['admin_name']  = $admin['name']      ?? trim(($admin['firstname'] ?? '') . ' ' . ($admin['lastname'] ?? ''));
-            $_SESSION['admin_role']  = $admin['role']      ?? 'admin';
+            $_SESSION['admin_role']  = $admin['role']      ?? 'LOAN_MANAGER';
+
+            // Specific check for admin login - prevent LOAN_AGENT from logging in here
+            if ($_SESSION['admin_role'] === 'LOAN_AGENT') {
+                http_response_code(403);
+                echo json_encode(["status" => "error", "message" => "Access denied. Agents must use the Agent portal."]);
+                exit();
+            }
 
             http_response_code(200);
             echo json_encode([

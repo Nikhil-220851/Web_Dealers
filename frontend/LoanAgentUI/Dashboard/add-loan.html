@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LoanPro — Add Loan Scheme</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="page-container">
+    <div class="page-header d-flex justify-content-between align-items-center">
+      <div>
+        <h2>Add Loan Scheme</h2>
+        <p>Create a new financial product for borrowers</p>
+      </div>
+      <button class="btn-secondary" onclick="window.location.href='dashboard.html'">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </button>
+    </div>
+
+    <div class="form-card">
+      <form id="addLoanForm">
+        
+        <!-- Section 1: Basic Details -->
+        <div class="form-section">
+          <h4><i class="fas fa-info-circle"></i> Basic Details</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Select Bank</label>
+              <div class="input-icon">
+                <i class="fas fa-university"></i>
+                <select id="bank_name" required>
+                  <option value="">-- Choose Bank --</option>
+                  <option value="HDFC Bank">HDFC Bank</option>
+                  <option value="State Bank of India">State Bank of India</option>
+                  <option value="ICICI Bank">ICICI Bank</option>
+                  <option value="Axis Bank">Axis Bank</option>
+                  <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Loan Type</label>
+              <div class="input-icon">
+                <i class="fas fa-tags"></i>
+                <select id="loan_type" required>
+                  <option value="">-- Choose Type --</option>
+                  <option value="Personal Loan">Personal Loan</option>
+                  <option value="Home Loan">Home Loan</option>
+                  <option value="Car Loan">Car Loan</option>
+                  <option value="Education Loan">Education Loan</option>
+                  <option value="Business Loan">Business Loan</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label>Loan Product Name</label>
+              <input type="text" id="loan_name" placeholder="e.g. Executive Personal Loan" required>
+            </div>
+            <div class="form-group full-width">
+              <label>Description</label>
+              <textarea id="description" rows="3" placeholder="Describe the loan product features, eligibility, etc."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Financial Configuration -->
+        <div class="form-section">
+          <h4><i class="fas fa-calculator"></i> Financial Configuration</h4>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Annual Interest Rate (%)</label>
+              <div class="input-icon">
+                <i class="fas fa-percentage"></i>
+                <input type="number" id="interest_rate" step="0.01" placeholder="e.g. 12.50" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Maximum Tenure (Months)</label>
+              <div class="input-icon">
+                <i class="fas fa-calendar-alt"></i>
+                <input type="number" id="tenure" placeholder="e.g. 24" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Minimum Amount (₹)</label>
+              <div class="input-icon">
+                <i class="fas fa-rupee-sign"></i>
+                <input type="number" id="min_amount" placeholder="e.g. 50000" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Maximum Amount (₹)</label>
+              <div class="input-icon">
+                <i class="fas fa-rupee-sign"></i>
+                <input type="number" id="max_amount" placeholder="e.g. 500000" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Processing Fee (₹)</label>
+              <div class="input-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <input type="number" id="processing_fee" placeholder="e.g. 1500" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-plus-circle"></i> Create Loan Scheme
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="agent-common.js"></script>
+  <script src="add-loan.js"></script>
+</body>
+</html>

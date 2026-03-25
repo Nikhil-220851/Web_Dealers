@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+  <script>
+    (function(){var t=localStorage.getItem('theme');if(t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-theme');}})();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard — LoanPro</title>
@@ -15,6 +18,15 @@
   <link rel="stylesheet" href="../assets/css/base.css">
   <link rel="stylesheet" href="../assets/css/dashboard.css">
   <link rel="stylesheet" href="../assets/css/style.css">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (savedTheme === "auto" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -190,7 +202,7 @@
                 <div class="text-sm font-semi text-muted mb-8" style="text-transform:uppercase; letter-spacing:1px;">
                   Upcoming EMI</div>
                 <div id="emi-widget-content" style="width: 100%;">
-                  <div class="d-family font-bold" id="emi-amount-display" style="font-size:32px; color:var(--primary);">
+                  <div class="num-font font-bold" id="emi-amount-display" style="font-size:32px; color:var(--primary);">
                     ₹0</div>
                   <div class="text-xs text-muted" style="margin-top:4px;">Next Due: <span
                       id="emi-date-display">N/A</span></div>

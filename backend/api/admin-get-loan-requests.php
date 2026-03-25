@@ -22,75 +22,86 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 try {
-    // Fetch all loan requests, sorted by application date descending (prefer stashed)
-    $cursor = $database->loan_applications->find([], ['sort' => ['applied_date' => -1]]);
+    // Improved aggregation pipeline
+    $pipeline = [
+        ['$sort' => ['applied_date' => -1]],
+        [
+            '$lookup' => [
+                'from' => 'users',
+                'localField' => 'user_id',
+                'foreignField' => '_id',
+                'as' => 'borrower'
+            ]
+        ],
+        [
+            '$unwind' => [
+                'path' => '$borrower',
+                'preserveNullAndEmptyArrays' => true
+            ]
+        ],
+        [
+            '$lookup' => [
+                'from' => 'loan_products',
+                'localField' => 'loan_product_id',
+                'foreignField' => '_id',
+                'as' => 'product'
+            ]
+        ],
+        [
+            '$unwind' => [
+                'path' => '$product',
+                'preserveNullAndEmptyArrays' => true
+            ]
+        ],
+        [
+            '$addFields' => [
+                'borrower_name_unified' => [
+                    '$ifNull' => ['$borrower.name', '$borrower.firstname', '$borrower_name', 'Unknown User']
+                ],
+                'loan_type_unified' => [
+                    '$ifNull' => ['$product.loan_type', '$loan_type', 'Unknown']
+                ],
+                'bank_name_unified' => [
+                    '$ifNull' => ['$product.bank_name', '$bank_name', 'Unknown Bank']
+                ]
+            ]
+        ],
+        [
+            '$project' => [
+                '_id' => 1,
+                'user_id' => 1,
+                'borrower_name' => '$borrower_name_unified',
+                'loan_type' => '$loan_type_unified',
+                'bank_name' => '$bank_name_unified',
+                'amount' => ['$ifNull' => ['$loan_amount', '$amount', 0]],
+                'tenure' => ['$ifNull' => ['$loan_tenure', '$tenure', 0]],
+                'status' => ['$ifNull' => ['$status', 'pending']],
+                'employee_verification' => ['$ifNull' => ['$employee_verification', 'pending']],
+                'verification_notes' => ['$ifNull' => ['$verification_notes', '']],
+                'verified_at' => 1,
+                'applied_date' => 1
+            ]
+        ]
+    ];
+
+    $cursor = $database->loan_applications->aggregate($pipeline);
 
     $loanRequests = [];
-
     foreach ($cursor as $app) {
-        $userId    = $app['user_id'] ?? '';
-        $productId = $app['loan_product_id'] ?? '';
-        $product   = null;
-        $userFirstName = 'User';
-
-        // ── FETCH LOAN PRODUCT (bank name, loan type) ──
-        if (!empty($productId)) {
-            try {
-                if (preg_match('/^[a-f\d]{24}$/i', $productId)) {
-                    $product = $database->loan_products->findOne([
-                        '_id' => new MongoDB\BSON\ObjectId($productId)
-                    ]);
-                }
-            } catch (Exception $ignored) {}
-        }
-
-        $loanType = $product['loan_type'] ?? ($app['loan_type'] ?? 'Unknown');
-        $bankName = $product['bank_name'] ?? ($app['bank_name'] ?? 'Unknown Bank');
-
-        // ── FETCH BORROWER NAME FROM users COLLECTION ──
-        $borrowerName = 'Unknown User';
-        if (!empty($userId)) {
-            try {
-                $user = $database->users->findOne(
-                    ['_id' => new MongoDB\BSON\ObjectId($userId)],
-                    ['projection' => [
-                        'firstname' => 1,
-                        'lastname'  => 1,
-                        'name'      => 1,
-                        'full_name' => 1
-                    ]]
-                );
-
-                if ($user) {
-                    if (!empty($user['firstname']) || !empty($user['lastname'])) {
-                        // firstname + lastname format
-                        $borrowerName = trim(
-                            ($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')
-                        );
-                    } elseif (!empty($user['name'])) {
-                        // single name field
-                        $borrowerName = trim($user['name']);
-                    } elseif (!empty($user['full_name'])) {
-                        // full_name field
-                        $borrowerName = trim($user['full_name']);
-                    }
-                }
-            } catch (Exception $ignored) {
-                // Invalid ObjectId or user not found — keep 'Unknown User'
-            }
-        }
-
-        // ── BUILD LOAN REQUEST ENTRY ── (prefer stashed: borrower_name from users firstname)
-        $displayName = $borrowerName !== 'Unknown User' ? $borrowerName : $userFirstName;
         $loanRequests[] = [
             'id'               => (string) $app['_id'],
-            'borrower_id'      => $userId,
-            'borrower_name'    => $displayName ?: 'Unknown User',
-            'loan_type'        => $loanType,
-            'bank_name'        => $bankName,
-            'amount'           => $app['loan_amount'] ?? ($app['amount'] ?? 0),
-            'tenure'           => $app['loan_tenure'] ?? ($app['tenure'] ?? 0),
-            'status'           => $app['status'] ?? 'pending',
+            'borrower_id'      => (string) $app['user_id'],
+            'borrower_name'    => $app['borrower_name'],
+            'loan_type'        => $app['loan_type'],
+            'bank_name'        => $app['bank_name'],
+            'amount'           => $app['amount'],
+            'tenure'           => $app['tenure'],
+            'status'           => $app['status'],
+            'employee_verification' => $app['employee_verification'],
+            'verification_notes' => $app['verification_notes'],
+            'verified_at' => isset($app['verified_at']) && $app['verified_at'] instanceof MongoDB\BSON\UTCDateTime
+                                  ? $app['verified_at']->toDateTime()->format('Y-m-d H:i:s')
+                                  : null,
             'application_date' => isset($app['applied_date']) && $app['applied_date'] instanceof MongoDB\BSON\UTCDateTime
                                   ? $app['applied_date']->toDateTime()->format('Y-m-d')
                                   : ($app['application_date'] ?? '')

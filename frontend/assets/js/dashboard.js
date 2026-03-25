@@ -259,18 +259,18 @@ function buildActiveLoanCard(loan) {
             <div style="display:flex; justify-content:space-between; margin-top:20px;">
                 <div>
                     <div class="lh-amt-lbl">Current Loan Amount</div>
-                    <div class="lh-amt font-bold" style="font-size:24px;">₹${Math.round(loan.amount).toLocaleString('en-IN')}</div>
+                    <div class="lh-amt font-bold num-font" style="font-size:24px;">₹${Math.round(loan.amount).toLocaleString('en-IN')}</div>
                 </div>
                 <div>
                     <div class="lh-amt-lbl" style="text-align:right;">EMI Amount</div>
-                    <div class="lh-amt font-bold text-primary" style="font-size:24px; text-align:right;">₹${Math.round(loan.emi_amount || 0).toLocaleString('en-IN')}</div>
+                    <div class="lh-amt font-bold text-primary num-font" style="font-size:24px; text-align:right;">₹${Math.round(loan.emi_amount || 0).toLocaleString('en-IN')}</div>
                 </div>
             </div>
 
             <div class="lh-meta" style="margin-top:15px; background:rgba(255,255,255,0.05); padding:12px; border-radius:8px;">
                 <div class="lh-meta-item"><label>Bank</label><span>${loan.bank_name}</span></div>
-                <div class="lh-meta-item"><label>EMIs Paid</label><span>${loan.total_emis_paid || 0} / ${loan.tenure}</span></div>
-                <div class="lh-meta-item"><label>Remaining Bal.</label><span>₹${Math.round(loan.remaining_balance !== undefined ? loan.remaining_balance : loan.amount).toLocaleString('en-IN')}</span></div>
+                <div class="lh-meta-item"><label>EMIs Paid</label><span class="num-font">${loan.total_emis_paid || 0} / ${loan.tenure}</span></div>
+                <div class="lh-meta-item"><label>Remaining Bal.</label><span class="num-font">₹${Math.round(loan.remaining_balance !== undefined ? loan.remaining_balance : loan.amount).toLocaleString('en-IN')}</span></div>
             </div>
             
             <div style="margin-top:16px; display:flex; justify-content:space-between; align-items:center; gap:12px;">
@@ -324,11 +324,11 @@ function buildPlaceholderCard(loan, idx) {
                     ${loan.loan_type}
                 </div>
                 <div class="lp-lbl">Loan Amount</div>
-                <div class="lp-amt">₹${Math.round(loan.amount).toLocaleString('en-IN')}</div>
+                <div class="lp-amt num-font">₹${Math.round(loan.amount).toLocaleString('en-IN')}</div>
                 <div class="lp-meta">
                     <div class="lp-meta-item"><label>Bank</label><span>${loan.bank_name}</span></div>
-                    <div class="lp-meta-item"><label>Rate</label><span>${loan.interest_rate}%</span></div>
-                    <div class="lp-meta-item"><label>Tenure</label><span>${loan.tenure} Yrs</span></div>
+                    <div class="lp-meta-item"><label>Rate</label><span class="num-font">${loan.interest_rate}%</span></div>
+                    <div class="lp-meta-item"><label>Tenure</label><span class="num-font">${loan.tenure} Yrs</span></div>
                 </div>
             </div>
             <div class="lp-hint">
@@ -361,7 +361,7 @@ function renderRecentApplications(apps) {
                 </div>
             </div>
             <div style="text-align:right">
-                <div class="font-bold d-family">₹${Math.round(app.amount).toLocaleString('en-IN')}</div>
+                <div class="font-bold num-font">₹${Math.round(app.amount).toLocaleString('en-IN')}</div>
                 <div class="text-xs" style="color:${getStatusColor(app.status)}; text-transform:capitalize">${app.status}</div>
             </div>
         </div>
@@ -396,8 +396,15 @@ function updateEMIWidget(summary) {
 
     if (summary.monthlyEMI > 0) {
         const formattedEMI = `₹${Math.round(summary.monthlyEMI).toLocaleString('en-IN')}`;
-        if(amountDisplay) amountDisplay.textContent = formattedEMI;
-        if(badge) badge.textContent = `${formattedEMI}/mo`;
+        if(amountDisplay) {
+            amountDisplay.textContent = formattedEMI;
+            amountDisplay.classList.add('num-font');
+            amountDisplay.classList.remove('d-family');
+        }
+        if(badge) {
+            badge.textContent = `${formattedEMI}/mo`;
+            badge.classList.add('num-font');
+        }
         
         let nextDueDate = 'N/A';
         // Check if there's any active loan to calculate the next date 
@@ -578,6 +585,7 @@ function renderNotifications(notifications, unreadCount) {
             <div style="flex:1;">
                 <div class="text-sm font-semi" style="${!notif.is_read ? 'font-weight:700;' : 'font-weight:500; opacity:0.8;'}">${notif.type.replace('_', ' ').toUpperCase()}</div>
                 <div class="text-xs" style="margin-top:4px; ${!notif.is_read ? 'color:var(--text);' : 'color:var(--text-muted);'}">${notif.message}</div>
+                ${(notif.type === 'approval' || notif.type === 'rejection') && notif.remarks && notif.remarks !== 'None' ? `<div class="text-xs" style="margin-top:4px; color:var(--text3); font-style:italic;">Note: ${notif.remarks}</div>` : ''}
                 <div class="text-xs text-muted" style="margin-top:6px">${notif.created_at}</div>
             </div>
             ${!notif.is_read ? '<div style="width:8px; height:8px; border-radius:50%; background:var(--primary); margin-top:5px; flex-shrink:0;"></div>' : ''}
@@ -613,6 +621,12 @@ function renderNotificationsPage(notifications) {
             <div style="flex:1;">
                 <div class="text-base font-bold" style="${!notif.is_read ? 'color:var(--text);' : 'color:var(--text-muted); font-weight:600;'}">${notif.type.replace('_', ' ').toUpperCase()}</div>
                 <div class="text-sm" style="margin-top:6px; ${!notif.is_read ? 'color:var(--text-secondary);' : 'color:var(--text-muted);'}">${notif.message}</div>
+                ${(notif.type === 'approval' || notif.type === 'rejection') ? `
+                    <div class="text-sm" style="margin-top:12px; padding:12px; background:var(--surface2); border-radius:8px; border-left:4px solid ${color};">
+                        <span class="font-bold" style="display:block; margin-bottom:4px; font-size:12px; opacity:0.7;">ADMIN REMARKS</span>
+                        <div style="line-height:1.5;">${notif.remarks || 'None'}</div>
+                    </div>
+                ` : ''}
                 <div class="text-xs font-semi" style="margin-top:10px; color:var(--text-muted);">${notif.created_at}</div>
             </div>
             ${!notif.is_read ? '<div class="badge badge-purple" style="font-size: 10px;">New</div>' : ''}

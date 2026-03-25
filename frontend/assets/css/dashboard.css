@@ -57,10 +57,11 @@
     }
 
     .stat-val {
-      font-family: var(--font-d);
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -.5px;
+      font-family: var(--font-num);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      font-variant-numeric: tabular-nums;
     }
 
     .stat-delta {
@@ -193,9 +194,9 @@
     }
 
     .lh-amt {
-      font-family: var(--font-d);
+      font-family: var(--font-num);
       font-size: 30px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: -1px;
     }
 
@@ -278,10 +279,11 @@
     }
 
     .rec-rate {
-      font-family: var(--font-d);
-      font-weight: 800;
+      font-family: var(--font-num);
+      font-weight: 700;
       color: var(--primary);
       font-size: 15px;
+      font-variant-numeric: tabular-nums;
     }
 
     .rec-cards {
@@ -414,9 +416,9 @@
     }
 
     .lp-amt {
-      font-family: var(--font-d);
+      font-family: var(--font-num);
       font-size: 26px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text);
     }

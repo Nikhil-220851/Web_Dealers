@@ -100,16 +100,16 @@ function renderLoansTable(tab) {
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div style="background:var(--bg);border-radius:8px;padding:10px">
               <div style="font-size:11px;color:var(--text2);margin-bottom:2px">Loan Amount</div>
-              <div style="font-weight:700;color:var(--primary);font-size:15px">₹${parseInt(l.loan_amount).toLocaleString('en-IN')}</div>
+              <div class="num-font" style="font-weight:700;color:var(--primary);font-size:15px">₹${parseInt(l.loan_amount).toLocaleString('en-IN')}</div>
             </div>
             <div style="background:var(--bg);border-radius:8px;padding:10px">
               <div style="font-size:11px;color:var(--text2);margin-bottom:2px">Tenure</div>
-              <div style="font-weight:700;color:var(--text1);font-size:15px">${l.loan_tenure} Months</div>
+              <div class="num-font" style="font-weight:700;color:var(--text1);font-size:15px">${l.loan_tenure} Months</div>
             </div>
           </div>
 
           <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border);font-size:12px">
-            <div style="color:var(--text2)">Applied on: <span style="font-weight:600;color:var(--text1)">${l.applied_date || '—'}</span></div>
+            <div style="color:var(--text2)">Applied on: <span class="num-font" style="font-weight:600;color:var(--text1)">${l.applied_date || '—'}</span></div>
             <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;height:auto">View Details</button>
           </div>
         </div>`).join('')}

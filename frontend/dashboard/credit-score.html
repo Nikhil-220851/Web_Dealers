@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script>
+  (function(){var t=localStorage.getItem('theme');if(t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark-theme');}})();
+</script>
 <meta charset="UTF-8">
 <title>Credit Score</title>
 
@@ -92,6 +95,15 @@ height:100% !important;
 
 </style>
 
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || (savedTheme === "auto" && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
 </head>
 
 <body>

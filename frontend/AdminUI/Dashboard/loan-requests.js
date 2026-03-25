@@ -56,7 +56,7 @@ function renderLoanRequests(loans) {
     tbody.innerHTML = '';
 
     if (!loans || loans.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No loan applications found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">No loan applications found</td></tr>`;
         return;
     }
 
@@ -65,12 +65,22 @@ function renderLoanRequests(loans) {
         const dateObj = new Date(loan.application_date);
         const dateStr = isNaN(dateObj.valueOf()) ? loan.application_date : dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
+        const verDate = loan.verified_at ? new Date(loan.verified_at) : null;
+        const verDateStr = verDate && !isNaN(verDate.valueOf()) 
+            ? ` (${verDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })})` 
+            : '';
+
         const tr = document.createElement('tr');
         tr.id    = `row-${loan.id}`;
         tr.innerHTML = `
           <td>${loan.borrower_name || "User"}</td>
           <td><span class="lid" title="${loan.id}">${shortId}</span></td>
           <td>${dateStr}</td>
+          <td>
+            <span class="badge badge-${loan.employee_verification || 'pending'}">
+              ${(loan.employee_verification || 'pending').replace('_', ' ')}${verDateStr}
+            </span>
+          </td>
           <td>
             <button onclick="openReviewModal('${loan.id}')" class="btn btn-sm btn-outline-primary" style="font-size:16px; padding:4px 8px; border:none; background:transparent;" title="View application details">
               <span class="material-icons-round" style="font-size:18px; vertical-align:middle; color:#0f4c5c;">visibility</span>
@@ -103,6 +113,7 @@ function renderLoanRequests(loans) {
 function filterLoans() {
     const q      = (document.getElementById('searchInput')?.value  || '').toLowerCase();
     const status = (document.getElementById('statusFilter')?.value || '').toLowerCase();
+    const verStatus = (document.getElementById('verificationFilter')?.value || '').toLowerCase();
 
     const filtered = allLoans.filter(l => {
         const matchSearch = !q ||
@@ -111,7 +122,8 @@ function filterLoans() {
             (l.bank_name||'').toLowerCase().includes(q)     ||
             l.id.toLowerCase().includes(q);
         const matchStatus = !status || (l.status||'pending').toLowerCase() === status;
-        return matchSearch && matchStatus;
+        const matchVer = !verStatus || (l.employee_verification||'pending').toLowerCase() === verStatus;
+        return matchSearch && matchStatus && matchVer;
     });
 
     renderLoanRequests(filtered);
@@ -314,6 +326,15 @@ function renderReviewModal(loan, profile) {
     </div>
     <div style="margin-bottom:20px;">${historyHtml}</div>
 
+    <!-- Employee Verification -->
+    <div style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:14px; padding:16px 20px; margin-bottom: 20px;">
+        <div style="font-size:11px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Employee Verification</div>
+        <div style="font-size:13.5px; line-height:1.6;">
+            <strong>Status: </strong> <span style="text-transform:capitalize; font-weight:700; color:${loan.employee_verification==='eligible'?'#16a34a':(loan.employee_verification==='not_eligible'?'#dc2626':'#d97706')}">${(loan.employee_verification||'pending').replace('_', ' ')}</span><br/>
+            <strong>Notes: </strong> <span style="font-style:italic;">${loan.verification_notes || 'No notes provided.'}</span>
+        </div>
+    </div>
+
     <!-- Decision Buttons — ONLY for pending loans -->
     ${loan.status === 'pending' ? `
     <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:14px;padding:18px 20px;">
@@ -499,4 +520,5 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchLoanRequests();
     document.getElementById('searchInput') ?.addEventListener('input',  filterLoans);
     document.getElementById('statusFilter')?.addEventListener('change', filterLoans);
+    document.getElementById('verificationFilter')?.addEventListener('change', filterLoans);
 });

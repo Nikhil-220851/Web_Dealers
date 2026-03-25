@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (amtSlider && amtDisplay) {
     amtSlider.addEventListener('input', () => {
       amtDisplay.textContent = '₹' + parseInt(amtSlider.value).toLocaleString('en-IN');
+      amtDisplay.classList.add('num-font');
     });
   }
 
@@ -105,15 +106,15 @@ function renderLoanCards(loans) {
       <div class="loan-card-stats">
         <div class="loan-card-stat">
           <div class="loan-card-stat-label">Interest Rate</div>
-          <div class="loan-card-stat-value text-primary">${loan.interest_rate}% p.a.</div>
+          <div class="loan-card-stat-value text-primary num-font">${loan.interest_rate}% p.a.</div>
         </div>
         <div class="loan-card-stat">
           <div class="loan-card-stat-label">Max Amount</div>
-          <div class="loan-card-stat-value">₹${maxLakhs}L</div>
+          <div class="loan-card-stat-value num-font">₹${maxLakhs}L</div>
         </div>
         <div class="loan-card-stat">
           <div class="loan-card-stat-label">Tenure</div>
-          <div class="loan-card-stat-value">${tenureYrs}</div>
+          <div class="loan-card-stat-value num-font">${tenureYrs}</div>
         </div>
       </div>
 

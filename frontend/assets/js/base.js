@@ -99,12 +99,114 @@
 
         // Close dropdown if clicking outside
         document.addEventListener('click', function (event) {
-          const drop = document.getElementById('notif-drop');
+          const notifDrop = document.getElementById('notif-drop');
+          const langDrop = document.getElementById('nav-lang-drop');
           const btn = event.target.closest('.icon-btn');
-          if (drop && drop.style.display === 'block' && !drop.contains(event.target) && !btn) {
-            drop.style.display = 'none';
+
+          if (notifDrop && notifDrop.style.display === 'block' && !notifDrop.contains(event.target) && (!btn || !btn.getAttribute('onclick')?.includes('toggleNotifications'))) {
+            notifDrop.style.display = 'none';
+          }
+          if (langDrop && langDrop.style.display === 'block' && !langDrop.contains(event.target) && (!btn || btn.id !== 'nav-lang-toggle')) {
+            langDrop.style.display = 'none';
           }
         });
+
+        /* ═══════════════════════════════════════════════
+           NAVBAR CONTROLS (INJECT THEME & LANG)
+        ═══════════════════════════════════════════════ */
+        function injectNavbarControls() {
+          const topbarRight = document.querySelector('.topbar-right');
+          if (!topbarRight) return;
+          if (document.getElementById('nav-theme-toggle')) return;
+
+          const notifBtn = topbarRight.querySelector('.icon-btn');
+          
+          const savedTheme = localStorage.getItem("theme");
+          const isDark = document.documentElement.classList.contains("dark-theme") || document.body.classList.contains("dark-theme");
+          const themeIcon = isDark ? "ph-moon" : "ph-sun";
+
+          // Create Theme Toggle
+          const themeBtn = document.createElement('div');
+          themeBtn.className = 'icon-btn';
+          themeBtn.id = 'nav-theme-toggle';
+          themeBtn.onclick = toggleThemeGlobal;
+          themeBtn.innerHTML = `<i class="ph ${themeIcon}" id="nav-theme-icon"></i>`;
+          themeBtn.title = 'Toggle Theme';
+
+          // Create Language Selector
+          const langBtn = document.createElement('div');
+          langBtn.className = 'icon-btn';
+          langBtn.id = 'nav-lang-toggle';
+          langBtn.onclick = toggleLanguageDropdown;
+          langBtn.innerHTML = '<i class="ph ph-globe"></i>';
+          langBtn.title = 'Change Language';
+
+          // Create Language Dropdown
+          const langDrop = document.createElement('div');
+          langDrop.id = 'nav-lang-drop';
+          // Make sure it doesn't break mobile responsiveness by adjusting bounds if necessary 
+          langDrop.style.cssText = 'display:none; position:absolute; top:65px; right:clamp(10px, 15vw, 60px); width:160px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-lg); z-index:100;';
+          
+          langDrop.innerHTML = `
+              <div style="padding:10px 15px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('en'); toggleLanguageDropdown();">English</div>
+              <div style="padding:10px 15px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('hi'); toggleLanguageDropdown();">हिन्दी</div>
+              <div style="padding:10px 15px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('te'); toggleLanguageDropdown();">తెలుగు</div>
+              <div style="padding:10px 15px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('ta'); toggleLanguageDropdown();">தமிழ்</div>
+              <div style="padding:10px 15px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('kn'); toggleLanguageDropdown();">ಕನ್ನಡ</div>
+              <div style="padding:10px 15px; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="changeLang('mr'); toggleLanguageDropdown();">मराठी</div>
+          `;
+
+          if (notifBtn) {
+            notifBtn.insertAdjacentElement('afterend', langBtn);
+            notifBtn.insertAdjacentElement('afterend', themeBtn);
+          } else {
+            topbarRight.insertBefore(themeBtn, topbarRight.firstChild);
+            topbarRight.insertBefore(langBtn, themeBtn.nextSibling);
+          }
+          
+          topbarRight.appendChild(langDrop);
+        }
+
+        function toggleThemeGlobal() {
+          const isDark = document.documentElement.classList.contains("dark-theme") || document.body.classList.contains("dark-theme");
+          const newTheme = isDark ? "light" : "dark";
+          
+          localStorage.setItem("theme", newTheme);
+          
+          if (newTheme === "dark") {
+            document.documentElement.classList.add("dark-theme");
+            document.body.classList.add("dark-theme");
+          } else {
+            document.documentElement.classList.remove("dark-theme");
+            document.body.classList.remove("dark-theme");
+          }
+
+          const icon = document.getElementById("nav-theme-icon");
+          if (icon) {
+            icon.className = newTheme === "dark" ? "ph ph-moon" : "ph ph-sun";
+          }
+          
+          // Re-sync active state on legacy theme buttons if they exist
+          const themeBtns = document.querySelectorAll('.theme-opt');
+          if (themeBtns.length > 0) {
+            themeBtns.forEach(btn => {
+              btn.classList.remove('active');
+              if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${newTheme}'`)) {
+                btn.classList.add('active');
+              }
+            });
+          }
+        }
+
+        function toggleLanguageDropdown() {
+          const drop = document.getElementById('nav-lang-drop');
+          if (drop) {
+            const notifDrop = document.getElementById('notif-drop');
+            if (notifDrop) notifDrop.style.display = 'none';
+              
+            drop.style.display = drop.style.display === 'none' ? 'block' : 'none';
+          }
+        }
 
 
         /* ═══════════════════════════════════════════════
@@ -286,6 +388,7 @@
           }
 
           updateUserUI(); // Populate global UI elements
+          injectNavbarControls(); // Inject new navbar icons
           initRipples();
           runDashboardStagger();
           animateProgBar();

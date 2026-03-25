@@ -57,7 +57,7 @@
     .data-table th.amount-col,
     .data-table td.amount-col {
       text-align: right;
-      font-family: var(--font-d);
+      font-family: var(--font-num);
     }
     .data-table td.amount-col {
       font-weight: 700;
